@@ -4,9 +4,12 @@
     --text-color: #333;
     --primary-color: #007bff;
     --primary-hover: #0056b3;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
     --border-color: #dee2e6;
     --shadow-color: rgba(0, 0, 0, 0.1);
     --input-bg: #f8f9fa;
+    --disabled-bg: #e9ecef;
 }
 
 * {
@@ -36,6 +39,7 @@ body {
     overflow: hidden;
 }
 
+/* Panel Kiri (Form) */
 .form-panel {
     flex: 1;
     min-width: 320px;
@@ -43,6 +47,8 @@ body {
     padding: 2.5rem;
     overflow-y: auto;
     border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .form-header {
@@ -58,6 +64,62 @@ body {
 
 .form-header p {
     color: #6c757d;
+}
+
+/* Bagian API Key */
+.api-key-section {
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    background-color: #fdfdff;
+}
+
+.api-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#apiKey {
+    padding-right: 35px !important;
+}
+
+.api-status {
+    position: absolute;
+    right: 12px;
+    font-size: 1.2rem;
+}
+.api-status.valid { color: var(--success-color); }
+.api-status.invalid { color: var(--danger-color); }
+
+#saveApiKeyBtn {
+    width: 100%;
+    padding: 0.7rem;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+}
+#saveApiKeyBtn:hover {
+    background-color: #5a6268;
+}
+
+/* Form Utama */
+#ucapan-form {
+    flex-grow: 1;
+}
+
+#main-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+#main-fieldset:disabled {
+    opacity: 0.5;
 }
 
 .form-group {
@@ -96,6 +158,7 @@ body {
     font-size: 0.8rem;
 }
 
+/* Tombol Generate */
 #generate-btn {
     width: 100%;
     padding: 0.8rem;
@@ -138,6 +201,7 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Tombol Hasil */
 .result-actions {
     margin-top: 2rem;
     display: flex;
@@ -148,7 +212,7 @@ body {
 .result-actions button {
     flex: 1;
     padding: 0.7rem;
-    background-color: #28a745;
+    background-color: var(--success-color);
     color: white;
     border: none;
     border-radius: 8px;
@@ -169,12 +233,13 @@ body {
 .feedback {
     margin-top: 1rem;
     text-align: center;
-    color: #28a745;
+    color: var(--success-color);
     font-weight: 500;
     opacity: 0;
     transition: opacity 0.3s;
 }
 
+/* Panel Kanan (Preview) */
 .preview-panel {
     flex: 2;
     padding: 2rem;
@@ -206,17 +271,23 @@ body {
     height: 100%;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
+/* Responsif */
 @media (max-width: 992px) {
+    body { padding: 0; }
     .app-container {
         flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        border-radius: 0;
     }
     .form-panel {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
         max-width: 100%;
+        padding: 2rem;
     }
     .preview-panel {
         min-height: 600px;
@@ -224,9 +295,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
     .form-panel, .preview-panel {
         padding: 1.5rem;
     }
