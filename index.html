@@ -1,0 +1,69 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Ucapan Ulang Tahun AI (Client-Side)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="form-panel">
+            <h1>Generator Ucapan AI</h1>
+            <p>Buat ucapan ulang tahun animasi yang unik dan personal!</p>
+            <form id="ucapan-form">
+                <!-- Input untuk API Key -->
+                <label for="apiKey">Google Gemini API Key:</label>
+                <input type="password" id="apiKey" name="apiKey" required placeholder="Masukkan API Key Anda di sini">
+                <small>API Key Anda hanya digunakan di browser Anda dan tidak disimpan.</small>
+
+                <label for="name">Nama Penerima:</label>
+                <input type="text" id="name" name="name" required placeholder="Contoh: Rizal Setiawan">
+
+                <label for="sender">Nama Pengirim:</label>
+                <input type="text" id="sender" name="sender" required placeholder="Contoh: Keluarga Tercinta">
+                
+                <label for="date">Tanggal Ulang Tahun:</label>
+                <input type="date" id="date" name="date" required>
+
+                <label for="theme">Pilih Tema:</label>
+                <select id="theme" name="theme" required>
+                    <option value="laut">Samudra Keajaiban</option>
+                    <option value="hutan">Hutan Kuno</option>
+                    <option value="ghibli">Ghibli Senja</option>
+                    <option value="galaxy">Galaksi Impian</option>
+                </select>
+
+                <label for="vibe">Pilih Nuansa/Vibe:</label>
+                <select id="vibe" name="vibe" required>
+                    <option value="puitis dan mendalam">Puitis & Mendalam</option>
+                    <option value="ceria dan penuh semangat">Ceria & Semangat</option>
+                    <option value="islami dan penuh doa">Islami & Penuh Doa</option>
+                    <option value="formal dan bijaksana">Formal & Bijaksana</option>
+                </select>
+
+                <button type="submit" id="generate-btn">Buat Ucapan ✨</button>
+                <div id="loader" class="loader" style="display: none;"></div>
+            </form>
+            
+            <div class="result-actions" style="display: none;">
+                <button id="copy-btn">📋 Copy Kode HTML</button>
+                <button id="download-btn">💾 Download File (.html)</button>
+            </div>
+            <div id="copy-feedback" class="feedback"></div>
+        </div>
+
+        <div class="preview-panel">
+            <h2>Live Preview</h2>
+            <div id="preview-placeholder">
+                <p>Hasilnya akan muncul di sini. Pastikan Anda memasukkan API Key yang valid.</p>
+            </div>
+            <iframe id="preview-frame" title="Preview Ucapan"></iframe>
+        </div>
+    </div>
+    
+    <!-- Impor library Gemini AI dari CDN -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
