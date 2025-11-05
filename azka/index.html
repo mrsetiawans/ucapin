@@ -1000,50 +1000,6 @@
                 });
             }, 500);
 
-            // Create explosion confetti (bigger explosion)
-            for (let i = 0; i < 80; i++) {
-                const confetti = document.createElement('div');
-                confetti.style.position = 'fixed';
-                confetti.style.width = '10px';
-                confetti.style.height = '10px';
-                confetti.style.left = '50%';
-                confetti.style.top = '50%';
-                confetti.style.borderRadius = '50%';
-                confetti.style.zIndex = '9999';
-                confetti.style.pointerEvents = 'none';
-                
-                const colors = ['#E8344E', '#4a90e2', '#2ecc71', '#f39c12', '#9b59b6', '#FFD700'];
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                const angle = (Math.PI * 2 * i) / 80;
-                const velocity = 150 + Math.random() * 200;
-                const vx = Math.cos(angle) * velocity;
-                const vy = Math.sin(angle) * velocity;
-                
-                document.body.appendChild(confetti);
-                
-                let posX = 0;
-                let posY = 0;
-                let opacity = 1;
-                
-                const animate = () => {
-                    posX += vx * 0.016;
-                    posY += vy * 0.016 + 100 * 0.016;
-                    opacity -= 0.015;
-                    
-                    confetti.style.transform = `translate(${posX}px, ${posY}px)`;
-                    confetti.style.opacity = opacity;
-                    
-                    if (opacity > 0) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        confetti.remove();
-                    }
-                };
-                
-                setTimeout(() => animate(), 600);
-            }
-
             // Hide gift screen and show main content
             setTimeout(() => {
                 giftScreen.classList.add('hidden');
