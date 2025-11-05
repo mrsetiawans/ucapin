@@ -1,1 +1,1112 @@
-sdasad
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Nizam! 🎮</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0e27;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Gift Opening Screen */
+        .gift-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .gift-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .gift-container {
+            text-align: center;
+            animation: floatGift 3s ease-in-out infinite;
+        }
+
+        .gift-text {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeInScale 1s ease-out;
+        }
+
+        .gift-box {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.05);
+        }
+
+        .gift-box.opening {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .gift-base {
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(145deg, #E8344E, #c72d41);
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: fadeInScale 0.8s ease-out 0.2s both;
+        }
+
+        .gift-lid {
+            width: 220px;
+            height: 50px;
+            background: linear-gradient(145deg, #ff6b7a, #E8344E);
+            border-radius: 10px 10px 5px 5px;
+            position: absolute;
+            top: 0;
+            left: -10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-origin: bottom center;
+            animation: fadeInScale 0.8s ease-out 0.4s both;
+        }
+
+        .gift-box.opening .gift-lid {
+            animation: lidExplode 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .gift-box.opening .gift-base {
+            animation: baseShake 0.6s ease-in-out;
+        }
+
+        .gift-box.opening .gift-ribbon-v,
+        .gift-box.opening .gift-ribbon-h,
+        .gift-box.opening .gift-bow {
+            animation: ribbonExplode 0.6s ease-out forwards;
+        }
+
+        .gift-ribbon-v {
+            width: 30px;
+            height: 200px;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            animation: fadeInScale 0.8s ease-out 0.6s both;
+        }
+
+        .gift-ribbon-h {
+            width: 200px;
+            height: 30px;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            position: absolute;
+            top: 60px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            animation: fadeInScale 0.8s ease-out 0.8s both;
+        }
+
+        .gift-bow {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: fadeInScale 0.8s ease-out 1s both;
+        }
+
+        .bow-left, .bow-right {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border-radius: 50% 50% 0 50%;
+            position: absolute;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .bow-left {
+            left: 0;
+            transform: rotate(-45deg);
+        }
+
+        .bow-right {
+            right: 0;
+            transform: rotate(45deg) scaleX(-1);
+        }
+
+        .bow-center {
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(145deg, #FFA500, #FF8C00);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 3px 10px rgba(255, 140, 0, 0.6);
+        }
+
+        .open-button {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            padding: 18px 45px;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: fadeInScale 0.8s ease-out 1.2s both, pulse 2s infinite 2s;
+        }
+
+        .open-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.7);
+        }
+
+        .open-button:active {
+            transform: translateY(-2px);
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkleFloat 3s infinite;
+            box-shadow: 0 0 10px white;
+        }
+
+        /* Main Content Initial State */
+        .main-content {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(45deg, #0a0e27, #1a1f3a, #0a0e27);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .birthday-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(232, 52, 78, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .name-card {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-name {
+            font-size: 36px;
+            font-weight: 700;
+            color: #E8344E;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .age-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #E8344E, #ff6b7a);
+            padding: 15px 35px;
+            border-radius: 50px;
+            margin-top: 15px;
+            box-shadow: 0 8px 25px rgba(232, 52, 78, 0.4);
+        }
+
+        .age-number {
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .age-text {
+            font-size: 16px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .date-badge {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Roblox GIF Character */
+        .character-showcase {
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .roblox-character {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .roblox-gif {
+            width: 280px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(232, 52, 78, 0.4);
+            border: 3px solid rgba(232, 52, 78, 0.3);
+        }
+
+        /* Message Cards */
+        .message-grid {
+            display: grid;
+            gap: 20px;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .message-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .message-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(232, 52, 78, 0.5);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #E8344E;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        /* Islamic Section */
+        .islamic-card {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .islamic-card .card-title {
+            color: #2ecc71;
+        }
+
+        .arabic-text {
+            font-size: 28px;
+            margin: 15px 0;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .translation {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+
+        /* Family Section */
+        .family-card {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .family-card .card-title {
+            color: #9b59b6;
+        }
+
+        .family-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .family-member {
+            background: rgba(155, 89, 182, 0.2);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .family-member:hover {
+            background: rgba(155, 89, 182, 0.3);
+            transform: scale(1.05);
+        }
+
+        .family-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .family-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Action Button */
+        .action-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .celebrate-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #E8344E, #ff6b7a);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 35px rgba(232, 52, 78, 0.5);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .celebrate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 45px rgba(232, 52, 78, 0.6);
+        }
+
+        .celebrate-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #E8344E;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            animation: particleFloat 4s infinite;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes lidExplode {
+            0% {
+                transform: translateY(0) rotateX(0deg) scale(1);
+                opacity: 1;
+            }
+            30% {
+                transform: translateY(-50px) rotateX(-20deg) scale(1.05);
+                opacity: 1;
+            }
+            60% {
+                transform: translateY(-150px) rotateX(-45deg) rotateZ(180deg) scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-300px) rotateX(-90deg) rotateZ(360deg) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes baseShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            10% { transform: translateX(-8px) rotate(-3deg) scale(1.02); }
+            20% { transform: translateX(8px) rotate(3deg) scale(1.02); }
+            30% { transform: translateX(-8px) rotate(-3deg) scale(1.02); }
+            40% { transform: translateX(8px) rotate(3deg) scale(1.02); }
+            50% { transform: translateX(-5px) rotate(-2deg) scale(1.01); }
+            60% { transform: translateX(5px) rotate(2deg) scale(1.01); }
+            70% { transform: translateX(-3px) rotate(-1deg) scale(1); }
+            80% { transform: translateX(3px) rotate(1deg) scale(1); }
+            90% { transform: translateX(-1px) scale(1); }
+        }
+
+        @keyframes ribbonExplode {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatGift {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) scale(1.05); }
+            25% { transform: translateX(-10px) rotate(-5deg) scale(1.05); }
+            75% { transform: translateX(10px) rotate(5deg) scale(1.05); }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(232, 52, 78, 0.8), 0 0 40px rgba(232, 52, 78, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(232, 52, 78, 1), 0 0 60px rgba(232, 52, 78, 0.7); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .birthday-title {
+                font-size: 36px;
+            }
+            
+            .player-name {
+                font-size: 28px;
+            }
+            
+            .age-number {
+                font-size: 36px;
+            }
+            
+            .roblox-logo {
+                font-size: 22px;
+                padding: 10px 25px;
+            }
+            
+            .message-card {
+                padding: 25px 20px;
+            }
+            
+            .card-title {
+                font-size: 20px;
+            }
+            
+            .family-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .birthday-title {
+                font-size: 28px;
+            }
+            
+            .player-name {
+                font-size: 24px;
+            }
+            
+            .name-card {
+                padding: 25px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Gift Opening Screen -->
+    <div class="gift-screen" id="giftScreen">
+        <div class="gift-container">
+            <div class="gift-text">
+                🎁 Ada Kejutan Spesial Untukmu! 🎁
+            </div>
+            
+            <div class="gift-box" id="giftBox">
+                <div class="gift-lid"></div>
+                <div class="gift-base"></div>
+                <div class="gift-ribbon-v"></div>
+                <div class="gift-ribbon-h"></div>
+                <div class="gift-bow">
+                    <div class="bow-left"></div>
+                    <div class="bow-right"></div>
+                    <div class="bow-center"></div>
+                </div>
+            </div>
+            
+            <button class="open-button" id="openButton">
+                🎉 BUKA KADO! 🎉
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    
+    <!-- Stars -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <!-- Background Music -->
+        <audio id="bgMusic" loop>
+            <source src="https://raw.githubusercontent.com/mrsetiawans/ucapin/main/azka/Selamat%20Ulang%20Tahun%20Azka.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="birthday-title">🎮 HAPPY BIRTHDAY 🎮</div>
+            
+            <div class="name-card">
+                <div class="player-name">NIZAM NUR AZKA</div>
+                <div class="age-display">
+                    <div class="age-number">9</div>
+                    <div class="age-text">TAHUN</div>
+                </div>
+                <div class="date-badge">5 November 2025</div>
+            </div>
+        </div>
+
+        <!-- Roblox Character -->
+        <div class="character-showcase">
+            <div class="roblox-character">
+                <img src="https://media.tenor.com/GH0TUsF-mM4AAAAM/bacon-man-roblox-default-dance.gif" alt="Roblox Default Dance" class="roblox-gif">
+            </div>
+        </div>
+
+        <!-- Message Cards -->
+        <div class="message-grid">
+            <!-- Birthday Message -->
+            <div class="message-card">
+                <div class="card-title">
+                    <span>🎉</span>
+                    <span>Selamat Ulang Tahun!</span>
+                </div>
+                <div class="card-text">
+                    Selamat ulang tahun yang ke-9, Nizam! Semoga di usia barumu ini kamu menjadi anak yang lebih sholeh, cerdas, dan penuh prestasi. Terus semangat dalam belajar dan bermain, jangan lupa selalu berbakti kepada Mama dan Kakak-kakak ya!
+                </div>
+            </div>
+
+            <!-- Islamic Dua -->
+            <div class="message-card islamic-card">
+                <div class="card-title">
+                    <span>🤲</span>
+                    <span>Doa Untuk Nizam</span>
+                </div>
+                <div class="arabic-text">بَارَكَ اللهُ لَكَ وَبَارَكَ عَلَيْكَ</div>
+                <div class="translation">Barakallahu Laka wa Baraka 'Alaika</div>
+                <div class="card-text" style="margin-top: 15px;">
+                    Semoga Allah memberkahi hidupmu dan melimpahkan keberkahan kepadamu. Semoga selalu dalam lindungan Allah SWT, sehat, bahagia, dan sukses di dunia dan akhirat.
+                </div>
+            </div>
+
+            <!-- Gaming Message -->
+            <div class="message-card">
+                <div class="card-title">
+                    <span>🎮</span>
+                    <span>Level Up!</span>
+                </div>
+                <div class="card-text">
+                    Congratulations! You've reached Level 9! 🎯 Terus jadi player yang hebat di Roblox dan di kehidupan nyata. Jangan lupa balance antara gaming dan belajar ya! Keep grinding and stay awesome! 🚀
+                </div>
+            </div>
+
+            <!-- Family Love -->
+            <div class="message-card family-card">
+                <div class="card-title">
+                    <span>💜</span>
+                    <span>Dengan Cinta dari Keluarga</span>
+                </div>
+                <div class="family-grid">
+                    <div class="family-member">
+                        <div class="family-icon">👨</div>
+                        <div class="family-name">Babah Nur Adhar</div>
+                    </div>
+                    <div class="family-member">
+                        <div class="family-icon">👩</div>
+                        <div class="family-name">Mama Acil Siam</div>
+                    </div>
+                    <div class="family-member">
+                        <div class="family-icon">👧</div>
+                        <div class="family-name">Kakak Ninda</div>
+                    </div>
+                    <div class="family-member">
+                        <div class="family-icon">👧</div>
+                        <div class="family-name">Kakak Nadine</div>
+                    </div>
+                </div>
+                <div class="card-text" style="margin-top: 20px; text-align: center; font-weight: 600;">
+                    Kami semua sangat sayang sama Nizam! ❤️
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-section">
+            <button class="celebrate-btn" onclick="celebrate()">
+                🎊 CELEBRATE! 🎊
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>✨ May your day be filled with joy and amazing adventures! ✨</p>
+            <p style="margin-top: 10px;">Made with ❤️ for the birthday boy</p>
+        </div>
+    </div>
+    <!-- End Main Content -->
+
+    <script>
+        // Gift Opening Logic
+        const giftScreen = document.getElementById('giftScreen');
+        const giftBox = document.getElementById('giftBox');
+        const openButton = document.getElementById('openButton');
+        const mainContent = document.getElementById('mainContent');
+        const bgMusic = document.getElementById('bgMusic');
+
+        // Create sparkles around gift
+        function createSparkles() {
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                giftScreen.appendChild(sparkle);
+            }
+        }
+
+        createSparkles();
+
+        // Open gift function
+        openButton.addEventListener('click', function() {
+            // Add shake animation
+            giftBox.classList.add('opening');
+            
+            // Create lid explosion particles
+            setTimeout(() => {
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.width = (Math.random() * 8 + 4) + 'px';
+                    particle.style.height = (Math.random() * 8 + 4) + 'px';
+                    particle.style.left = '50%';
+                    particle.style.top = '35%';
+                    particle.style.borderRadius = '50%';
+                    particle.style.zIndex = '9999';
+                    particle.style.pointerEvents = 'none';
+                    
+                    const colors = ['#E8344E', '#ff6b7a', '#FFD700', '#FFA500', '#ff8c94'];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.boxShadow = `0 0 10px ${colors[Math.floor(Math.random() * colors.length)]}`;
+                    
+                    document.body.appendChild(particle);
+                    
+                    const angle = (Math.PI * 2 * i) / 50;
+                    const velocity = 100 + Math.random() * 200;
+                    const vx = Math.cos(angle) * velocity;
+                    const vy = Math.sin(angle) * velocity - 150;
+                    
+                    let posX = 0;
+                    let posY = 0;
+                    let opacity = 1;
+                    let gravity = 0;
+                    
+                    const animate = () => {
+                        gravity += 5;
+                        posX += vx * 0.016;
+                        posY += (vy + gravity) * 0.016;
+                        opacity -= 0.012;
+                        
+                        particle.style.transform = `translate(${posX}px, ${posY}px) rotate(${posX * 2}deg)`;
+                        particle.style.opacity = opacity;
+                        
+                        if (opacity > 0) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            particle.remove();
+                        }
+                    };
+                    
+                    animate();
+                }
+            }, 300);
+            
+            // Play opening sound with more dramatic effect
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Explosion sound
+            setTimeout(() => {
+                const notes = [220, 294, 440, 587]; // More dramatic notes
+                notes.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = freq;
+                        oscillator.type = 'sawtooth';
+                        
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                    }, index * 50);
+                });
+            }, 300);
+            
+            // Victory sound
+            const victoryNotes = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, C
+            victoryNotes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 100);
+            });
+
+            // Start background music
+            setTimeout(() => {
+                bgMusic.play().catch(error => {
+                    console.log('Music play prevented:', error);
+                });
+            }, 500);
+
+            // Create explosion confetti (bigger explosion)
+            for (let i = 0; i < 200; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.left = '50%';
+                confetti.style.top = '50%';
+                confetti.style.borderRadius = '50%';
+                confetti.style.zIndex = '9999';
+                confetti.style.pointerEvents = 'none';
+                
+                const colors = ['#E8344E', '#4a90e2', '#2ecc71', '#f39c12', '#9b59b6', '#FFD700'];
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                const angle = (Math.PI * 2 * i) / 200;
+                const velocity = 200 + Math.random() * 250;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                
+                document.body.appendChild(confetti);
+                
+                let posX = 0;
+                let posY = 0;
+                let opacity = 1;
+                
+                const animate = () => {
+                    posX += vx * 0.016;
+                    posY += vy * 0.016 + 100 * 0.016;
+                    opacity -= 0.015;
+                    
+                    confetti.style.transform = `translate(${posX}px, ${posY}px)`;
+                    confetti.style.opacity = opacity;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        confetti.remove();
+                    }
+                };
+                
+                setTimeout(() => animate(), 600);
+            }
+
+            // Hide gift screen and show main content
+            setTimeout(() => {
+                giftScreen.classList.add('hidden');
+                mainContent.classList.add('visible');
+            }, 1000);
+        });
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create particles
+        function createParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.bottom = '-10px';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Celebration function
+        function celebrate() {
+            // Create confetti
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                
+                const colors = ['#E8344E', '#4a90e2', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = 'confettiFall ' + (Math.random() * 2 + 2) + 's linear';
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 4000);
+            }
+
+            // Sound effect using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create a more pleasant sound
+            const notes = [523.25, 587.33, 659.25, 783.99]; // C, D, E, G
+            
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                }, index * 100);
+            });
+
+            // Birthday message
+            setTimeout(() => {
+                alert('🎉 HAPPY BIRTHDAY NIZAM NUR AZKA! 🎉\n\nSemoga panjang umur, sehat selalu, dan menjadi anak yang sholeh!\n\nBarakallahu fiikum! 🎂');
+            }, 800);
+        }
+
+        // Initialize
+        window.onload = function() {
+            createStars();
+            createParticles();
+        };
+    </script>
+</body>
+</html>
