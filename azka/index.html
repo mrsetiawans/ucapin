@@ -698,6 +698,32 @@
             .name-card {
                 padding: 25px 30px;
             }
+
+            /* Optimize animations for mobile */
+            .gift-container {
+                animation: none;
+            }
+
+            .sparkle {
+                display: none;
+            }
+
+            .particle {
+                display: none;
+            }
+
+            .star {
+                animation-duration: 5s;
+            }
+        }
+
+        /* Reduce motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
@@ -854,7 +880,7 @@
 
         // Create sparkles around gift
         function createSparkles() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
                 sparkle.style.left = Math.random() * 100 + '%';
@@ -873,7 +899,7 @@
             
             // Create lid explosion particles
             setTimeout(() => {
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 20; i++) {
                     const particle = document.createElement('div');
                     particle.style.position = 'fixed';
                     particle.style.width = (Math.random() * 8 + 4) + 'px';
@@ -890,8 +916,8 @@
                     
                     document.body.appendChild(particle);
                     
-                    const angle = (Math.PI * 2 * i) / 50;
-                    const velocity = 100 + Math.random() * 200;
+                    const angle = (Math.PI * 2 * i) / 20;
+                    const velocity = 100 + Math.random() * 150;
                     const vx = Math.cos(angle) * velocity;
                     const vy = Math.sin(angle) * velocity - 150;
                     
@@ -975,7 +1001,7 @@
             }, 500);
 
             // Create explosion confetti (bigger explosion)
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < 80; i++) {
                 const confetti = document.createElement('div');
                 confetti.style.position = 'fixed';
                 confetti.style.width = '10px';
@@ -989,8 +1015,8 @@
                 const colors = ['#E8344E', '#4a90e2', '#2ecc71', '#f39c12', '#9b59b6', '#FFD700'];
                 confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
                 
-                const angle = (Math.PI * 2 * i) / 200;
-                const velocity = 200 + Math.random() * 250;
+                const angle = (Math.PI * 2 * i) / 80;
+                const velocity = 150 + Math.random() * 200;
                 const vx = Math.cos(angle) * velocity;
                 const vy = Math.sin(angle) * velocity;
                 
@@ -1028,7 +1054,7 @@
         // Create stars
         function createStars() {
             const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 50; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
@@ -1040,7 +1066,7 @@
 
         // Create particles
         function createParticles() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
@@ -1054,7 +1080,7 @@
         // Celebration function
         function celebrate() {
             // Create confetti
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 60; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + '%';
