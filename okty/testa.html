@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Happy Birthday Okty ✨</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            overflow-x: hidden;
+            background: #000000;
+            color: #f5f5f5;
+            position: relative;
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+        }
+
+        /* Elegant Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(var(--drift-x, 50px)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Elegant Glow Effects */
+        .glow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glowMove 20s infinite ease-in-out;
+            filter: blur(40px);
+        }
+
+        @keyframes glowMove {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(50vw, 30vh) scale(1.5);
+            }
+            50% {
+                transform: translate(-20vw, 50vh) scale(0.8);
+            }
+            75% {
+                transform: translate(30vw, -20vh) scale(1.2);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: clamp(2rem, 6vw, 3rem);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: cardEntrance 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes cardEntrance {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 20px;
+            animation: borderShine 3s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes borderShine {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .ornament {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: ornamentFade 1s ease-out forwards 0.8s;
+        }
+
+        @keyframes ornamentFade {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.3),
+                0 2px 4px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: titleAppear 1s ease-out forwards 1s;
+        }
+
+        @keyframes titleAppear {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .card.content-revealed .header-title {
+            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: subtitleFade 1s ease-out forwards 1.3s;
+        }
+
+        @keyframes subtitleFade {
+            to {
+                opacity: 0.8;
+            }
+        }
+
+        .divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            margin: 2rem auto;
+            opacity: 0;
+            animation: dividerExpand 1s ease-out forwards 1.5s;
+        }
+
+        @keyframes dividerExpand {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+            to {
+                width: 80px;
+                opacity: 1;
+            }
+        }
+
+        #countdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+            opacity: 0;
+            animation: countdownFade 1s ease-out forwards 1.7s;
+        }
+
+        @media (min-width: 500px) {
+            #countdown {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @keyframes countdownFade {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.2rem 0.8rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .countdown-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .countdown-item:hover::before {
+            left: 100%;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            font-weight: 700;
+            color: #ffffff;
+            display: block;
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        .reveal-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color: #000000;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.9rem, 3.5vw, 1.05rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 5px 20px rgba(255, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            margin: 2rem 0;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reveal-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .reveal-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(255, 255, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .reveal-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .birthday-content {
+            display: none;
+            animation: contentReveal 1.5s ease-out forwards;
+            margin-top: 2rem;
+        }
+
+        @keyframes contentReveal {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .birthday-message {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            backdrop-filter: blur(10px);
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+        }
+
+        .birthday-message h2 {
+            font-family: 'Playfair Display', serif;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .birthday-message p {
+            margin-bottom: 1rem;
+        }
+
+        .birthday-message p:last-child {
+            margin-bottom: 0;
+        }
+
+        .special-wish-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            font-weight: 500;
+            cursor: pointer;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .special-wish-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .special-wish-container {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(15px);
+            text-align: left;
+            line-height: 1.9;
+            font-size: clamp(1.05rem, 3.8vw, 1.2rem);
+            animation: wishReveal 1s ease-out;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes wishReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .special-wish-container strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .special-wish-container em {
+            color: rgba(255, 255, 255, 0.85);
+            font-style: italic;
+        }
+
+        .from-friend {
+            text-align: right;
+            margin-top: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: clamp(0.95rem, 3.2vw, 1.1rem);
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .sparkle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 5;
+            pointer-events: none;
+            display: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffffff;
+            animation: sparkleAnimation 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkleAnimation {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* White Falling Petals/Leaves */
+        .leaves-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 15;
+            pointer-events: none;
+            display: none;
+        }
+
+        .leaf {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 100% 0 100% 0;
+            animation: petalFall 10s linear infinite;
+        }
+
+        @keyframes petalFall {
+            0% { 
+                transform: translateY(-10vh) rotate(0deg) translateX(0); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(110vh) rotate(360deg) translateX(50px); 
+                opacity: 0; 
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 15px;
+            }
+
+            .birthday-message {
+                padding: 1.3rem;
+            }
+
+            .special-wish-container {
+                padding: 1.5rem;
+            }
+
+            #countdown {
+                gap: 0.8rem;
+            }
+
+            .countdown-item {
+                padding: 1rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.5rem 1rem;
+            }
+
+            .birthday-message {
+                padding: 1.2rem;
+            }
+
+            .special-wish-container {
+                padding: 1.3rem;
+            }
+
+            .reveal-btn {
+                padding: 0.9rem 2rem;
+                font-size: 0.85rem;
+            }
+
+            .special-wish-btn {
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="glow-container">
+        <div class="glow" style="top: 10%; left: 10%;"></div>
+        <div class="glow" style="top: 60%; right: 15%; animation-delay: -5s;"></div>
+        <div class="glow" style="bottom: 15%; left: 20%; animation-delay: -10s;"></div>
+    </div>
+
+    <div class="particles" id="particles-container"></div>
+    <div class="leaves-container" id="leaves-container"></div>
+
+    <div class="container">
+        <div class="card" id="mainCard">
+            <div class="ornament">✦</div>
+            
+            <h1 id="main-title" class="header-title">Happy Birthday</h1>
+            <div class="divider"></div>
+            <p id="subtitle" class="subtitle">OKTYANA DIAN CHRYSTIANI</p>
+            
+            <div id="countdown">
+                <div class="countdown-item">
+                    <span id="days" class="countdown-number">00</span>
+                    <div class="countdown-label">Hari</div>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours" class="countdown-number">00</span>
+                    <div class="countdown-label">Jam</div>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes" class="countdown-number">00</span>
+                    <div class="countdown-label">Menit</div>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds" class="countdown-number">00</span>
+                    <div class="countdown-label">Detik</div>
+                </div>
+            </div>
+
+            <button id="reveal-btn" class="reveal-btn">
+                <span>Buka Pesan</span>
+            </button>
+
+            <div id="birthday-content" class="birthday-content">
+                <div class="birthday-message">
+                    <h2>✨ Selamat Ulang Tahun, Okty! ✨</h2>
+                    <p>Halo Okty, hari ini adalah hari spesialmu! Di hari kelahiranmu yang istimewa ini, aku ingin mengucapkan selamat ulang tahun untukmu.</p>
+                </div>
+
+                <div class="birthday-message">
+                    <p>Semoga di tahun yang baru ini, hidupmu dipenuhi dengan kebahagiaan, kesehatan, dan kesuksesan dalam setiap langkah yang kau ambil. Semoga semua impian dan cita-citamu tercapai dengan indah, dan setiap hari membawamu lebih dekat pada tujuan yang kau inginkan.</p>
+                </div>
+
+                <div class="birthday-message">
+                    <p>Aku berharap kamu selalu dikelilingi oleh orang-orang yang menyayangimu, dan setiap momen dalam hidupmu penuh dengan senyuman dan kenangan indah. Terima kasih sudah menjadi teman yang baik, dan semoga persahabatan kita terus berlanjut dengan penuh kehangatan.</p>
+                </div>
+
+                <button id="special-wish-btn" class="special-wish-btn">
+                    Baca Doa Spesial
+                </button>
+
+                <div id="special-wish-container" class="special-wish-container"></div>
+            </div>
+
+            <div class="footer">
+                — Dengan penuh ketulusan —
+            </div>
+        </div>
+    </div>
+
+    <div class="sparkle-container" id="sparkle-container"></div>
+
+    <script>
+        const particlesContainer = document.getElementById('particles-container');
+        const sparkleContainer = document.getElementById('sparkle-container');
+        const leavesContainer = document.getElementById('leaves-container');
+        const cardEl = document.getElementById('mainCard');
+        const countdownEl = document.getElementById('countdown');
+        const birthdayContentEl = document.getElementById('birthday-content');
+        const mainTitleEl = document.getElementById('main-title');
+        const subtitleEl = document.getElementById('subtitle');
+        const specialWishBtn = document.getElementById('special-wish-btn');
+        const specialWishContainer = document.getElementById('special-wish-container');
+        const revealBtn = document.getElementById('reveal-btn');
+
+        // Create elegant particles
+        function createParticles() {
+            if (!particlesContainer) return;
+            const numParticles = window.innerWidth < 768 ? 40 : 80;
+            
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                particle.style.setProperty('--drift-x', (Math.random() - 0.5) * 100 + 'px');
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Create white falling petals/leaves
+        function createLeaves() {
+            if (!leavesContainer) return;
+            
+            const petalCount = window.innerWidth < 768 ? 30 : 50;
+            
+            leavesContainer.innerHTML = ''; // Clear container
+            
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'leaf';
+                
+                // Random size (small to medium)
+                const size = Math.random() * 10 + 5;
+                petal.style.width = size + 'px';
+                petal.style.height = size + 'px';
+                
+                // Random horizontal position
+                petal.style.left = Math.random() * 100 + 'vw';
+                
+                // Position petals at different heights above screen (staggered vertically)
+                // So they look like they're queuing/waiting in lines above
+                const initialTop = -20 - (Math.random() * 30); // Between -20vh to -50vh
+                petal.style.top = initialTop + 'vh';
+                
+                // Random fall duration
+                petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                
+                // Small random delays for more natural start
+                petal.style.animationDelay = (Math.random() * 3) + 's';
+                
+                leavesContainer.appendChild(petal);
+            }
+        }
+
+        // Create sparkles
+        function createSparkles() {
+            if (!sparkleContainer) return;
+            sparkleContainer.style.display = 'block';
+            const numSparkles = window.innerWidth < 768 ? 25 : 50;
+            
+            for (let i = 0; i < numSparkles; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                sparkleContainer.appendChild(sparkle);
+            }
+        }
+
+        //  (Month is 0-indexed, so 10 = November)
+        const birthdayDate = new Date(2026, 9, 2, 0, 0, 0).getTime();
+        const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+
+        const specialWishContent = `
+            <strong>Untuk Oktyana Dian Chrystiani,</strong><br><br>
+            
+            Di hari ulang tahunmu yang istimewa ini, aku ingin menuliskan doa yang tulus dari hatiku untukmu:<br><br>
+            
+            <strong>Semoga hidupmu selalu diberkahi dengan kebahagiaan dan kedamaian.</strong><br>
+            Okty, aku berdoa agar setiap langkahmu dalam hidup ini dipenuhi dengan kegembiraan yang tulus, dan hatimu selalu menemukan kedamaian di tengah apapun yang terjadi. Semoga kamu selalu dikelilingi oleh hal-hal baik yang membuat hidupmu bermakna.<br><br>
+            
+            <strong>Semoga semua cita-cita dan impianmu tercapai dengan sempurna.</strong><br>
+            Aku berharap semua yang kamu impikan, baik dalam karier, kehidupan pribadi, maupun hal-hal lain yang kamu cita-citakan, dapat terwujud dengan indah. Semoga usaha dan kerja kerasmu selalu membuahkan hasil yang memuaskan, dan setiap mimpi yang kamu kejar menjadi kenyataan yang membahagiakan.<br><br>
+            
+            <strong>Semoga kesehatan dan kekuatan selalu menyertaimu.</strong><br>
+            Kesehatan adalah harta yang paling berharga. Aku mendoakan agar kamu selalu diberikan kesehatan yang prima, baik fisik maupun mental, sehingga kamu dapat menjalani setiap hari dengan penuh energi dan semangat. Semoga kamu selalu kuat menghadapi setiap tantangan yang datang.<br><br>
+            
+            <strong>Semoga kamu dikelilingi oleh cinta dan kasih sayang.</strong><br>
+            Aku berdoa agar hidupmu selalu dipenuhi oleh orang-orang yang menyayangimu dengan tulus. Semoga keluarga, teman-teman, dan semua orang di sekitarmu senantiasa membawa kehangatan dan dukungan dalam hidupmu. Dan semoga kamu juga selalu bisa berbagi cinta dan kebaikan kepada orang lain.<br><br>
+            
+            <strong>Semoga setiap tahun membawamu lebih dekat pada kebijaksanaan dan kedewasaan.</strong><br>
+            Di usia yang bertambah ini, aku berharap kamu terus tumbuh menjadi pribadi yang lebih bijaksana, dewasa, dan penuh pengertian. Semoga setiap pengalaman hidup mengajarkanmu hal-hal berharga yang membuat kamu menjadi versi terbaik dari dirimu sendiri.<br><br>
+            
+            <strong>Semoga rezeki dan kelimpahan selalu mengalir dalam hidupmu.</strong><br>
+            Aku mendoakan agar pintu rezeki selalu terbuka lebar untukmu, dalam berbagai bentuk dan cara yang tak terduga. Semoga kamu tidak pernah kekurangan, dan selalu memiliki lebih dari cukup untuk berbagi dengan orang lain.<br><br>
+            
+            <strong>Terima kasih sudah menjadi teman yang baik.</strong><br>
+            Terakhir, aku ingin mengucapkan terima kasih karena sudah menjadi bagian dari hidupku. Persahabatan kita adalah sesuatu yang aku hargai, dan aku berharap kita bisa terus menjalani perjalanan hidup ini bersama-sama, saling mendukung di setiap langkah.<br><br>
+            
+            Sekali lagi, selamat ulang tahun, Okty! Semoga hari ini dan hari-hari berikutnya selalu dipenuhi dengan hal-hal indah. Nikmati hari spesialmu! 🎂✨
+            
+            <div class="from-friend">Dengan tulus, Rizal</div>
+        `;
+
+        // Sound effect (optional, subtle chime)
+        const audio = new Audio('https://github.com/mrsetiawans/ucapin/raw/refs/heads/main/okty/okty.mp3');
+        audio.loop = true;
+        audio.volume = 1;
+        let musicStarted = false;
+
+        if (revealBtn) {
+            revealBtn.addEventListener('click', () => {
+                revealBtn.style.display = 'none';
+                if (cardEl) cardEl.classList.add('content-revealed');
+                if (mainTitleEl) mainTitleEl.innerHTML = "A Special Message";
+                if (subtitleEl) {
+                    subtitleEl.innerHTML = "FOR YOU, OKTY";
+                    subtitleEl.style.animation = 'none';
+                    subtitleEl.style.opacity = '0.8';
+                }
+                if (birthdayContentEl) birthdayContentEl.style.display = 'block';
+                if (specialWishBtn) specialWishBtn.style.display = 'inline-block';
+                
+                createSparkles();
+                
+                // Start falling leaves animation
+                if (leavesContainer) {
+                    leavesContainer.style.display = 'block';
+                    createLeaves();
+                }
+                
+                if (!musicStarted) {
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(_ => {
+                            musicStarted = true;
+                        }).catch(error => {
+                            const playOnInteraction = () => {
+                                if (!musicStarted) {
+                                    audio.play().then(() => {
+                                        musicStarted = true;
+                                        document.removeEventListener('click', playOnInteraction);
+                                        document.removeEventListener('touchstart', playOnInteraction);
+                                    }).catch(e => console.error("Audio play failed:", e));
+                                }
+                            };
+                            document.addEventListener('click', playOnInteraction);
+                            document.addEventListener('touchstart', playOnInteraction);
+                        });
+                    }
+                }
+            });
+        }
+
+        if (specialWishBtn) {
+            specialWishBtn.addEventListener('click', () => {
+                if (specialWishContainer) {
+                    specialWishContainer.innerHTML = specialWishContent;
+                    specialWishContainer.style.display = 'block';
+                    specialWishContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const targetBirthdayTime = birthdayDate;
+
+            if (now > targetBirthdayTime + thirtyDaysInMs) {
+                // After 30 days
+                if (countdownEl) countdownEl.style.display = 'none';
+                if (revealBtn) revealBtn.style.display = 'none';
+                if (cardEl) cardEl.classList.add('content-revealed');
+                if (mainTitleEl) mainTitleEl.innerHTML = "Until Next Year";
+                if (subtitleEl) {
+                    subtitleEl.innerHTML = "LOOKING FORWARD TO 2027";
+                    subtitleEl.style.animation = 'none';
+                    subtitleEl.style.opacity = '0.8';
+                }
+                if (birthdayContentEl) {
+                    birthdayContentEl.style.display = 'block';
+                    birthdayContentEl.innerHTML = `
+                        <div class="birthday-message">
+                            <h2>✨ Until We Meet Again ✨</h2>
+                            <p>Okty, semoga sisa tahun ini dan tahun-tahun berikutnya membawa kebahagiaan yang berkelanjutan dalam hidupmu.</p>
+                        </div>
+                        <div class="birthday-message">
+                            <p>Aku menantikan kesempatan untuk merayakan hari spesialmu lagi di tahun 2027. Semoga kamu terus berkembang dan mencapai semua yang kamu inginkan.</p>
+                        </div>
+                        <div class="birthday-message">
+                            <p>Terima kasih sudah menjadi teman yang luar biasa. Sampai jumpa di perayaan berikutnya! 🎂✨</p>
+                        </div>
+                    `;
+                    if (specialWishBtn) specialWishBtn.style.display = 'none';
+                    if (specialWishContainer) specialWishContainer.style.display = 'none';
+                }
+                clearInterval(countdownInterval);
+                return;
+            } else if (now >= targetBirthdayTime) {
+                // It's the birthday!
+                if (countdownEl) countdownEl.style.display = 'none';
+                if (revealBtn && birthdayContentEl && birthdayContentEl.style.display !== 'block') {
+                    revealBtn.style.display = 'inline-block';
+                }
+                if (mainTitleEl && (!cardEl || !cardEl.classList.contains('content-revealed'))) {
+                    mainTitleEl.innerHTML = "It's Your Special Day!";
+                }
+                if (subtitleEl && (!cardEl || !cardEl.classList.contains('content-revealed'))) {
+                    subtitleEl.innerHTML = "OKTYANA DIAN CHRYSTIANI";
+                    subtitleEl.style.animation = 'none';
+                    subtitleEl.style.opacity = '0.8';
+                }
+            } else {
+                // Countdown mode
+                const distance = targetBirthdayTime - now;
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+                if (countdownEl) countdownEl.style.display = 'grid';
+                if (revealBtn) revealBtn.style.display = 'none';
+                if (birthdayContentEl) birthdayContentEl.style.display = 'none';
+                if (mainTitleEl) mainTitleEl.innerHTML = "Happy Birthday";
+                if (subtitleEl) {
+                    subtitleEl.innerHTML = "OKTYANA DIAN CHRYSTIANI";
+                    subtitleEl.style.animation = '';
+                    subtitleEl.style.opacity = '0';
+                }
+                if (cardEl) cardEl.classList.remove('content-revealed');
+            }
+        }
+
+        createParticles();
+
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Card 3D tilt effect
+        if (cardEl) {
+            cardEl.addEventListener('mousemove', (e) => {
+                const rect = cardEl.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+
+                cardEl.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            cardEl.addEventListener('mouseleave', () => {
+                cardEl.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        }
+    </script>
+</body>
+</html>
