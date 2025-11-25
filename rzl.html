@@ -3,1287 +3,1178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🌊 Perjalanan Samudra untuk Rizal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <title>The Sky of Eternal Wishes: Rizal's Journey</title>
+    <!-- Memuat Three.js dari CDN untuk Engine 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Font untuk tampilan UI yang elegan -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Waiting+for+the+Sunrise&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
     <style>
+        /* ------------------------------------------------------------------
+           CSS STYLING SYSTEM
+           Complex UI Overlay & Animations
+        ------------------------------------------------------------------ */
         :root {
-            --ocean-deepest: #010a13;
-            --ocean-deep: #041c2c;
-            --ocean-mid: #0a3d5c;
-            --ocean-light: #1a6b8a;
-            --ocean-surface: #2d8fb3;
-            --bioluminescent: #00f5d4;
-            --bioluminescent-soft: #7df9ff;
-            --pearl: #f0f8ff;
-            --coral-pink: #ff6b9d;
-            --golden-hour: #ffd700;
-            --text-primary: #e8f4f8;
-            --text-secondary: rgba(232, 244, 248, 0.75);
+            --primary: #3498db;
+            --accent: #f1c40f;
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
         body {
-            font-family: 'Philosopher', serif;
-            background: var(--ocean-deepest);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.7;
-        }
-
-        /* ============================================
-           IMMERSIVE OCEAN BACKGROUND SYSTEM
-           ============================================ */
-        .ocean-realm {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
             overflow: hidden;
+            background: #000;
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            width: 100vw;
+            height: 100vh;
         }
 
-        .depth-gradient {
+        #canvas-container {
             position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse 120% 80% at 50% 100%, var(--ocean-mid) 0%, transparent 50%),
-                radial-gradient(ellipse 80% 60% at 20% 80%, rgba(0, 245, 212, 0.08) 0%, transparent 40%),
-                radial-gradient(ellipse 80% 60% at 80% 70%, rgba(125, 249, 255, 0.06) 0%, transparent 40%),
-                linear-gradient(180deg, 
-                    var(--ocean-deepest) 0%, 
-                    var(--ocean-deep) 30%,
-                    var(--ocean-mid) 60%,
-                    var(--ocean-light) 85%,
-                    var(--ocean-surface) 100%
-                );
-            animation: depthShift 20s ease-in-out infinite alternate;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
 
-        @keyframes depthShift {
-            0% { filter: brightness(0.9) saturate(1.1); }
-            100% { filter: brightness(1.1) saturate(1.2); }
-        }
-
-        /* Bioluminescent particles */
-        .bioluminescence {
+        /* --- UI LAYERS --- */
+        #ui-layer {
             position: absolute;
-            inset: 0;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(1px);
-            animation: float linear infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) translateX(0) scale(0);
-                opacity: 0;
-            }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% {
-                transform: translateY(-10vh) translateX(var(--drift, 50px)) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Light rays from surface */
-        .light-rays {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60vh;
-            background: 
-                linear-gradient(175deg, rgba(125, 249, 255, 0.03) 0%, transparent 30%),
-                linear-gradient(185deg, rgba(0, 245, 212, 0.02) 0%, transparent 40%),
-                linear-gradient(170deg, rgba(255, 255, 255, 0.015) 0%, transparent 25%);
-            pointer-events: none;
-            animation: rayFlicker 8s ease-in-out infinite;
-        }
-
-        @keyframes rayFlicker {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        /* Floating jellyfish silhouettes */
-        .jellyfish {
-            position: absolute;
-            width: var(--size, 60px);
-            height: calc(var(--size, 60px) * 1.4);
-            opacity: 0.15;
-            filter: blur(2px);
-            animation: jellyFloat var(--duration, 25s) ease-in-out infinite;
-        }
-
-        .jellyfish::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 10%;
-            width: 80%;
-            height: 50%;
-            background: radial-gradient(ellipse at center, var(--bioluminescent) 0%, transparent 70%);
-            border-radius: 50% 50% 30% 30%;
-        }
-
-        .jellyfish::after {
-            content: '';
-            position: absolute;
-            top: 45%;
-            left: 20%;
-            width: 60%;
-            height: 55%;
-            background: 
-                linear-gradient(180deg, transparent 0%, var(--bioluminescent-soft) 20%, transparent 100%);
-            filter: blur(3px);
-        }
-
-        @keyframes jellyFloat {
-            0%, 100% {
-                transform: translateY(0) translateX(0) rotate(-5deg);
-            }
-            25% {
-                transform: translateY(-30px) translateX(20px) rotate(5deg);
-            }
-            50% {
-                transform: translateY(-10px) translateX(-10px) rotate(-3deg);
-            }
-            75% {
-                transform: translateY(-40px) translateX(15px) rotate(7deg);
-            }
-        }
-
-        /* ============================================
-           STORYTELLING SCROLL CONTAINER
-           ============================================ */
-        .story-container {
-            position: relative;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 10;
-            min-height: 100vh;
-        }
-
-        /* Intro Section - The Dive */
-        .intro-section {
-            min-height: 100vh;
+            pointer-events: none; /* Let clicks pass through to 3D scene */
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* LOADING SCREEN */
+        #loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #2980b9);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem;
-            position: relative;
+            transition: opacity 1s ease;
+            pointer-events: auto;
         }
 
-        .intro-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background: linear-gradient(to bottom, transparent, var(--ocean-deepest));
-            pointer-events: none;
+        .loader-spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
-        .scroll-indicator {
+        .loader-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        /* START SCREEN */
+        #start-screen {
             position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+            z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 3s forwards;
-            z-index: 20;
+            justify-content: center;
+            text-align: center;
+            pointer-events: auto;
+            transition: opacity 0.8s;
         }
 
-        .scroll-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-
-        .scroll-arrow {
-            width: 24px;
-            height: 24px;
-            border-right: 2px solid var(--bioluminescent);
-            border-bottom: 2px solid var(--bioluminescent);
-            transform: rotate(45deg);
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: rotate(45deg) translateY(0); }
-            50% { transform: rotate(45deg) translateY(8px); }
-        }
-
-        /* Title animations */
         .main-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2.5rem, 10vw, 5rem);
-            font-weight: 600;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, 
-                var(--pearl) 0%, 
-                var(--bioluminescent-soft) 25%, 
-                var(--pearl) 50%, 
-                var(--bioluminescent) 75%, 
-                var(--pearl) 100%
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s linear infinite, titleReveal 2s ease-out forwards;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: #fff;
+            text-shadow: 0 0 30px rgba(135, 206, 235, 0.8);
+            margin-bottom: 1rem;
             opacity: 0;
             transform: translateY(30px);
-            text-shadow: 0 0 60px rgba(0, 245, 212, 0.5);
-            filter: drop-shadow(0 0 30px rgba(0, 245, 212, 0.3));
+            animation: fadeInUp 1.5s forwards 0.5s;
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        @keyframes titleReveal {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .subtitle {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1rem, 4vw, 1.5rem);
-            font-weight: 300;
-            font-style: italic;
-            color: var(--text-secondary);
-            margin-top: 1.5rem;
-            letter-spacing: 0.1em;
+        .sub-title {
+            font-family: 'Waiting for the Sunrise', cursive;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: #ffd700;
+            margin-bottom: 3rem;
             opacity: 0;
-            animation: fadeInUp 1.5s ease-out 0.8s forwards;
+            transform: translateY(30px);
+            animation: fadeInUp 1.5s forwards 0.8s;
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .for-name {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.2rem, 5vw, 2rem);
-            font-weight: 500;
-            color: var(--bioluminescent);
-            margin-top: 2rem;
-            opacity: 0;
-            animation: fadeInUp 1.5s ease-out 1.2s forwards;
-            text-shadow: 0 0 30px rgba(0, 245, 212, 0.5);
-        }
-
-        /* Countdown Timer */
-        .countdown-container {
-            margin-top: 3rem;
-            opacity: 0;
-            animation: fadeInUp 1.5s ease-out 1.6s forwards;
-        }
-
-        .countdown-label {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.9rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-
-        .countdown-grid {
-            display: flex;
-            justify-content: center;
-            gap: clamp(0.8rem, 3vw, 1.5rem);
-            flex-wrap: wrap;
-        }
-
-        .countdown-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 70px;
-            padding: 1rem 1.2rem;
-            background: rgba(0, 245, 212, 0.05);
-            border: 1px solid rgba(0, 245, 212, 0.2);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .countdown-item:hover {
-            background: rgba(0, 245, 212, 0.1);
-            border-color: rgba(0, 245, 212, 0.4);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(0, 245, 212, 0.2);
-        }
-
-        .countdown-number {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 6vw, 2.5rem);
+        .btn-start {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            color: var(--bioluminescent);
-            line-height: 1;
-        }
-
-        .countdown-unit {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-top: 0.5rem;
-        }
-
-        /* ============================================
-           STORY CHAPTERS
-           ============================================ */
-        .chapter {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: clamp(2rem, 5vw, 4rem);
+            letter-spacing: 2px;
+            color: white;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
             position: relative;
+            overflow: hidden;
             opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s ease-out;
+            animation: fadeInUp 1.5s forwards 1.2s;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
-        .chapter.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .btn-start:hover {
+            background: white;
+            color: #2980b9;
+            box-shadow: 0 0 40px rgba(255,255,255,0.6);
+            transform: translateY(-3px);
         }
 
-        .chapter-number {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(4rem, 15vw, 10rem);
-            font-weight: 700;
-            color: rgba(0, 245, 212, 0.08);
+        /* HUD (Heads Up Display) */
+        #hud {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .score-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .star-icon { color: var(--accent); font-size: 1.2rem; animation: rotate 5s linear infinite; }
+        .score-text { font-size: 1.2rem; font-weight: 700; font-family: 'Cinzel'; }
+
+        .controls-hint {
             position: absolute;
-            top: 10%;
-            left: 5%;
-            line-height: 1;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
             pointer-events: none;
-            z-index: -1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 3s infinite;
         }
 
-        .chapter-content {
+        /* DIALOGUE / STORY BOX */
+        #dialogue-box {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
             max-width: 700px;
-            margin: 0 auto;
+            background: rgba(10, 25, 40, 0.85);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            display: none;
+            pointer-events: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .chapter-title {
+        .dialogue-content {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #eee;
+            min-height: 60px;
+        }
+
+        .dialogue-speaker {
             font-family: 'Cinzel', serif;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            font-weight: 500;
-            color: var(--bioluminescent-soft);
-            margin-bottom: 1.5rem;
-            position: relative;
+            color: #87CEEB;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
             display: inline-block;
         }
 
-        .chapter-title::after {
-            content: '';
+        .dialogue-next {
             position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--bioluminescent), transparent);
+            bottom: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--accent);
+            cursor: pointer;
+            animation: bounceRight 1s infinite;
         }
 
-        .chapter-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.1rem, 3.5vw, 1.35rem);
-            line-height: 2;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-        }
-
-        .chapter-text strong {
-            color: var(--bioluminescent);
-            font-weight: 600;
-        }
-
-        .chapter-quote {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.2rem, 4vw, 1.6rem);
-            font-style: italic;
-            color: var(--bioluminescent-soft);
-            padding: 2rem;
-            border-left: 3px solid var(--bioluminescent);
-            background: rgba(0, 245, 212, 0.03);
-            margin: 2rem 0;
-        }
-
-        /* ============================================
-           REVEAL BUTTON & CELEBRATION
-           ============================================ */
-        .reveal-section {
-            min-height: 100vh;
+        /* END SCREEN */
+        #end-screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #02111D, #0C2D48);
+            z-index: 200;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .reveal-button {
-            position: relative;
-            padding: 1.2rem 3rem;
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1rem, 3.5vw, 1.2rem);
-            font-weight: 500;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--ocean-deepest);
-            background: linear-gradient(135deg, var(--bioluminescent), var(--bioluminescent-soft));
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            box-shadow: 
-                0 0 30px rgba(0, 245, 212, 0.4),
-                0 0 60px rgba(0, 245, 212, 0.2);
-            animation: buttonPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes buttonPulse {
-            0%, 100% {
-                box-shadow: 
-                    0 0 30px rgba(0, 245, 212, 0.4),
-                    0 0 60px rgba(0, 245, 212, 0.2);
-            }
-            50% {
-                box-shadow: 
-                    0 0 50px rgba(0, 245, 212, 0.6),
-                    0 0 100px rgba(0, 245, 212, 0.4);
-            }
-        }
-
-        .reveal-button:hover {
-            transform: scale(1.05);
-            box-shadow: 
-                0 0 60px rgba(0, 245, 212, 0.6),
-                0 0 120px rgba(0, 245, 212, 0.4);
-        }
-
-        .reveal-button:active {
-            transform: scale(0.98);
-        }
-
-        .reveal-button::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(45deg, 
-                var(--bioluminescent), 
-                var(--coral-pink), 
-                var(--golden-hour), 
-                var(--bioluminescent-soft)
-            );
-            border-radius: 50px;
-            z-index: -1;
-            animation: borderRotate 3s linear infinite;
+            justify-content: center;
             opacity: 0;
-            transition: opacity 0.3s;
+            pointer-events: none;
+            transition: opacity 2s;
         }
 
-        .reveal-button:hover::before {
-            opacity: 1;
-        }
-
-        @keyframes borderRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Celebration Content */
-        .celebration-container {
-            display: none;
-            max-width: 800px;
-            width: 100%;
-            animation: celebrationReveal 1.5s ease-out forwards;
-        }
-
-        @keyframes celebrationReveal {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) translateY(30px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .celebration-header {
-            margin-bottom: 3rem;
-        }
-
-        .celebration-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 8vw, 4rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, 
-                var(--golden-hour) 0%, 
-                var(--coral-pink) 30%, 
-                var(--bioluminescent) 60%, 
-                var(--pearl) 100%
-            );
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s linear infinite;
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.5));
-        }
-
-        .celebration-subtitle {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1rem, 3.5vw, 1.3rem);
-            font-style: italic;
-            color: var(--text-secondary);
-            margin-top: 1rem;
-        }
-
-        .message-card {
-            background: linear-gradient(145deg, 
-                rgba(0, 245, 212, 0.08), 
-                rgba(125, 249, 255, 0.04)
-            );
-            border: 1px solid rgba(0, 245, 212, 0.2);
-            border-radius: 20px;
-            padding: clamp(1.5rem, 5vw, 2.5rem);
-            margin-bottom: 1.5rem;
-            backdrop-filter: blur(15px);
-            transition: all 0.4s ease;
-        }
-
-        .message-card:hover {
-            border-color: rgba(0, 245, 212, 0.4);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 245, 212, 0.15);
-        }
-
-        .message-card h3 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.2rem, 4vw, 1.6rem);
-            color: var(--bioluminescent);
-            margin-bottom: 1rem;
-        }
-
-        .message-card p {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1rem, 3vw, 1.2rem);
-            line-height: 1.9;
-            color: var(--text-primary);
-        }
-
-        /* Special Prayer Section */
-        .prayer-button {
-            margin-top: 2rem;
-            padding: 1rem 2.5rem;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem;
-            font-style: italic;
-            color: var(--text-primary);
-            background: transparent;
-            border: 1px solid rgba(255, 215, 0, 0.4);
+        .final-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 40px;
             border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .prayer-button:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: var(--golden-hour);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-        }
-
-        .prayer-container {
-            display: none;
-            margin-top: 2rem;
-            padding: clamp(1.5rem, 5vw, 2.5rem);
-            background: linear-gradient(145deg, 
-                rgba(255, 215, 0, 0.05), 
-                rgba(255, 107, 157, 0.03)
-            );
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 20px;
-            animation: prayerReveal 1s ease-out forwards;
-        }
-
-        @keyframes prayerReveal {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .prayer-container p {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
-            line-height: 2;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .prayer-container strong {
-            color: var(--golden-hour);
-        }
-
-        .prayer-container em {
-            color: var(--bioluminescent-soft);
-        }
-
-        .signature {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            text-align: right;
-            color: var(--coral-pink);
-            margin-top: 2rem;
-            font-size: 1.1rem;
-        }
-
-        /* Rising Bubbles Animation */
-        .bubble-celebration {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 100;
-            display: none;
-        }
-
-        .celebration-bubble {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, 
-                rgba(255, 255, 255, 0.8), 
-                rgba(0, 245, 212, 0.4), 
-                transparent
-            );
-            animation: bubbleRise linear forwards;
-        }
-
-        @keyframes bubbleRise {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Confetti */
-        .confetti {
-            position: fixed;
-            pointer-events: none;
-            z-index: 101;
-        }
-
-        /* Footer */
-        .footer {
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
-            padding: 3rem 2rem;
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            max-width: 600px;
+            box-shadow: 0 0 50px rgba(135, 206, 235, 0.3);
+            transform: translateY(50px);
+            transition: transform 1s;
+        }
+        
+        #end-screen.active { opacity: 1; pointer-events: auto; }
+        #end-screen.active .final-card { transform: translateY(0); }
+
+        .final-msg {
+            font-family: 'Waiting for the Sunrise', cursive;
+            font-size: 2rem;
+            margin: 20px 0;
+            color: #ffd700;
         }
 
-        /* ============================================
-           MOBILE OPTIMIZATIONS
-           ============================================ */
-        @media (max-width: 768px) {
-            .chapter {
-                padding: 1.5rem;
-                min-height: auto;
-                padding-top: 15vh;
-                padding-bottom: 15vh;
-            }
+        /* KEYFRAMES */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        @keyframes bounceRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 
-            .chapter-number {
-                font-size: clamp(3rem, 20vw, 8rem);
-                top: 5%;
-            }
-
-            .intro-section {
-                padding: 1.5rem;
-            }
-
-            .countdown-grid {
-                gap: 0.6rem;
-            }
-
-            .countdown-item {
-                min-width: 60px;
-                padding: 0.8rem 1rem;
-            }
-
-            .scroll-indicator {
-                bottom: 30px;
-            }
-
-            .message-card {
-                padding: 1.2rem;
-            }
-
-            .jellyfish {
-                display: none;
-            }
+        /* Mobile Controls */
+        #mobile-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: 20;
+            display: none; /* Shown via JS on touch devices */
+            pointer-events: none;
+        }
+        .joystick-area {
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
         }
 
-        @media (max-width: 480px) {
-            .countdown-item {
-                min-width: 55px;
-                padding: 0.7rem 0.8rem;
-            }
-
-            .reveal-button {
-                padding: 1rem 2rem;
-                font-size: 0.9rem;
-            }
-
-            .prayer-button {
-                padding: 0.8rem 1.8rem;
-                font-size: 1rem;
-            }
-        }
-
-        /* Reduced motion preference */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Hide content initially for storytelling reveal */
-        .hidden {
-            display: none !important;
-        }
-
-        .visible-block {
-            display: block !important;
-        }
-
-        .visible-flex {
-            display: flex !important;
+        #volume-btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
         }
     </style>
 </head>
 <body>
-    <!-- Immersive Ocean Background -->
-    <div class="ocean-realm">
-        <div class="depth-gradient"></div>
-        <div class="light-rays"></div>
-        <div class="bioluminescence" id="particles"></div>
+
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay Layer -->
+    <div id="ui-layer">
         
-        <!-- Jellyfish decorations -->
-        <div class="jellyfish" style="--size: 80px; --duration: 30s; left: 10%; top: 20%;"></div>
-        <div class="jellyfish" style="--size: 50px; --duration: 25s; left: 85%; top: 40%;"></div>
-        <div class="jellyfish" style="--size: 65px; --duration: 35s; left: 75%; top: 70%;"></div>
-        <div class="jellyfish" style="--size: 45px; --duration: 28s; left: 5%; top: 60%;"></div>
+        <!-- Loading -->
+        <div id="loader">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Memuat Langit Harapan...</div>
+            <div id="loading-progress" style="margin-top:10px; font-size:0.9rem;">0%</div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1 class="main-title">Langit Harapan</h1>
+            <h2 class="sub-title">Untuk Muhammad Rizal Setiawan</h2>
+            <p style="max-width: 500px; margin-bottom: 2rem; line-height: 1.6; color: #ddd;">
+                Kendalikan pesawat kertas ini menembus awan. <br>
+                Kumpulkan <span style="color:#f1c40f">Bintang Harapan</span> untuk merangkai doa ulang tahunmu.
+            </p>
+            <button class="btn-start" id="btn-start">Mulai Terbang</button>
+            <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.6;">
+                <i class="fas fa-headphones"></i> Gunakan headphone untuk pengalaman terbaik
+            </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div class="score-container">
+                <i class="fas fa-star star-icon"></i>
+                <span class="score-text" id="score-display">0 / 7</span>
+            </div>
+            <div id="volume-btn"><i class="fas fa-volume-up"></i></div>
+        </div>
+
+        <!-- Dialogue Box -->
+        <div id="dialogue-box">
+            <div class="dialogue-speaker">Suara Langit</div>
+            <div class="dialogue-content" id="dialogue-text">...</div>
+            <div class="dialogue-next" id="dialogue-next-btn"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- Hint -->
+        <div class="controls-hint" id="controls-hint">
+            Gerakkan Mouse / Sentuh Layar untuk Mengendalikan Pesawat
+        </div>
+
+        <!-- Mobile Touch Area -->
+        <div id="mobile-controls">
+            <div class="joystick-area" id="touch-zone"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen">
+            <div class="final-card">
+                <i class="fas fa-paper-plane" style="font-size: 3rem; color: #87CEEB; margin-bottom: 20px;"></i>
+                <h2 style="font-family: 'Cinzel'; font-size: 2.5rem;">Perjalanan Selesai</h2>
+                <div class="divider" style="height:2px; background:rgba(255,255,255,0.2); margin:20px auto; width:50%;"></div>
+                <p class="final-msg">"Selamat Ulang Tahun, Rizal."</p>
+                <p style="line-height: 1.8; color: #eee; margin-bottom: 30px;">
+                    Seperti pesawat kertas yang berani menembus awan tinggi,<br>
+                    Semoga impianmu tak pernah takut pada ketinggian.<br>
+                    Teruslah terbang, karena langit Tuhan itu luas tanpa batas.
+                </p>
+                <button class="btn-start" onclick="location.reload()">Terbang Lagi</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Bubble Celebration Overlay -->
-    <div class="bubble-celebration" id="bubbleCelebration"></div>
-
-    <!-- Main Story Container -->
-    <div class="story-container">
-        
-        <!-- INTRO: The Surface -->
-        <section class="intro-section" id="intro">
-            <h1 class="main-title">Panggilan Samudra</h1>
-            <p class="subtitle">Sebuah perjalanan menuju kedalaman jiwa...</p>
-            <p class="for-name">Untuk Muhammad Rizal Setiawan</p>
-            
-            <div class="countdown-container" id="countdownContainer">
-                <p class="countdown-label">Menuju Hari Istimewa</p>
-                <div class="countdown-grid" id="countdown">
-                    <div class="countdown-item">
-                        <span class="countdown-number" id="days">00</span>
-                        <span class="countdown-unit">Hari</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-number" id="hours">00</span>
-                        <span class="countdown-unit">Jam</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-number" id="minutes">00</span>
-                        <span class="countdown-unit">Menit</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-number" id="seconds">00</span>
-                        <span class="countdown-unit">Detik</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="scroll-indicator" id="scrollIndicator">
-                <span class="scroll-text">Selami Lebih Dalam</span>
-                <div class="scroll-arrow"></div>
-            </div>
-        </section>
-
-        <!-- CHAPTER 1: The Descent -->
-        <section class="chapter" id="chapter1">
-            <span class="chapter-number">I</span>
-            <div class="chapter-content">
-                <h2 class="chapter-title">Awal Perjalanan</h2>
-                <p class="chapter-text">
-                    Di permukaan samudra kehidupan, ada seorang jiwa yang istimewa. 
-                    <strong>Muhammad Rizal Setiawan</strong> — namanya terukir dalam ombak-ombak 
-                    yang tak pernah berhenti bergerak, membawa cerita kebijaksanaan ke setiap 
-                    pantai yang disentuhnya.
-                </p>
-                <p class="chapter-text">
-                    Seperti lautan yang menyimpan misteri di kedalamannya, engkau pun menyimpan 
-                    kekuatan yang tak terlihat — ketenangan di tengah badai, keteguhan di 
-                    tengah arus yang bergejolak.
-                </p>
-                <blockquote class="chapter-quote">
-                    "Samudra tidak pernah menolak sungai manapun yang datang kepadanya. 
-                    Begitu pula hatimu, Rizal, yang selalu terbuka..."
-                </blockquote>
-            </div>
-        </section>
-
-        <!-- CHAPTER 2: The Deep -->
-        <section class="chapter" id="chapter2">
-            <span class="chapter-number">II</span>
-            <div class="chapter-content">
-                <h2 class="chapter-title">Kedalaman Jiwa</h2>
-                <p class="chapter-text">
-                    Semakin dalam kita menyelam, semakin kita memahami bahwa <strong>kegelapan 
-                    bukanlah ketiadaan cahaya</strong> — melainkan ruang di mana cahaya sejati 
-                    bersinar paling terang. Bioluminesen — cahaya yang lahir dari kedalaman.
-                </p>
-                <p class="chapter-text">
-                    Engkau, saudaraku, adalah cahaya itu. Di saat-saat tergelap, kebijaksanaanmu 
-                    menerangi jalan. Di keheningan terdalam, kata-katamu membawa kedamaian.
-                </p>
-                <p class="chapter-text">
-                    Usia bertambah bukan sekadar hitungan waktu — melainkan <strong>kedalaman jiwa 
-                    yang semakin kaya</strong>, seperti samudra yang menyimpan lebih banyak mutiara 
-                    di dasar terdalamnya.
-                </p>
-            </div>
-        </section>
-
-        <!-- CHAPTER 3: The Treasure -->
-        <section class="chapter" id="chapter3">
-            <span class="chapter-number">III</span>
-            <div class="chapter-content">
-                <h2 class="chapter-title">Mutiara Harapan</h2>
-                <p class="chapter-text">
-                    Di sini, di kedalaman terdalam perjalanan ini, tersimpan <strong>mutiara-mutiara 
-                    doa</strong> dari kami semua — keluargamu yang mencintaimu tanpa batas.
-                </p>
-                <p class="chapter-text">
-                    Setiap mutiara adalah harapan. Setiap kilauannya adalah cinta. Dan setiap 
-                    lapisannya terbentuk dari waktu — dari kenangan, dari tawa, dari air mata 
-                    bahagia yang pernah kita bagi bersama.
-                </p>
-                <blockquote class="chapter-quote">
-                    "Mutiara paling indah lahir dari kesabaran dan tekanan. 
-                    Begitu pula karaktermu, Rizal, yang semakin berkilau seiring waktu..."
-                </blockquote>
-            </div>
-        </section>
-
-        <!-- REVEAL SECTION -->
-        <section class="reveal-section" id="revealSection">
-            <button class="reveal-button" id="revealBtn">
-                🫧 Buka Hadiah Samudra 🫧
-            </button>
-
-            <div class="celebration-container hidden" id="celebrationContent">
-                <div class="celebration-header">
-                    <h1 class="celebration-title">Selamat Ulang Tahun!</h1>
-                    <p class="celebration-subtitle">
-                        Muhammad Rizal Setiawan — Sang Penjaga Jiwa yang Bijaksana
-                    </p>
-                </div>
-
-                <div class="message-card">
-                    <h3>🌊 Dari Kedalaman Hati</h3>
-                    <p>
-                        Saudaraku tercinta, di hari istimewamu ini, kami mempersembahkan 
-                        samudra cinta dan doa yang tak bertepi. Semoga usiamu yang baru 
-                        ini membawa ketenangan seperti laut di pagi hari, kekuatan seperti 
-                        arus dalam yang tak pernah surut, dan kebijaksanaan seperti samudra 
-                        yang telah menyaksikan jutaan fajar dan senja.
-                    </p>
-                </div>
-
-                <div class="message-card">
-                    <h3>✨ Harapan yang Berkilau</h3>
-                    <p>
-                        Semoga setiap langkahmu diterangi cahaya mutiara kebijaksanaan. 
-                        Semoga hatimu selalu dipenuhi kedamaian yang dalam. Dan semoga 
-                        jiwamu terus mengalir, menginspirasi semua yang beruntung mengenalmu.
-                    </p>
-                </div>
-
-                <div class="message-card">
-                    <h3>💙 Keluarga yang Mencintaimu</h3>
-                    <p>
-                        Kami semua — saudara-saudaramu — bersyukur memilikimu dalam kehidupan kami. 
-                        Engkau adalah anugerah, seperti samudra adalah anugerah bagi bumi ini. 
-                        Nikmati hari istimewamu dengan sukacita yang sedalam lautan!
-                    </p>
-                </div>
-
-                <button class="prayer-button" id="prayerBtn">
-                    📜 Buka Gulungan Doa Khusus
-                </button>
-
-                <div class="prayer-container hidden" id="prayerContent">
-                    <p>
-                        <strong>Untuk Saudaraku Tercinta, Muhammad Rizal Setiawan,</strong><br><br>
-                        Dari kedalaman samudra kasih sayang keluarga, kami merangkai doa tulus yang 
-                        mengalir kuat dan meluap tinggi untukmu...
-                    </p>
-                    <p>
-                        <strong>🌊 Semoga Arus Hidupmu Semakin Kokoh:</strong><br>
-                        Ya Allah, kuatkanlah saudaraku Rizal di atas dasar iman dan takwa yang dalam. 
-                        Laksana arus samudra yang kokoh mengalir mencari muara kehidupan, semoga ia 
-                        selalu menemukan kekuatan dalam ajaran-Mu, dan kebijaksanaan dalam setiap 
-                        gelombang yang ditempuhnya.
-                    </p>
-                    <p>
-                        <strong>🫧 Semoga Gelombang Kehidupannya Penuh Berkah:</strong><br>
-                        Ya Rahman, berkahilah setiap usahanya agar menghasilkan mutiara-mutiara kebaikan 
-                        yang berharga. Semoga kilau prestasinya semakin terang, memberikan ketenangan 
-                        bagi dirinya dan manfaat bagi sesama.
-                    </p>
-                    <p>
-                        <strong>☀️ Semoga Cahaya-Mu Selalu Menerangi:</strong><br>
-                        Ya Nur, walau terkadang perjalanan hidup terasa gelap seperti samudra di malam hari, 
-                        terangilah selalu jalan saudaraku ini. Semoga hatinya tak pernah kehilangan harapan, 
-                        dan jiwanya senantiasa menemukan ketenangan di bawah naungan kasih sayang-Mu.
-                    </p>
-                    <p>
-                        <em>Ya Allah, Tuhan Yang Maha Pemelihara,<br>
-                        Di hari kelahiran saudara kami ini, kami memohon kehadirat-Mu:<br>
-                        Alirkanlah dalam dirinya semangat yang tak pernah surut,<br>
-                        Hati yang senantiasa bersyukur,<br>
-                        Dan jiwa yang selalu dekat dengan-Mu.<br>
-                        Berkahilah usianya, luaskanlah rezekinya,<br>
-                        Mudahkanlah segala urusannya,<br>
-                        Dan jadikanlah ia hamba-Mu yang shalih.<br>
-                        Aamiin ya Rabbal 'alamin.</em>
-                    </p>
-                    <p class="signature">
-                        — Dengan Cinta Sedalam Samudra,<br>
-                        Semua Saudaramu 🌊💙
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            🐚 Dibuat dengan cinta dari kedalaman hati keluarga 🐚
-        </footer>
-    </div>
-
-    <!-- Background Music -->
-    <audio id="bgMusic" loop>
-        <source src="https://cdn.sanity.io/files/zhgxj6ko/production/20096b856584fe42be47145334272a834c663ffe.mp3" type="audio/mpeg">
-    </audio>
-
+    <!-- MAIN SCRIPT ENGINE -->
     <script>
-        // ============================================
-        // BIOLUMINESCENT PARTICLES SYSTEM
-        // ============================================
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = window.innerWidth < 768 ? 40 : 80;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const size = Math.random() * 4 + 2;
-                const duration = Math.random() * 15 + 10;
-                const delay = Math.random() * 15;
-                const drift = (Math.random() - 0.5) * 100;
-                const left = Math.random() * 100;
-                const hue = Math.random() > 0.7 ? 320 : 175; // Occasional pink
-                
-                particle.style.cssText = `
-                    width: ${size}px;
-                    height: ${size}px;
-                    left: ${left}%;
-                    --drift: ${drift}px;
-                    animation-duration: ${duration}s;
-                    animation-delay: ${delay}s;
-                    background: hsl(${hue}, 100%, 70%);
-                    box-shadow: 0 0 ${size * 2}px hsl(${hue}, 100%, 60%),
-                                0 0 ${size * 4}px hsl(${hue}, 100%, 50%);
-                `;
-                
-                container.appendChild(particle);
+        /**
+         * ============================================================================
+         * 1. UTILITIES & MATH LIBRARY
+         * Helper functions for procedural generation
+         * ============================================================================
+         */
+         const MathUtils = {
+            rand: (min, max) => Math.random() * (max - min) + min,
+            randInt: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
+            clamp: (val, min, max) => Math.max(min, Math.min(max, val)),
+            lerp: (start, end, t) => start * (1 - t) + end * t,
+            // Smoothstep for smoother transitions
+            smoothstep: (min, max, value) => {
+                var x = Math.max(0, Math.min(1, (value-min)/(max-min)));
+                return x*x*(3 - 2*x);
+            }
+        };
+
+        // Custom Simplex Noise Implementation (Inline to avoid external dependency issues)
+        // Based on typical open-source implementations of Simplex Noise 2D/3D
+        class SimplexNoise {
+            constructor() {
+                this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+                this.p = [];
+                for (let i=0; i<256; i++) this.p[i] = Math.floor(Math.random()*256);
+                this.perm = [];
+                for(let i=0; i<512; i++) this.perm[i] = this.p[i & 255];
+            }
+            dot(g, x, y) { return g[0]*x + g[1]*y; }
+            noise2D(xin, yin) {
+                let n0, n1, n2;
+                const F2 = 0.5*(Math.sqrt(3.0)-1.0);
+                const s = (xin+yin)*F2;
+                const i = Math.floor(xin+s);
+                const j = Math.floor(yin+s);
+                const G2 = (3.0-Math.sqrt(3.0))/6.0;
+                const t = (i+j)*G2;
+                const X0 = i-t;
+                const Y0 = j-t;
+                const x0 = xin-X0;
+                const y0 = yin-Y0;
+                let i1, j1;
+                if(x0>y0) {i1=1; j1=0;} else {i1=0; j1=1;}
+                const x1 = x0 - i1 + G2;
+                const y1 = y0 - j1 + G2;
+                const x2 = x0 - 1.0 + 2.0 * G2;
+                const y2 = y0 - 1.0 + 2.0 * G2;
+                const ii = i & 255;
+                const jj = j & 255;
+                const gi0 = this.perm[ii+this.perm[jj]] % 12;
+                const gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12;
+                const gi2 = this.perm[ii+1+this.perm[jj+1]] % 12;
+                let t0 = 0.5 - x0*x0 - y0*y0;
+                if(t0<0) n0 = 0.0;
+                else { t0 *= t0; n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0); }
+                let t1 = 0.5 - x1*x1 - y1*y1;
+                if(t1<0) n1 = 0.0;
+                else { t1 *= t1; n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); }
+                let t2 = 0.5 - x2*x2 - y2*y2;
+                if(t2<0) n2 = 0.0;
+                else { t2 *= t2; n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); }
+                return 70.0 * (n0 + n1 + n2);
             }
         }
+        const noise = new SimplexNoise();
 
-        // ============================================
-        // SCROLL-BASED CHAPTER REVEAL
-        // ============================================
-        function setupScrollReveal() {
-            const chapters = document.querySelectorAll('.chapter');
+        /**
+         * ============================================================================
+         * 2. AUDIO ENGINE (WEB AUDIO API)
+         * Fully procedural generative music (No MP3s)
+         * ============================================================================
+         */
+        class AudioController {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+                this.isPlaying = false;
+                this.oscillators = [];
+                this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88]; // C Major
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0.3;
+                this.masterGain.connect(this.ctx.destination);
+                
+                // Reverb Effect (Convolution) - Simulated simplified
+                // For a real immersive feel, we usually load an impulse response.
+                // Here we use a simple delay line for echo.
+                this.delay = this.ctx.createDelay();
+                this.delay.delayTime.value = 0.4;
+                this.feedback = this.ctx.createGain();
+                this.feedback.gain.value = 0.3;
+                
+                this.masterGain.connect(this.delay);
+                this.delay.connect(this.feedback);
+                this.feedback.connect(this.delay);
+                this.delay.connect(this.ctx.destination);
+            }
+
+            startAmbience() {
+                if (!this.ctx) this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                this.scheduleNote();
+                this.createWindNoise();
+            }
+
+            createWindNoise() {
+                const bufferSize = 2 * this.ctx.sampleRate;
+                const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    output[i] = (lastOut + (0.02 * white)) / 1.02;
+                    var lastOut = output[i];
+                    output[i] *= 3.5; 
+                }
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = noiseBuffer;
+                noise.loop = true;
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.05;
+                noise.connect(gain);
+                gain.connect(this.masterGain);
+                noise.start(0);
+                this.windGain = gain;
+            }
+
+            updateWind(speed) {
+                // Modulate wind volume based on plane speed/height
+                if(this.windGain) {
+                    const target = Math.min(0.2, speed * 0.01);
+                    this.windGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.5);
+                }
+            }
+
+            playCollectSound() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, this.ctx.currentTime); // A5
+                osc.frequency.exponentialRampToValueAtTime(1760, this.ctx.currentTime + 0.1); // A6
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.5);
+            }
+
+            scheduleNote() {
+                if (!this.isPlaying) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                // Random note from scale
+                const note = this.scale[Math.floor(Math.random() * this.scale.length)];
+                const octave = Math.random() > 0.7 ? 2 : 1; // Sometimes higher octave
+                osc.frequency.value = note * octave;
+                osc.type = 'triangle';
+
+                // Envelope
+                const attack = 2;
+                const release = 3;
+                const now = this.ctx.currentTime;
+                
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.05, now + attack);
+                gain.gain.linearRampToValueAtTime(0, now + attack + release);
+
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                
+                osc.start();
+                osc.stop(now + attack + release);
+
+                // Schedule next note
+                setTimeout(() => this.scheduleNote(), Math.random() * 2000 + 1000);
+            }
+
+            toggleMute() {
+                if(this.masterGain.gain.value > 0) {
+                    this.masterGain.gain.value = 0;
+                    return false;
+                } else {
+                    this.masterGain.gain.value = 0.3;
+                    return true;
+                }
+            }
+        }
+        const audioSys = new AudioController();
+
+
+        /**
+         * ============================================================================
+         * 3. GRAPHICS ENGINE (THREE.JS WRAPPER)
+         * ============================================================================
+         */
+        const GAME_CONFIG = {
+            planeSpeed: 0.5,
+            turnSpeed: 0.08,
+            cloudCount: 60,
+            starCount: 7, // Number of wishes
+            worldWidth: 400
+        };
+
+        let scene, camera, renderer;
+        let plane, skyDome, sunLight, ambientLight;
+        let clouds = [];
+        let stars = []; // Collectibles
+        let particles = [];
+        
+        // Game State
+        const state = {
+            isRunning: false,
+            score: 0,
+            mouse: { x: 0, y: 0 },
+            planePos: { x: 0, y: 0, z: 0 },
+            isDialogueOpen: false,
+            dialogueQueue: [],
+            time: 0
+        };
+
+        const storyData = [
+            { id: 1, text: "Selamat Ulang Tahun, Rizal. Hari ini, langit merayakan kehadiranmu." },
+            { id: 2, text: "Setiap awan yang kau lewati adalah rintangan yang telah kau taklukan setahun ini." },
+            { id: 3, text: "Lihatlah ke depan. Cakrawala luas itu adalah potensimu yang belum terjamah." },
+            { id: 4, text: "Jangan takut jatuh. Angin doa dari orang-orang tercinta akan selalu mengangkatmu." },
+            { id: 5, text: "Jadilah pribadi yang bijak, setenang biru langit, sehangat sinar mentari." },
+            { id: 6, text: "Teruslah bermimpi setinggi mungkin. Karena Tuhan menyukai hamba-Nya yang berharap." },
+            { id: 7, text: "Semoga di usia baru ini, kebahagiaan dan keberkahan selalu menaungimu. Aamiin." }
+        ];
+
+        // --- INIT FUNCTION ---
+        function initGame() {
+            // Scene Setup
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x87CEEB, 0.008); // Sky blue fog
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 5, 20);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Lighting
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            sunLight = new THREE.DirectionalLight(0xffd700, 1.2);
+            sunLight.position.set(100, 200, 100);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            scene.add(sunLight);
+
+            // Objects
+            createSkyDome();
+            createPaperPlane();
+            createProceduralClouds();
+            createStars();
+            createTerrain();
+
+            // Event Listeners
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousemove', onMouseMove, false);
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
             
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, {
-                threshold: 0.2,
-                rootMargin: '-50px'
+            // Loop
+            animate();
+            
+            // Hide Loader
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('loader').remove(), 1000);
+        }
+
+        // --- OBJECT GENERATION ---
+
+        // 1. Procedural Texture Generator (Canvas)
+        function createCloudTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const context = canvas.getContext('2d');
+            const grad = context.createRadialGradient(64,64,0, 64,64,64);
+            grad.addColorStop(0, 'rgba(255,255,255,0.9)');
+            grad.addColorStop(0.4, 'rgba(255,255,255,0.5)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            context.fillStyle = grad;
+            context.fillRect(0,0,128,128);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createStarTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw Star shape
+            ctx.fillStyle = '#f1c40f';
+            ctx.beginPath();
+            const cx = 32, cy = 32, spikes = 5, outerRadius = 30, innerRadius = 15;
+            let rot = Math.PI / 2 * 3;
+            let x = cx, y = cy;
+            const step = Math.PI / spikes;
+
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Glow
+            ctx.globalCompositeOperation = 'destination-over';
+            const grad = ctx.createRadialGradient(32,32,0,32,32,32);
+            grad.addColorStop(0, 'rgba(255,215,0,0.8)');
+            grad.addColorStop(1, 'rgba(255,215,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,64,64);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // 2. Paper Plane Geometry (Manual BufferGeometry)
+        function createPaperPlane() {
+            // Simple geometry for a paper plane
+            const geometry = new THREE.BufferGeometry();
+            
+            // Vertices: nose, tail_left, tail_right, tail_center_bottom
+            const vertices = new Float32Array([
+                0, 0, 2,   // Nose (0)
+                -1, 0.5, -1, // Left Wing (1)
+                0, -0.5, -1, // Bottom Body (2)
+                
+                0, 0, 2,   // Nose (0)
+                0, -0.5, -1, // Bottom Body (2)
+                1, 0.5, -1,  // Right Wing (3)
+                
+                // Top surfaces for visual bulk
+                0, 0, 2, 
+                -1, 0.5, -1,
+                0, 0, -1, // Center spine top
+
+                0, 0, 2,
+                0, 0, -1,
+                1, 0.5, -1
+            ]);
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff, 
+                roughness: 0.4,
+                metalness: 0.1,
+                side: THREE.DoubleSide,
+                flatShading: true
             });
+
+            plane = new THREE.Mesh(geometry, material);
+            plane.castShadow = true;
+            scene.add(plane);
             
-            chapters.forEach(chapter => observer.observe(chapter));
+            // Add a trail
+            const trailGeo = new THREE.BufferGeometry();
+            const trailMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2, transparent: true, opacity: 0.6 });
+            // Logic handled in update
         }
 
-        // ============================================
-        // COUNTDOWN TIMER
-        // ============================================
-        const birthdayDate = new Date(2025, 4, 23, 0, 0, 0).getTime(); // May 23, 2025
-        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-
-        function updateCountdown() {
-            const now = Date.now();
-            const distance = birthdayDate - now;
-            
-            const countdownContainer = document.getElementById('countdownContainer');
-            const revealBtn = document.getElementById('revealBtn');
-            const scrollIndicator = document.getElementById('scrollIndicator');
-            
-            if (now >= birthdayDate && now <= birthdayDate + thirtyDaysMs) {
-                // Birthday period - hide countdown, show reveal
-                countdownContainer.style.display = 'none';
-                revealBtn.style.display = 'inline-block';
-                scrollIndicator.style.display = 'flex';
-            } else if (now > birthdayDate + thirtyDaysMs) {
-                // After birthday period
-                countdownContainer.style.display = 'none';
-                revealBtn.textContent = '🌊 Lihat Pesan Samudra 🌊';
-                scrollIndicator.style.display = 'flex';
-            } else {
-                // Before birthday - show countdown
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                document.getElementById('days').textContent = String(days).padStart(2, '0');
-                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-                
-                scrollIndicator.style.display = 'flex';
-            }
-        }
-
-        // ============================================
-        // CELEBRATION EFFECTS
-        // ============================================
-        function createCelebrationBubbles() {
-            const container = document.getElementById('bubbleCelebration');
-            container.style.display = 'block';
-            
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const bubble = document.createElement('div');
-                    bubble.className = 'celebration-bubble';
-                    
-                    const size = Math.random() * 30 + 10;
-                    const left = Math.random() * 100;
-                    const duration = Math.random() * 4 + 3;
-                    
-                    bubble.style.cssText = `
-                        width: ${size}px;
-                        height: ${size}px;
-                        left: ${left}%;
-                        animation-duration: ${duration}s;
-                    `;
-                    
-                    container.appendChild(bubble);
-                    
-                    setTimeout(() => bubble.remove(), duration * 1000);
-                }, i * 100);
-            }
-        }
-
-        function createConfetti() {
-            const colors = ['#00f5d4', '#7df9ff', '#ff6b9d', '#ffd700', '#f0f8ff'];
-            
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    
-                    const size = Math.random() * 10 + 5;
-                    const left = Math.random() * 100;
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    const duration = Math.random() * 3 + 2;
-                    const rotation = Math.random() * 720;
-                    
-                    confetti.style.cssText = `
-                        width: ${size}px;
-                        height: ${size}px;
-                        left: ${left}vw;
-                        top: -20px;
-                        background: ${color};
-                        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                        animation: confettiFall ${duration}s linear forwards;
-                        transform: rotate(${rotation}deg);
-                    `;
-                    
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), duration * 1000);
-                }, i * 50);
-            }
-        }
-
-        // Add confetti animation
-        const confettiStyle = document.createElement('style');
-        confettiStyle.textContent = `
-            @keyframes confettiFall {
-                0% {
-                    transform: translateY(0) rotate(0deg);
-                    opacity: 1;
+        // 3. Sky Dome (Gradient)
+        function createSkyDome() {
+            const vertexShader = `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+                    vWorldPosition = worldPosition.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
                 }
-                100% {
-                    transform: translateY(100vh) rotate(720deg);
-                    opacity: 0;
+            `;
+            const fragmentShader = `
+                uniform vec3 topColor;
+                uniform vec3 bottomColor;
+                uniform float offset;
+                uniform float exponent;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float h = normalize( vWorldPosition + offset ).y;
+                    gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h, 0.0 ), exponent ), 0.0 ) ), 1.0 );
                 }
-            }
-        `;
-        document.head.appendChild(confettiStyle);
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            setupScrollReveal();
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+            `;
             
-            const bgMusic = document.getElementById('bgMusic');
-            let musicStarted = false;
-            
-            // Reveal Button
-            const revealBtn = document.getElementById('revealBtn');
-            const celebrationContent = document.getElementById('celebrationContent');
-            
-            revealBtn.addEventListener('click', () => {
-                revealBtn.style.display = 'none';
-                celebrationContent.classList.remove('hidden');
-                celebrationContent.style.display = 'block';
-                
-                createCelebrationBubbles();
-                createConfetti();
-                
-                // Start music
-                if (!musicStarted) {
-                    bgMusic.play().then(() => {
-                        musicStarted = true;
-                    }).catch(err => {
-                        console.log('Music autoplay blocked');
-                    });
-                }
-                
-                // Scroll to celebration
-                setTimeout(() => {
-                    celebrationContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 500);
-            });
-            
-            // Prayer Button
-            const prayerBtn = document.getElementById('prayerBtn');
-            const prayerContent = document.getElementById('prayerContent');
-            
-            prayerBtn.addEventListener('click', () => {
-                prayerContent.classList.remove('hidden');
-                prayerContent.style.display = 'block';
-                prayerBtn.style.display = 'none';
-                
-                setTimeout(() => {
-                    prayerContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            });
-            
-            // Enable music on any interaction (for mobile)
-            const enableMusic = () => {
-                if (!musicStarted && celebrationContent.style.display === 'block') {
-                    bgMusic.play().then(() => {
-                        musicStarted = true;
-                    }).catch(() => {});
-                }
+            const uniforms = {
+                topColor: { value: new THREE.Color(0x0077ff) },
+                bottomColor: { value: new THREE.Color(0xffffff) },
+                offset: { value: 33 },
+                exponent: { value: 0.6 }
             };
+
+            const skyGeo = new THREE.SphereGeometry(400, 32, 15);
+            const skyMat = new THREE.ShaderMaterial({
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                uniforms: uniforms,
+                side: THREE.BackSide
+            });
+
+            skyDome = new THREE.Mesh(skyGeo, skyMat);
+            scene.add(skyDome);
+        }
+
+        // 4. Procedural Clouds (Instanced Billboards)
+        function createProceduralClouds() {
+            const cloudTex = createCloudTexture();
+            const cloudMat = new THREE.SpriteMaterial({ 
+                map: cloudTex, 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.8,
+                depthWrite: false
+            });
+
+            // Create clusters of clouds
+            for(let i=0; i<GAME_CONFIG.cloudCount; i++) {
+                const group = new THREE.Group();
+                const puffs = MathUtils.randInt(3, 6);
+                
+                for(let j=0; j<puffs; j++) {
+                    const sprite = new THREE.Sprite(cloudMat);
+                    sprite.position.set(
+                        MathUtils.rand(-5, 5),
+                        MathUtils.rand(-2, 2),
+                        MathUtils.rand(-2, 2)
+                    );
+                    const scale = MathUtils.rand(4, 8);
+                    sprite.scale.set(scale, scale, 1);
+                    group.add(sprite);
+                }
+
+                group.position.set(
+                    MathUtils.rand(-GAME_CONFIG.worldWidth/2, GAME_CONFIG.worldWidth/2),
+                    MathUtils.rand(10, 30), // Height
+                    MathUtils.rand(-500, -50)  // Depth start
+                );
+                
+                // Store metadata for animation
+                group.userData = {
+                    speed: MathUtils.rand(0.1, 0.3)
+                };
+                
+                scene.add(group);
+                clouds.push(group);
+            }
+        }
+
+        // 5. Collectible Stars
+        function createStars() {
+            const starTex = createStarTexture();
+            const starMat = new THREE.SpriteMaterial({ map: starTex, color: 0xffffff });
             
-            document.addEventListener('touchstart', enableMusic, { once: false });
-            document.addEventListener('click', enableMusic, { once: false });
+            // Create specific path for stars to guide the player
+            for (let i = 0; i < GAME_CONFIG.starCount; i++) {
+                const sprite = new THREE.Sprite(starMat);
+                sprite.scale.set(3, 3, 1);
+                
+                // Spiral positioning ahead
+                const zPos = -100 - (i * 150); // Every 150 units
+                const xPos = Math.sin(i * 0.5) * 40;
+                const yPos = 10 + Math.cos(i * 0.5) * 10;
+                
+                sprite.position.set(xPos, yPos, zPos);
+                sprite.userData = { id: i, collected: false };
+                
+                scene.add(sprite);
+                stars.push(sprite);
+            }
+        }
+
+        // 6. Terrain (Simplex Noise Ground)
+        function createTerrain() {
+            const geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
+            geometry.rotateX(-Math.PI / 2);
+            
+            const vertices = geometry.attributes.position.array;
+            
+            for (let i = 0; i < vertices.length; i += 3) {
+                const x = vertices[i];
+                const z = vertices[i + 2];
+                // Use Noise
+                const y = noise.noise2D(x * 0.005, z * 0.005) * 20 + noise.noise2D(x*0.02, z*0.02) * 5;
+                vertices[i + 1] = y - 40; // Shift down
+            }
+            
+            geometry.computeVertexNormals();
+            
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0x3a7e5c, // Greenish
+                flatShading: true,
+                roughness: 1
+            });
+            
+            const terrain = new THREE.Mesh(geometry, material);
+            terrain.receiveShadow = true;
+            scene.add(terrain);
+        }
+
+
+        // --- GAME LOGIC & ANIMATION LOOP ---
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = performance.now() * 0.001;
+            state.time = time;
+
+            if (state.isRunning) {
+                updatePlane(time);
+                updateEnvironment(time);
+                checkCollisions();
+            } else {
+                // Idle animation for start screen
+                if(plane) {
+                    plane.position.y = Math.sin(time) * 0.5;
+                    plane.rotation.z = Math.sin(time * 0.5) * 0.1;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updatePlane(time) {
+            // Lerp Mouse Input for Smoothness
+            const targetX = state.mouse.x * 30; // Max horizontal range
+            const targetY = state.mouse.y * 15; // Max vertical range
+
+            plane.position.x = MathUtils.lerp(plane.position.x, targetX, 0.05);
+            plane.position.y = MathUtils.lerp(plane.position.y, targetY, 0.05);
+            
+            // Banking (Rotation) based on movement
+            plane.rotation.z = -state.mouse.x * 0.8; // Bank left/right
+            plane.rotation.x = -state.mouse.y * 0.5; // Pitch up/down
+
+            // Forward movement simulation (move world backwards)
+            // Or better: Move plane forward and camera follows
+            const speed = GAME_CONFIG.planeSpeed;
+            plane.position.z -= speed;
+            camera.position.z -= speed;
+            camera.position.x = MathUtils.lerp(camera.position.x, plane.position.x * 0.5, 0.05);
+            camera.position.y = MathUtils.lerp(camera.position.y, plane.position.y + 5, 0.05);
+
+            // Update Audio Wind
+            const normalizedHeight = (plane.position.y + 10) / 40;
+            audioSys.updateWind(speed + Math.abs(state.mouse.y));
+        }
+
+        function updateEnvironment(time) {
+            // Move Clouds to simulate infinite world
+            clouds.forEach(group => {
+                // Parallax scrolling isn't needed if we move the camera,
+                // But we need to respawn clouds that are too far behind
+                if (group.position.z > camera.position.z + 10) {
+                    group.position.z = camera.position.z - 500 - Math.random() * 200;
+                    group.position.x = camera.position.x + MathUtils.rand(-200, 200);
+                }
+            });
+
+            // Pulse Stars
+            stars.forEach(star => {
+                if(!star.userData.collected) {
+                    const scale = 3 + Math.sin(time * 3) * 0.5;
+                    star.scale.set(scale, scale, 1);
+                    star.material.rotation += 0.02;
+                }
+            });
+
+            // Day/Night Cycle (Subtle)
+            // Map score to sky color? 
+            // Let's just oscillate slowly
+            const skyUniforms = skyDome.material.uniforms;
+            const cycle = (Math.sin(time * 0.1) + 1) / 2; // 0 to 1
+            // skyUniforms.topColor.value.setHSL(0.6, 1, 0.5 + cycle * 0.1);
+        }
+
+        function checkCollisions() {
+            if(state.isDialogueOpen) return; // Pause collection while reading? Maybe not.
+
+            const hitRadius = 5;
+            stars.forEach((star) => {
+                if(star.userData.collected) return;
+
+                const dist = plane.position.distanceTo(star.position);
+                if(dist < hitRadius) {
+                    collectStar(star);
+                }
+            });
+
+            // Check End Game
+            if(state.score >= GAME_CONFIG.starCount && !state.isDialogueOpen && state.dialogueQueue.length === 0) {
+                // Wait a bit then end
+                if(!state.endTimer) {
+                    state.endTimer = setTimeout(finishGame, 3000);
+                }
+            }
+        }
+
+        function collectStar(star) {
+            star.userData.collected = true;
+            star.visible = false;
+            
+            // FX
+            audioSys.playCollectSound();
+            createExplosion(star.position);
+
+            // Logic
+            state.score++;
+            document.getElementById('score-display').innerText = `${state.score} / ${GAME_CONFIG.starCount}`;
+            
+            // Trigger Story
+            const story = storyData.find(s => s.id === state.score);
+            if(story) {
+                queueDialogue(story.text);
+            }
+        }
+
+        function createExplosion(pos) {
+            // Simple particle burst
+            // In a real robust system we'd use a pooled particle system
+            // Here we just spawn DOM elements or temporary meshes? 
+            // Let's use temporary sprites
+            const material = new THREE.SpriteMaterial({ 
+                map: createStarTexture(), 
+                color: 0xffff00, 
+                blending: THREE.AdditiveBlending 
+            });
+            
+            for(let i=0; i<8; i++) {
+                const p = new THREE.Sprite(material);
+                p.position.copy(pos);
+                p.scale.set(1,1,1);
+                
+                // Random velocity
+                const vel = new THREE.Vector3(
+                    Math.random()-0.5, Math.random()-0.5, Math.random()-0.5
+                ).normalize().multiplyScalar(0.5);
+
+                scene.add(p);
+                
+                // Animate and remove
+                const animateParticle = () => {
+                    p.position.add(vel);
+                    p.material.opacity -= 0.02;
+                    p.scale.multiplyScalar(0.95);
+                    if(p.material.opacity > 0) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        scene.remove(p);
+                    }
+                };
+                animateParticle();
+            }
+        }
+
+        // --- UI & INTERACTION HANDLERS ---
+
+        function onMouseMove(event) {
+            // Normalize -1 to 1
+            state.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            state.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onTouchMove(event) {
+            event.preventDefault(); // Prevent scroll
+            const touch = event.touches[0];
+            state.mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+            state.mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Story System
+        function queueDialogue(text) {
+            state.dialogueQueue.push(text);
+            if (!state.isDialogueOpen) {
+                showNextDialogue();
+            }
+        }
+
+        function showNextDialogue() {
+            if (state.dialogueQueue.length === 0) {
+                closeDialogue();
+                return;
+            }
+
+            state.isDialogueOpen = true;
+            const text = state.dialogueQueue.shift();
+            const box = document.getElementById('dialogue-box');
+            const content = document.getElementById('dialogue-text');
+            
+            box.style.display = 'block';
+            content.innerHTML = ''; 
+            
+            // Typewriter effect
+            let i = 0;
+            const speed = 30; // ms per char
+            
+            // Clear previous interval if exists
+            if(window.typeInterval) clearInterval(window.typeInterval);
+
+            window.typeInterval = setInterval(() => {
+                content.innerHTML += text.charAt(i);
+                i++;
+                if (i > text.length - 1) {
+                    clearInterval(window.typeInterval);
+                }
+            }, speed);
+        }
+
+        function closeDialogue() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            state.isDialogueOpen = false;
+        }
+
+        document.getElementById('dialogue-next-btn').addEventListener('click', () => {
+            if(window.typeInterval) clearInterval(window.typeInterval); // Instant finish logic could go here
+            showNextDialogue();
         });
 
-        // Smooth scroll for indicator
-        document.getElementById('scrollIndicator')?.addEventListener('click', () => {
-            document.getElementById('chapter1')?.scrollIntoView({ behavior: 'smooth' });
+        // Game Flow Controls
+        document.getElementById('btn-start').addEventListener('click', () => {
+            // Audio Context requires user interaction
+            audioSys.startAmbience();
+            
+            // Fade out start screen
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('hud').style.opacity = '1';
+                state.isRunning = true;
+                
+                // Intro text
+                setTimeout(() => queueDialogue("Langit ini luas, Rizal. Tapi tak seluas harapan yang kau miliki."), 1000);
+            }, 800);
         });
+
+        document.getElementById('volume-btn').addEventListener('click', (e) => {
+            const isMuted = !audioSys.toggleMute();
+            e.currentTarget.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        });
+
+        function finishGame() {
+            state.isRunning = false;
+            // Slow down plane
+            document.getElementById('ui-layer').style.pointerEvents = 'auto';
+            document.getElementById('end-screen').classList.add('active');
+            document.getElementById('hud').style.opacity = '0';
+        }
+
+        // Detect Mobile for Controls Hint
+        if(window.innerWidth < 768) {
+            document.getElementById('controls-hint').innerText = "Sentuh & Tahan Layar untuk Mengendalikan";
+            document.getElementById('mobile-controls').style.display = 'block';
+        }
+
+        // --- BOOTSTRAP ---
+        initGame();
+
     </script>
 </body>
 </html>
