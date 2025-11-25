@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌊 Perjalanan Samudra untuk Rizal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deepest: #010a13;
+            --ocean-deep: #041c2c;
+            --ocean-mid: #0a3d5c;
+            --ocean-light: #1a6b8a;
+            --ocean-surface: #2d8fb3;
+            --bioluminescent: #00f5d4;
+            --bioluminescent-soft: #7df9ff;
+            --pearl: #f0f8ff;
+            --coral-pink: #ff6b9d;
+            --golden-hour: #ffd700;
+            --text-primary: #e8f4f8;
+            --text-secondary: rgba(232, 244, 248, 0.75);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Philosopher', serif;
+            background: var(--ocean-deepest);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           IMMERSIVE OCEAN BACKGROUND SYSTEM
+           ============================================ */
+        .ocean-realm {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .depth-gradient {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 120% 80% at 50% 100%, var(--ocean-mid) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 20% 80%, rgba(0, 245, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse 80% 60% at 80% 70%, rgba(125, 249, 255, 0.06) 0%, transparent 40%),
+                linear-gradient(180deg, 
+                    var(--ocean-deepest) 0%, 
+                    var(--ocean-deep) 30%,
+                    var(--ocean-mid) 60%,
+                    var(--ocean-light) 85%,
+                    var(--ocean-surface) 100%
+                );
+            animation: depthShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes depthShift {
+            0% { filter: brightness(0.9) saturate(1.1); }
+            100% { filter: brightness(1.1) saturate(1.2); }
+        }
+
+        /* Bioluminescent particles */
+        .bioluminescence {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) translateX(var(--drift, 50px)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Light rays from surface */
+        .light-rays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60vh;
+            background: 
+                linear-gradient(175deg, rgba(125, 249, 255, 0.03) 0%, transparent 30%),
+                linear-gradient(185deg, rgba(0, 245, 212, 0.02) 0%, transparent 40%),
+                linear-gradient(170deg, rgba(255, 255, 255, 0.015) 0%, transparent 25%);
+            pointer-events: none;
+            animation: rayFlicker 8s ease-in-out infinite;
+        }
+
+        @keyframes rayFlicker {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Floating jellyfish silhouettes */
+        .jellyfish {
+            position: absolute;
+            width: var(--size, 60px);
+            height: calc(var(--size, 60px) * 1.4);
+            opacity: 0.15;
+            filter: blur(2px);
+            animation: jellyFloat var(--duration, 25s) ease-in-out infinite;
+        }
+
+        .jellyfish::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 50%;
+            background: radial-gradient(ellipse at center, var(--bioluminescent) 0%, transparent 70%);
+            border-radius: 50% 50% 30% 30%;
+        }
+
+        .jellyfish::after {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 20%;
+            width: 60%;
+            height: 55%;
+            background: 
+                linear-gradient(180deg, transparent 0%, var(--bioluminescent-soft) 20%, transparent 100%);
+            filter: blur(3px);
+        }
+
+        @keyframes jellyFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(-5deg);
+            }
+            25% {
+                transform: translateY(-30px) translateX(20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-10px) translateX(-10px) rotate(-3deg);
+            }
+            75% {
+                transform: translateY(-40px) translateX(15px) rotate(7deg);
+            }
+        }
+
+        /* ============================================
+           STORYTELLING SCROLL CONTAINER
+           ============================================ */
+        .story-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+        }
+
+        /* Intro Section - The Dive */
+        .intro-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .intro-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to bottom, transparent, var(--ocean-deepest));
+            pointer-events: none;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 3s forwards;
+            z-index: 20;
+        }
+
+        .scroll-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid var(--bioluminescent);
+            border-bottom: 2px solid var(--bioluminescent);
+            transform: rotate(45deg);
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: rotate(45deg) translateY(0); }
+            50% { transform: rotate(45deg) translateY(8px); }
+        }
+
+        /* Title animations */
+        .main-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, 
+                var(--pearl) 0%, 
+                var(--bioluminescent-soft) 25%, 
+                var(--pearl) 50%, 
+                var(--bioluminescent) 75%, 
+                var(--pearl) 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite, titleReveal 2s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            text-shadow: 0 0 60px rgba(0, 245, 212, 0.5);
+            filter: drop-shadow(0 0 30px rgba(0, 245, 212, 0.3));
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes titleReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: 300;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-top: 1.5rem;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .for-name {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            font-weight: 500;
+            color: var(--bioluminescent);
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.2s forwards;
+            text-shadow: 0 0 30px rgba(0, 245, 212, 0.5);
+        }
+
+        /* Countdown Timer */
+        .countdown-container {
+            margin-top: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1.6s forwards;
+        }
+
+        .countdown-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .countdown-grid {
+            display: flex;
+            justify-content: center;
+            gap: clamp(0.8rem, 3vw, 1.5rem);
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+            padding: 1rem 1.2rem;
+            background: rgba(0, 245, 212, 0.05);
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .countdown-item:hover {
+            background: rgba(0, 245, 212, 0.1);
+            border-color: rgba(0, 245, 212, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 245, 212, 0.2);
+        }
+
+        .countdown-number {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            font-weight: 600;
+            color: var(--bioluminescent);
+            line-height: 1;
+        }
+
+        .countdown-unit {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* ============================================
+           STORY CHAPTERS
+           ============================================ */
+        .chapter {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(2rem, 5vw, 4rem);
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+
+        .chapter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter-number {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(4rem, 15vw, 10rem);
+            font-weight: 700;
+            color: rgba(0, 245, 212, 0.08);
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            line-height: 1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .chapter-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .chapter-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 500;
+            color: var(--bioluminescent-soft);
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .chapter-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--bioluminescent), transparent);
+        }
+
+        .chapter-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+            line-height: 2;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .chapter-text strong {
+            color: var(--bioluminescent);
+            font-weight: 600;
+        }
+
+        .chapter-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            font-style: italic;
+            color: var(--bioluminescent-soft);
+            padding: 2rem;
+            border-left: 3px solid var(--bioluminescent);
+            background: rgba(0, 245, 212, 0.03);
+            margin: 2rem 0;
+        }
+
+        /* ============================================
+           REVEAL BUTTON & CELEBRATION
+           ============================================ */
+        .reveal-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .reveal-button {
+            position: relative;
+            padding: 1.2rem 3rem;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--ocean-deepest);
+            background: linear-gradient(135deg, var(--bioluminescent), var(--bioluminescent-soft));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 0 30px rgba(0, 245, 212, 0.4),
+                0 0 60px rgba(0, 245, 212, 0.2);
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 30px rgba(0, 245, 212, 0.4),
+                    0 0 60px rgba(0, 245, 212, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 50px rgba(0, 245, 212, 0.6),
+                    0 0 100px rgba(0, 245, 212, 0.4);
+            }
+        }
+
+        .reveal-button:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 60px rgba(0, 245, 212, 0.6),
+                0 0 120px rgba(0, 245, 212, 0.4);
+        }
+
+        .reveal-button:active {
+            transform: scale(0.98);
+        }
+
+        .reveal-button::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, 
+                var(--bioluminescent), 
+                var(--coral-pink), 
+                var(--golden-hour), 
+                var(--bioluminescent-soft)
+            );
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderRotate 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .reveal-button:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Celebration Content */
+        .celebration-container {
+            display: none;
+            max-width: 800px;
+            width: 100%;
+            animation: celebrationReveal 1.5s ease-out forwards;
+        }
+
+        @keyframes celebrationReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .celebration-header {
+            margin-bottom: 3rem;
+        }
+
+        .celebration-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, 
+                var(--golden-hour) 0%, 
+                var(--coral-pink) 30%, 
+                var(--bioluminescent) 60%, 
+                var(--pearl) 100%
+            );
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.5));
+        }
+
+        .celebration-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 3.5vw, 1.3rem);
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        .message-card {
+            background: linear-gradient(145deg, 
+                rgba(0, 245, 212, 0.08), 
+                rgba(125, 249, 255, 0.04)
+            );
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            border-radius: 20px;
+            padding: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(15px);
+            transition: all 0.4s ease;
+        }
+
+        .message-card:hover {
+            border-color: rgba(0, 245, 212, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 245, 212, 0.15);
+        }
+
+        .message-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            color: var(--bioluminescent);
+            margin-bottom: 1rem;
+        }
+
+        .message-card p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        /* Special Prayer Section */
+        .prayer-button {
+            margin-top: 2rem;
+            padding: 1rem 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .prayer-button:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--golden-hour);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .prayer-container {
+            display: none;
+            margin-top: 2rem;
+            padding: clamp(1.5rem, 5vw, 2.5rem);
+            background: linear-gradient(145deg, 
+                rgba(255, 215, 0, 0.05), 
+                rgba(255, 107, 157, 0.03)
+            );
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            animation: prayerReveal 1s ease-out forwards;
+        }
+
+        @keyframes prayerReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prayer-container p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            line-height: 2;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .prayer-container strong {
+            color: var(--golden-hour);
+        }
+
+        .prayer-container em {
+            color: var(--bioluminescent-soft);
+        }
+
+        .signature {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            text-align: right;
+            color: var(--coral-pink);
+            margin-top: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Rising Bubbles Animation */
+        .bubble-celebration {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .celebration-bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(255, 255, 255, 0.8), 
+                rgba(0, 245, 212, 0.4), 
+                transparent
+            );
+            animation: bubbleRise linear forwards;
+        }
+
+        @keyframes bubbleRise {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 101;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================
+           MOBILE OPTIMIZATIONS
+           ============================================ */
+        @media (max-width: 768px) {
+            .chapter {
+                padding: 1.5rem;
+                min-height: auto;
+                padding-top: 15vh;
+                padding-bottom: 15vh;
+            }
+
+            .chapter-number {
+                font-size: clamp(3rem, 20vw, 8rem);
+                top: 5%;
+            }
+
+            .intro-section {
+                padding: 1.5rem;
+            }
+
+            .countdown-grid {
+                gap: 0.6rem;
+            }
+
+            .countdown-item {
+                min-width: 60px;
+                padding: 0.8rem 1rem;
+            }
+
+            .scroll-indicator {
+                bottom: 30px;
+            }
+
+            .message-card {
+                padding: 1.2rem;
+            }
+
+            .jellyfish {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .countdown-item {
+                min-width: 55px;
+                padding: 0.7rem 0.8rem;
+            }
+
+            .reveal-button {
+                padding: 1rem 2rem;
+                font-size: 0.9rem;
+            }
+
+            .prayer-button {
+                padding: 0.8rem 1.8rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Hide content initially for storytelling reveal */
+        .hidden {
+            display: none !important;
+        }
+
+        .visible-block {
+            display: block !important;
+        }
+
+        .visible-flex {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Immersive Ocean Background -->
+    <div class="ocean-realm">
+        <div class="depth-gradient"></div>
+        <div class="light-rays"></div>
+        <div class="bioluminescence" id="particles"></div>
+        
+        <!-- Jellyfish decorations -->
+        <div class="jellyfish" style="--size: 80px; --duration: 30s; left: 10%; top: 20%;"></div>
+        <div class="jellyfish" style="--size: 50px; --duration: 25s; left: 85%; top: 40%;"></div>
+        <div class="jellyfish" style="--size: 65px; --duration: 35s; left: 75%; top: 70%;"></div>
+        <div class="jellyfish" style="--size: 45px; --duration: 28s; left: 5%; top: 60%;"></div>
+    </div>
+
+    <!-- Bubble Celebration Overlay -->
+    <div class="bubble-celebration" id="bubbleCelebration"></div>
+
+    <!-- Main Story Container -->
+    <div class="story-container">
+        
+        <!-- INTRO: The Surface -->
+        <section class="intro-section" id="intro">
+            <h1 class="main-title">Panggilan Samudra</h1>
+            <p class="subtitle">Sebuah perjalanan menuju kedalaman jiwa...</p>
+            <p class="for-name">Untuk Muhammad Rizal Setiawan</p>
+            
+            <div class="countdown-container" id="countdownContainer">
+                <p class="countdown-label">Menuju Hari Istimewa</p>
+                <div class="countdown-grid" id="countdown">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="days">00</span>
+                        <span class="countdown-unit">Hari</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-unit">Jam</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-unit">Menit</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-unit">Detik</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator" id="scrollIndicator">
+                <span class="scroll-text">Selami Lebih Dalam</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 1: The Descent -->
+        <section class="chapter" id="chapter1">
+            <span class="chapter-number">I</span>
+            <div class="chapter-content">
+                <h2 class="chapter-title">Awal Perjalanan</h2>
+                <p class="chapter-text">
+                    Di permukaan samudra kehidupan, ada seorang jiwa yang istimewa. 
+                    <strong>Muhammad Rizal Setiawan</strong> — namanya terukir dalam ombak-ombak 
+                    yang tak pernah berhenti bergerak, membawa cerita kebijaksanaan ke setiap 
+                    pantai yang disentuhnya.
+                </p>
+                <p class="chapter-text">
+                    Seperti lautan yang menyimpan misteri di kedalamannya, engkau pun menyimpan 
+                    kekuatan yang tak terlihat — ketenangan di tengah badai, keteguhan di 
+                    tengah arus yang bergejolak.
+                </p>
+                <blockquote class="chapter-quote">
+                    "Samudra tidak pernah menolak sungai manapun yang datang kepadanya. 
+                    Begitu pula hatimu, Rizal, yang selalu terbuka..."
+                </blockquote>
+            </div>
+        </section>
+
+        <!-- CHAPTER 2: The Deep -->
+        <section class="chapter" id="chapter2">
+            <span class="chapter-number">II</span>
+            <div class="chapter-content">
+                <h2 class="chapter-title">Kedalaman Jiwa</h2>
+                <p class="chapter-text">
+                    Semakin dalam kita menyelam, semakin kita memahami bahwa <strong>kegelapan 
+                    bukanlah ketiadaan cahaya</strong> — melainkan ruang di mana cahaya sejati 
+                    bersinar paling terang. Bioluminesen — cahaya yang lahir dari kedalaman.
+                </p>
+                <p class="chapter-text">
+                    Engkau, saudaraku, adalah cahaya itu. Di saat-saat tergelap, kebijaksanaanmu 
+                    menerangi jalan. Di keheningan terdalam, kata-katamu membawa kedamaian.
+                </p>
+                <p class="chapter-text">
+                    Usia bertambah bukan sekadar hitungan waktu — melainkan <strong>kedalaman jiwa 
+                    yang semakin kaya</strong>, seperti samudra yang menyimpan lebih banyak mutiara 
+                    di dasar terdalamnya.
+                </p>
+            </div>
+        </section>
+
+        <!-- CHAPTER 3: The Treasure -->
+        <section class="chapter" id="chapter3">
+            <span class="chapter-number">III</span>
+            <div class="chapter-content">
+                <h2 class="chapter-title">Mutiara Harapan</h2>
+                <p class="chapter-text">
+                    Di sini, di kedalaman terdalam perjalanan ini, tersimpan <strong>mutiara-mutiara 
+                    doa</strong> dari kami semua — keluargamu yang mencintaimu tanpa batas.
+                </p>
+                <p class="chapter-text">
+                    Setiap mutiara adalah harapan. Setiap kilauannya adalah cinta. Dan setiap 
+                    lapisannya terbentuk dari waktu — dari kenangan, dari tawa, dari air mata 
+                    bahagia yang pernah kita bagi bersama.
+                </p>
+                <blockquote class="chapter-quote">
+                    "Mutiara paling indah lahir dari kesabaran dan tekanan. 
+                    Begitu pula karaktermu, Rizal, yang semakin berkilau seiring waktu..."
+                </blockquote>
+            </div>
+        </section>
+
+        <!-- REVEAL SECTION -->
+        <section class="reveal-section" id="revealSection">
+            <button class="reveal-button" id="revealBtn">
+                🫧 Buka Hadiah Samudra 🫧
+            </button>
+
+            <div class="celebration-container hidden" id="celebrationContent">
+                <div class="celebration-header">
+                    <h1 class="celebration-title">Selamat Ulang Tahun!</h1>
+                    <p class="celebration-subtitle">
+                        Muhammad Rizal Setiawan — Sang Penjaga Jiwa yang Bijaksana
+                    </p>
+                </div>
+
+                <div class="message-card">
+                    <h3>🌊 Dari Kedalaman Hati</h3>
+                    <p>
+                        Saudaraku tercinta, di hari istimewamu ini, kami mempersembahkan 
+                        samudra cinta dan doa yang tak bertepi. Semoga usiamu yang baru 
+                        ini membawa ketenangan seperti laut di pagi hari, kekuatan seperti 
+                        arus dalam yang tak pernah surut, dan kebijaksanaan seperti samudra 
+                        yang telah menyaksikan jutaan fajar dan senja.
+                    </p>
+                </div>
+
+                <div class="message-card">
+                    <h3>✨ Harapan yang Berkilau</h3>
+                    <p>
+                        Semoga setiap langkahmu diterangi cahaya mutiara kebijaksanaan. 
+                        Semoga hatimu selalu dipenuhi kedamaian yang dalam. Dan semoga 
+                        jiwamu terus mengalir, menginspirasi semua yang beruntung mengenalmu.
+                    </p>
+                </div>
+
+                <div class="message-card">
+                    <h3>💙 Keluarga yang Mencintaimu</h3>
+                    <p>
+                        Kami semua — saudara-saudaramu — bersyukur memilikimu dalam kehidupan kami. 
+                        Engkau adalah anugerah, seperti samudra adalah anugerah bagi bumi ini. 
+                        Nikmati hari istimewamu dengan sukacita yang sedalam lautan!
+                    </p>
+                </div>
+
+                <button class="prayer-button" id="prayerBtn">
+                    📜 Buka Gulungan Doa Khusus
+                </button>
+
+                <div class="prayer-container hidden" id="prayerContent">
+                    <p>
+                        <strong>Untuk Saudaraku Tercinta, Muhammad Rizal Setiawan,</strong><br><br>
+                        Dari kedalaman samudra kasih sayang keluarga, kami merangkai doa tulus yang 
+                        mengalir kuat dan meluap tinggi untukmu...
+                    </p>
+                    <p>
+                        <strong>🌊 Semoga Arus Hidupmu Semakin Kokoh:</strong><br>
+                        Ya Allah, kuatkanlah saudaraku Rizal di atas dasar iman dan takwa yang dalam. 
+                        Laksana arus samudra yang kokoh mengalir mencari muara kehidupan, semoga ia 
+                        selalu menemukan kekuatan dalam ajaran-Mu, dan kebijaksanaan dalam setiap 
+                        gelombang yang ditempuhnya.
+                    </p>
+                    <p>
+                        <strong>🫧 Semoga Gelombang Kehidupannya Penuh Berkah:</strong><br>
+                        Ya Rahman, berkahilah setiap usahanya agar menghasilkan mutiara-mutiara kebaikan 
+                        yang berharga. Semoga kilau prestasinya semakin terang, memberikan ketenangan 
+                        bagi dirinya dan manfaat bagi sesama.
+                    </p>
+                    <p>
+                        <strong>☀️ Semoga Cahaya-Mu Selalu Menerangi:</strong><br>
+                        Ya Nur, walau terkadang perjalanan hidup terasa gelap seperti samudra di malam hari, 
+                        terangilah selalu jalan saudaraku ini. Semoga hatinya tak pernah kehilangan harapan, 
+                        dan jiwanya senantiasa menemukan ketenangan di bawah naungan kasih sayang-Mu.
+                    </p>
+                    <p>
+                        <em>Ya Allah, Tuhan Yang Maha Pemelihara,<br>
+                        Di hari kelahiran saudara kami ini, kami memohon kehadirat-Mu:<br>
+                        Alirkanlah dalam dirinya semangat yang tak pernah surut,<br>
+                        Hati yang senantiasa bersyukur,<br>
+                        Dan jiwa yang selalu dekat dengan-Mu.<br>
+                        Berkahilah usianya, luaskanlah rezekinya,<br>
+                        Mudahkanlah segala urusannya,<br>
+                        Dan jadikanlah ia hamba-Mu yang shalih.<br>
+                        Aamiin ya Rabbal 'alamin.</em>
+                    </p>
+                    <p class="signature">
+                        — Dengan Cinta Sedalam Samudra,<br>
+                        Semua Saudaramu 🌊💙
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            🐚 Dibuat dengan cinta dari kedalaman hati keluarga 🐚
+        </footer>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.sanity.io/files/zhgxj6ko/production/20096b856584fe42be47145334272a834c663ffe.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ============================================
+        // BIOLUMINESCENT PARTICLES SYSTEM
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = window.innerWidth < 768 ? 40 : 80;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 4 + 2;
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * 15;
+                const drift = (Math.random() - 0.5) * 100;
+                const left = Math.random() * 100;
+                const hue = Math.random() > 0.7 ? 320 : 175; // Occasional pink
+                
+                particle.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${left}%;
+                    --drift: ${drift}px;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                    background: hsl(${hue}, 100%, 70%);
+                    box-shadow: 0 0 ${size * 2}px hsl(${hue}, 100%, 60%),
+                                0 0 ${size * 4}px hsl(${hue}, 100%, 50%);
+                `;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // ============================================
+        // SCROLL-BASED CHAPTER REVEAL
+        // ============================================
+        function setupScrollReveal() {
+            const chapters = document.querySelectorAll('.chapter');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '-50px'
+            });
+            
+            chapters.forEach(chapter => observer.observe(chapter));
+        }
+
+        // ============================================
+        // COUNTDOWN TIMER
+        // ============================================
+        const birthdayDate = new Date(2025, 4, 23, 0, 0, 0).getTime(); // May 23, 2025
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+        function updateCountdown() {
+            const now = Date.now();
+            const distance = birthdayDate - now;
+            
+            const countdownContainer = document.getElementById('countdownContainer');
+            const revealBtn = document.getElementById('revealBtn');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            
+            if (now >= birthdayDate && now <= birthdayDate + thirtyDaysMs) {
+                // Birthday period - hide countdown, show reveal
+                countdownContainer.style.display = 'none';
+                revealBtn.style.display = 'inline-block';
+                scrollIndicator.style.display = 'flex';
+            } else if (now > birthdayDate + thirtyDaysMs) {
+                // After birthday period
+                countdownContainer.style.display = 'none';
+                revealBtn.textContent = '🌊 Lihat Pesan Samudra 🌊';
+                scrollIndicator.style.display = 'flex';
+            } else {
+                // Before birthday - show countdown
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+                
+                scrollIndicator.style.display = 'flex';
+            }
+        }
+
+        // ============================================
+        // CELEBRATION EFFECTS
+        // ============================================
+        function createCelebrationBubbles() {
+            const container = document.getElementById('bubbleCelebration');
+            container.style.display = 'block';
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'celebration-bubble';
+                    
+                    const size = Math.random() * 30 + 10;
+                    const left = Math.random() * 100;
+                    const duration = Math.random() * 4 + 3;
+                    
+                    bubble.style.cssText = `
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${left}%;
+                        animation-duration: ${duration}s;
+                    `;
+                    
+                    container.appendChild(bubble);
+                    
+                    setTimeout(() => bubble.remove(), duration * 1000);
+                }, i * 100);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#00f5d4', '#7df9ff', '#ff6b9d', '#ffd700', '#f0f8ff'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    const size = Math.random() * 10 + 5;
+                    const left = Math.random() * 100;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const duration = Math.random() * 3 + 2;
+                    const rotation = Math.random() * 720;
+                    
+                    confetti.style.cssText = `
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${left}vw;
+                        top: -20px;
+                        background: ${color};
+                        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                        animation: confettiFall ${duration}s linear forwards;
+                        transform: rotate(${rotation}deg);
+                    `;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), duration * 1000);
+                }, i * 50);
+            }
+        }
+
+        // Add confetti animation
+        const confettiStyle = document.createElement('style');
+        confettiStyle.textContent = `
+            @keyframes confettiFall {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100vh) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(confettiStyle);
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            setupScrollReveal();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            const bgMusic = document.getElementById('bgMusic');
+            let musicStarted = false;
+            
+            // Reveal Button
+            const revealBtn = document.getElementById('revealBtn');
+            const celebrationContent = document.getElementById('celebrationContent');
+            
+            revealBtn.addEventListener('click', () => {
+                revealBtn.style.display = 'none';
+                celebrationContent.classList.remove('hidden');
+                celebrationContent.style.display = 'block';
+                
+                createCelebrationBubbles();
+                createConfetti();
+                
+                // Start music
+                if (!musicStarted) {
+                    bgMusic.play().then(() => {
+                        musicStarted = true;
+                    }).catch(err => {
+                        console.log('Music autoplay blocked');
+                    });
+                }
+                
+                // Scroll to celebration
+                setTimeout(() => {
+                    celebrationContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
+            });
+            
+            // Prayer Button
+            const prayerBtn = document.getElementById('prayerBtn');
+            const prayerContent = document.getElementById('prayerContent');
+            
+            prayerBtn.addEventListener('click', () => {
+                prayerContent.classList.remove('hidden');
+                prayerContent.style.display = 'block';
+                prayerBtn.style.display = 'none';
+                
+                setTimeout(() => {
+                    prayerContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
+            
+            // Enable music on any interaction (for mobile)
+            const enableMusic = () => {
+                if (!musicStarted && celebrationContent.style.display === 'block') {
+                    bgMusic.play().then(() => {
+                        musicStarted = true;
+                    }).catch(() => {});
+                }
+            };
+            
+            document.addEventListener('touchstart', enableMusic, { once: false });
+            document.addEventListener('click', enableMusic, { once: false });
+        });
+
+        // Smooth scroll for indicator
+        document.getElementById('scrollIndicator')?.addEventListener('click', () => {
+            document.getElementById('chapter1')?.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
