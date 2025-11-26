@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Untuk Hani - Dari Rizal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --warm-cream: #faf6f0;
+            --soft-rose: #e8c4c4;
+            --deep-wine: #722f37;
+            --midnight: #1a1a2e;
+            --golden-hour: #d4a574;
+            --whisper-pink: #f5e6e8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--midnight);
+            color: var(--warm-cream);
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* Canvas Container */
+        #world {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Overlay untuk efek cahaya */
+        .light-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            background: radial-gradient(ellipse at 50% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 60%);
+        }
+
+        /* UI Layer */
+        #ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .pointer-active {
+            pointer-events: auto;
+        }
+
+        /* ===== START SCREEN ===== */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, 
+                #1a1a2e 0%, 
+                #2d2d44 50%, 
+                #3d2a3d 100%
+            );
+        }
+
+        .intro-content {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.5s ease forwards;
+        }
+
+        .intro-content:nth-child(2) { animation-delay: 0.3s; }
+        .intro-content:nth-child(3) { animation-delay: 0.6s; }
+        .intro-content:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title-main {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(2.2rem, 9vw, 4rem);
+            color: var(--warm-cream);
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-sub {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.75rem, 3vw, 1rem);
+            color: var(--soft-rose);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+        }
+
+        .intro-poem {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            line-height: 2;
+            color: var(--whisper-pink);
+            max-width: 400px;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .btn-begin {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--warm-cream);
+            background: transparent;
+            border: 1px solid rgba(232, 196, 196, 0.4);
+            padding: 18px 45px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-begin::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 196, 196, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-begin:hover::before,
+        .btn-begin:active::before {
+            left: 100%;
+        }
+
+        .btn-begin:hover,
+        .btn-begin:active {
+            border-color: var(--soft-rose);
+            box-shadow: 0 0 30px rgba(232, 196, 196, 0.2);
+        }
+
+        /* Floating petals decoration */
+        .petal {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--soft-rose);
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.3;
+            animation: floatPetal 15s infinite linear;
+        }
+
+        @keyframes floatPetal {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== HUD ===== */
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 15;
+        }
+
+        #hud.visible {
+            opacity: 1;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(232, 196, 196, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .dot.filled {
+            background: var(--soft-rose);
+            box-shadow: 0 0 10px rgba(232, 196, 196, 0.5);
+        }
+
+        .sound-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(232, 196, 196, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--warm-cream);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .sound-toggle:hover {
+            border-color: var(--soft-rose);
+        }
+
+        /* ===== DIALOGUE BOX ===== */
+        #dialogue {
+            position: fixed;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 550px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(232, 196, 196, 0.15);
+            border-radius: 4px;
+            padding: 30px 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s ease;
+            z-index: 20;
+        }
+
+        #dialogue.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dialogue-header {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 400;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--golden-hour);
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .dialogue-body {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.05rem, 4vw, 1.25rem);
+            line-height: 1.9;
+            color: var(--warm-cream);
+            min-height: 80px;
+        }
+
+        .dialogue-continue {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--soft-rose);
+            opacity: 0;
+            animation: pulse 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        .dialogue-continue.visible {
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ===== END SCREEN ===== */
+        #ending {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, 
+                #1a1a2e 0%, 
+                #2d2a3d 50%, 
+                #3d2a3d 100%
+            );
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease;
+        }
+
+        #ending.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .ending-card {
+            max-width: 500px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.5s ease 0.5s;
+        }
+
+        #ending.active .ending-card {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ending-icon {
+            font-size: 2rem;
+            color: var(--soft-rose);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .ending-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(1.8rem, 7vw, 2.5rem);
+            color: var(--warm-cream);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .ending-subtitle {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 300;
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--golden-hour);
+            margin-bottom: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .ending-message {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 4vw, 1.15rem);
+            line-height: 2;
+            color: var(--whisper-pink);
+            margin-bottom: 2.5rem;
+        }
+
+        .ending-signature {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--soft-rose);
+            opacity: 0.7;
+        }
+
+        .btn-restart {
+            margin-top: 2.5rem;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-cream);
+            background: transparent;
+            border: 1px solid rgba(232, 196, 196, 0.3);
+            padding: 15px 35px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.4s ease;
+        }
+
+        .btn-restart:hover {
+            opacity: 1;
+            border-color: var(--soft-rose);
+        }
+
+        /* Control Hint */
+        .control-hint {
+            position: fixed;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: rgba(250, 246, 240, 0.4);
+            z-index: 12;
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
+
+        .control-hint.hidden {
+            opacity: 0;
+        }
+
+        /* SVG Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+        }
+
+        /* Letter Reveal Animation */
+        .letter-reveal {
+            display: inline;
+            opacity: 0;
+            animation: letterFade 0.05s ease forwards;
+        }
+
+        @keyframes letterFade {
+            to { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="world"></div>
+    <div class="light-overlay"></div>
+
+    <div id="ui">
+        <!-- Intro Screen -->
+        <div id="intro" class="pointer-active">
+            <!-- Floating petals -->
+            <div class="petal" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="petal" style="left: 25%; animation-delay: 3s;"></div>
+            <div class="petal" style="left: 40%; animation-delay: 6s;"></div>
+            <div class="petal" style="left: 60%; animation-delay: 2s;"></div>
+            <div class="petal" style="left: 75%; animation-delay: 8s;"></div>
+            <div class="petal" style="left: 90%; animation-delay: 4s;"></div>
+
+            <h1 class="title-main intro-content">Untuk Hani</h1>
+            <p class="title-sub intro-content">dari Rizal</p>
+            
+            <p class="intro-poem intro-content">
+                Malam ini aku merangkai bintang<br>
+                menjadi kata-kata yang tak pernah kuucapkan.<br>
+                Maukah kau terbang sebentar bersamaku?
+            </p>
+            
+            <button class="btn-begin intro-content pointer-active" id="btnStart">
+                Mulai
+            </button>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div class="progress-container">
+                <div class="progress-dots" id="progressDots">
+                    <!-- Dots will be generated -->
+                </div>
+            </div>
+            <button class="sound-toggle pointer-active" id="btnSound">
+                <svg class="icon" id="iconSound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Dialogue -->
+        <div id="dialogue" class="pointer-active">
+            <div class="dialogue-header">Rizal menulis:</div>
+            <div class="dialogue-body" id="dialogueText"></div>
+            <div class="dialogue-continue" id="btnContinue">ketuk untuk lanjut →</div>
+        </div>
+
+        <!-- Control Hint -->
+        <div class="control-hint" id="controlHint">
+            sentuh layar untuk mengarahkan
+        </div>
+
+        <!-- Ending -->
+        <div id="ending">
+            <div class="ending-card">
+                <div class="ending-icon">∞</div>
+                <h1 class="ending-title">Maafkan Aku, Sayangku</h1>
+                <p class="ending-subtitle">Untuk Hani Febiana yang Tak Tergantikan</p>
+                
+                <p class="ending-message">
+                    Aku tidak bisa memutar waktu,<br>
+                    tidak bisa menghapus air mata yang pernah jatuh.<br>
+                    Tapi aku bisa memilihmu lagi—<br>
+                    hari ini, esok, dan di setiap matahari yang tersisa.<br><br>
+                    Bukan karena kau sempurna,<br>
+                    tapi karena kau adalah rumah<br>
+                    yang ingin kupulangkan hatiku selamanya.
+                </p>
+                
+                <p class="ending-signature">— Dengan seluruh jiwa yang kumiliki, Rizal —</p>
+                
+                <button class="btn-restart pointer-active" onclick="location.reload()">
+                    Baca Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // MESSAGES - Permintaan maaf yang tulus untuk Hani
+        // =========================================================================
+        
+        const messages = [
+            "Hani... di antara semua kata yang pernah kutulis, tidak ada yang lebih berat dari ini. Maafkan aku—yang pernah membiarkanmu berjalan sendiri di lorong-lorong sunyi, saat seharusnya tanganku ada di genggamanmu.",
+            
+            "Ada malam-malam yang tidak kau ceritakan, tapi aku tahu kau menangis di dalamnya. Dan aku? Aku ada di tempat lain, tidak mendengar hujan yang jatuh di bahumu. Untuk setiap malam itu, maafkan aku.",
+            
+            "Aku menyimpan terlalu banyak hal di balik senyumku. Bukan karena tidak percaya padamu—tapi karena aku takut kau melihat sisi diriku yang belum sempurna. Bodohnya aku, justru kesunyianlah yang menyakitimu.",
+            
+            "Kepercayaan itu seperti sayap burung kertas—rapuh, tapi bisa membawamu terbang. Aku pernah merobeknya. Dan kini, dengan setiap kata ini, aku mencoba melipatnya kembali. Pelan. Hati-hati. Untukmu.",
+            
+            "Kau tahu apa yang paling kutakutkan? Bukan kehilanganmu. Tapi melihatmu tetap di sisiku, namun dengan mata yang sudah kehilangan bintang-bintangnya. Aku tidak ingin menjadi alasan langitmu meredup.",
+            
+            "Terima kasih sudah tidak pergi, meski kakimu pernah berdiri di ambang pintu. Terima kasih sudah memilih bertahan, meski hatiku pernah lupa cara memelukmu dengan benar.",
+            
+            "Mulai detik ini, aku ingin menjadi pelabuhan yang tidak pernah membuatmu ragu untuk pulang. Tempat di mana kau bisa melepas semua topeng, dan tetap dicintai. Karena kau layak mendapat itu, Hani. Selalu."
+        ];
+
+        // =========================================================================
+        // STATE & CONFIG
+        // =========================================================================
+        
+        const state = {
+            isPlaying: false,
+            score: 0,
+            maxScore: messages.length,
+            targetX: 0,
+            targetY: 0,
+            currentX: 0,
+            currentY: 0,
+            dialogueOpen: false,
+            speed: 0,
+            baseSpeed: 0.5,
+            isMuted: false
+        };
+
+        // =========================================================================
+        // THREE.JS SETUP
+        // =========================================================================
+        
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x1a1a2e, 0.003);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 3, 12);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        document.getElementById('world').appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffeedd, 0.3);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffd4a0, 0.8);
+        mainLight.position.set(10, 20, -30);
+        scene.add(mainLight);
+
+        const rimLight = new THREE.PointLight(0xe8c4c4, 0.5, 50);
+        rimLight.position.set(-10, 10, 10);
+        scene.add(rimLight);
+
+        // =========================================================================
+        // TEXTURE GENERATORS
+        // =========================================================================
+        
+        function createFeatherTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(250, 246, 240, 1)');
+            grad.addColorStop(0.3, 'rgba(250, 246, 240, 0.8)');
+            grad.addColorStop(0.7, 'rgba(232, 196, 196, 0.3)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createStarTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            grad.addColorStop(0.2, 'rgba(255, 245, 230, 0.9)');
+            grad.addColorStop(0.5, 'rgba(232, 196, 196, 0.4)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createCloudTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            grad.addColorStop(0, 'rgba(60, 50, 70, 0.6)');
+            grad.addColorStop(0.5, 'rgba(45, 40, 60, 0.3)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 128, 128);
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // =========================================================================
+        // GAME OBJECTS
+        // =========================================================================
+        
+        // Paper Crane (simplified origami bird shape)
+        let crane;
+        function createCrane() {
+            const group = new THREE.Group();
+            
+            // Body
+            const bodyGeo = new THREE.ConeGeometry(0.3, 2, 4);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0xfaf6f0,
+                emissive: 0xffeedd,
+                emissiveIntensity: 0.2,
+                roughness: 0.3,
+                metalness: 0.1
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.rotation.x = Math.PI / 2;
+            group.add(body);
+
+            // Wings
+            const wingGeo = new THREE.BufferGeometry();
+            const wingVerts = new Float32Array([
+                0, 0, 0,    -2, 0.3, -0.5,    -0.5, 0, -1,  // Left wing
+                0, 0, 0,    2, 0.3, -0.5,     0.5, 0, -1    // Right wing
+            ]);
+            wingGeo.setAttribute('position', new THREE.BufferAttribute(wingVerts, 3));
+            wingGeo.computeVertexNormals();
+
+            const wingMat = new THREE.MeshStandardMaterial({
+                color: 0xfaf6f0,
+                emissive: 0xe8c4c4,
+                emissiveIntensity: 0.15,
+                side: THREE.DoubleSide,
+                roughness: 0.4
+            });
+            const wings = new THREE.Mesh(wingGeo, wingMat);
+            group.add(wings);
+
+            // Glow
+            const glowLight = new THREE.PointLight(0xffeedd, 0.6, 15);
+            glowLight.position.set(0, 0, 0);
+            group.add(glowLight);
+
+            crane = group;
+            scene.add(crane);
+        }
+
+        // Clouds
+        const clouds = [];
+        const cloudTex = createCloudTexture();
+
+        function spawnCloud(zPos) {
+            const group = new THREE.Group();
+            const count = 2 + Math.floor(Math.random() * 3);
+            
+            for (let i = 0; i < count; i++) {
+                const mat = new THREE.SpriteMaterial({
+                    map: cloudTex,
+                    transparent: true,
+                    opacity: 0.4 + Math.random() * 0.2,
+                    depthWrite: false
+                });
+                const sprite = new THREE.Sprite(mat);
+                const scale = 8 + Math.random() * 12;
+                sprite.scale.set(scale, scale * 0.6, 1);
+                sprite.position.set(
+                    (Math.random() - 0.5) * 8,
+                    (Math.random() - 0.5) * 4,
+                    (Math.random() - 0.5) * 3
+                );
+                group.add(sprite);
+            }
+
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 25 + Math.random() * 35;
+            group.position.x = Math.cos(angle) * radius;
+            group.position.y = Math.sin(angle) * radius * 0.5;
+            group.position.z = zPos;
+
+            scene.add(group);
+            clouds.push(group);
+        }
+
+        for (let i = 0; i < 30; i++) {
+            spawnCloud(-i * 20);
+        }
+
+        // Collectible Stars (Light Orbs)
+        const orbs = [];
+        const starTex = createStarTexture();
+
+        function spawnOrb(index) {
+            const mat = new THREE.SpriteMaterial({
+                map: starTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(3.5, 3.5, 1);
+
+            const zPos = -80 - (index * 120);
+            const xPos = Math.sin(index * 0.9) * 15;
+            const yPos = Math.cos(index * 0.7) * 8;
+
+            sprite.position.set(xPos, yPos, zPos);
+            sprite.userData = { index, active: true, baseY: yPos };
+
+            // Add subtle point light
+            const light = new THREE.PointLight(0xffeedd, 0.3, 8);
+            sprite.add(light);
+
+            scene.add(sprite);
+            orbs.push(sprite);
+        }
+
+        for (let i = 0; i < state.maxScore; i++) {
+            spawnOrb(i);
+        }
+
+        // Background particles (distant stars)
+        const featherTex = createFeatherTexture();
+        const particleCount = 150;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePos = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            particlePos[i] = (Math.random() - 0.5) * 80;
+            particlePos[i + 1] = (Math.random() - 0.5) * 50;
+            particlePos[i + 2] = -Math.random() * 150;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+        const particleMat = new THREE.PointsMaterial({
+            map: featherTex,
+            size: 0.5,
+            transparent: true,
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
+
+        // =========================================================================
+        // AUDIO SYSTEM
+        // =========================================================================
+        
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.master = null;
+            }
+
+            init() {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AC();
+                this.master = this.ctx.createGain();
+                this.master.gain.value = 0.25;
+                this.master.connect(this.ctx.destination);
+
+                this.playAmbience();
+                this.playMelody();
+            }
+
+            playAmbience() {
+                // Soft drone
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 110; // A2
+
+                const osc2 = this.ctx.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.value = 165; // E3
+
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.08;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 300;
+
+                osc.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.master);
+
+                osc.start();
+                osc2.start();
+            }
+
+            playMelody() {
+                // Pentatonic scale: A, C, D, E, G
+                const scale = [220, 261.63, 293.66, 329.63, 392];
+                
+                const playNote = () => {
+                    if (state.dialogueOpen) {
+                        setTimeout(playNote, 2000);
+                        return;
+                    }
+
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = scale[Math.floor(Math.random() * scale.length)];
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.06, this.ctx.currentTime + 0.8);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 4);
+
+                    osc.connect(gain);
+                    gain.connect(this.master);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 4);
+
+                    setTimeout(playNote, 2000 + Math.random() * 3000);
+                };
+
+                setTimeout(playNote, 1000);
+            }
+
+            playCollect() {
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.2);
+
+                const osc2 = this.ctx.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(659.25, this.ctx.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(1046.5, this.ctx.currentTime + 0.25);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
+
+                osc.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.master);
+
+                osc.start();
+                osc2.start();
+                osc.stop(this.ctx.currentTime + 0.4);
+                osc2.stop(this.ctx.currentTime + 0.4);
+            }
+
+            toggleMute() {
+                state.isMuted = !state.isMuted;
+                if (this.master) {
+                    this.master.gain.value = state.isMuted ? 0 : 0.25;
+                }
+                return state.isMuted;
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // =========================================================================
+        // INPUT HANDLING
+        // =========================================================================
+        
+        function handlePointer(clientX, clientY) {
+            state.targetX = ((clientX / window.innerWidth) * 2 - 1) * 20;
+            state.targetY = (-(clientY / window.innerHeight) * 2 + 1) * 12;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (state.isPlaying) handlePointer(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if (state.isPlaying) {
+                const touch = e.touches[0];
+                handlePointer(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (state.isPlaying) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                handlePointer(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        // =========================================================================
+        // UI ELEMENTS
+        // =========================================================================
+        
+        const ui = {
+            intro: document.getElementById('intro'),
+            hud: document.getElementById('hud'),
+            progressDots: document.getElementById('progressDots'),
+            dialogue: document.getElementById('dialogue'),
+            dialogueText: document.getElementById('dialogueText'),
+            btnContinue: document.getElementById('btnContinue'),
+            ending: document.getElementById('ending'),
+            btnStart: document.getElementById('btnStart'),
+            btnSound: document.getElementById('btnSound'),
+            iconSound: document.getElementById('iconSound'),
+            controlHint: document.getElementById('controlHint')
+        };
+
+        // Generate progress dots
+        for (let i = 0; i < state.maxScore; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.dataset.index = i;
+            ui.progressDots.appendChild(dot);
+        }
+
+        function updateProgress() {
+            const dots = ui.progressDots.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < state.score);
+            });
+        }
+
+        let typeTimer = null;
+        function showDialogue(text) {
+            if (typeTimer) clearTimeout(typeTimer);
+            
+            state.dialogueOpen = true;
+            ui.dialogue.classList.add('visible');
+            ui.dialogueText.innerHTML = '';
+            ui.btnContinue.classList.remove('visible');
+
+            let i = 0;
+            const typeChar = () => {
+                if (i < text.length) {
+                    ui.dialogueText.innerHTML += text.charAt(i);
+                    i++;
+                    typeTimer = setTimeout(typeChar, 35);
+                } else {
+                    ui.btnContinue.classList.add('visible');
+                }
+            };
+            typeChar();
+        }
+
+        function hideDialogue() {
+            if (typeTimer) clearTimeout(typeTimer);
+            ui.dialogue.classList.remove('visible');
+            ui.btnContinue.classList.remove('visible');
+            state.dialogueOpen = false;
+        }
+
+        // =========================================================================
+        // GAME LOGIC
+        // =========================================================================
+        
+        createCrane();
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function collectOrb(orb) {
+            orb.userData.active = false;
+            orb.visible = false;
+
+            audio.playCollect();
+            createCollectEffect(orb.position);
+
+            state.score++;
+            updateProgress();
+
+            const msg = messages[state.score - 1];
+            if (msg) showDialogue(msg);
+
+            if (state.score >= state.maxScore) {
+                setTimeout(showEnding, 4000);
+            }
+        }
+
+        function createCollectEffect(pos) {
+            const count = 8;
+            for (let i = 0; i < count; i++) {
+                const mat = new THREE.SpriteMaterial({
+                    map: featherTex,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                const sprite = new THREE.Sprite(mat);
+                sprite.position.copy(pos);
+                sprite.scale.set(1.5, 1.5, 1);
+                scene.add(sprite);
+
+                const angle = (i / count) * Math.PI * 2;
+                const vel = {
+                    x: Math.cos(angle) * 0.15,
+                    y: Math.sin(angle) * 0.15,
+                    z: (Math.random() - 0.5) * 0.1
+                };
+
+                const animate = () => {
+                    sprite.position.x += vel.x;
+                    sprite.position.y += vel.y;
+                    sprite.position.z += vel.z;
+                    sprite.material.opacity -= 0.02;
+
+                    if (sprite.material.opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        scene.remove(sprite);
+                    }
+                };
+                animate();
+            }
+        }
+
+        function showEnding() {
+            state.isPlaying = false;
+            ui.hud.classList.remove('visible');
+            ui.dialogue.classList.remove('visible');
+            ui.ending.classList.add('active');
+        }
+
+        // =========================================================================
+        // MAIN LOOP
+        // =========================================================================
+        
+        let time = 0;
+
+        function update() {
+            time += 0.01;
+
+            if (!state.isPlaying) {
+                // Idle animation
+                if (crane) {
+                    crane.rotation.y = Math.sin(time * 0.5) * 0.15;
+                    crane.position.y = Math.sin(time) * 0.3;
+                }
+                renderer.render(scene, camera);
+                requestAnimationFrame(update);
+                return;
+            }
+
+            // Update speed based on dialogue state
+            const targetSpeed = state.dialogueOpen ? 0.08 : state.baseSpeed;
+            state.speed = lerp(state.speed, targetSpeed, 0.05);
+
+            // Move crane smoothly
+            state.currentX = lerp(state.currentX, state.targetX, 0.06);
+            state.currentY = lerp(state.currentY, state.targetY, 0.06);
+
+            crane.position.x = state.currentX;
+            crane.position.y = state.currentY;
+
+            // Banking and pitching
+            const bankAngle = -(state.targetX - state.currentX) * 0.08;
+            const pitchAngle = -(state.targetY - state.currentY) * 0.04;
+            crane.rotation.z = lerp(crane.rotation.z, bankAngle, 0.1);
+            crane.rotation.x = lerp(crane.rotation.x, pitchAngle, 0.1);
+
+            // Wing flap
+            crane.rotation.y = Math.sin(time * 3) * 0.05;
+
+            // Camera follow
+            camera.position.x = lerp(camera.position.x, state.currentX * 0.4, 0.03);
+            camera.position.y = lerp(camera.position.y, state.currentY * 0.3 + 3, 0.03);
+
+            // Move clouds
+            clouds.forEach(cloud => {
+                cloud.position.z += state.speed;
+                if (cloud.position.z > 15) {
+                    cloud.position.z = -300;
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 25 + Math.random() * 35;
+                    cloud.position.x = Math.cos(angle) * radius;
+                    cloud.position.y = Math.sin(angle) * radius * 0.5;
+                }
+            });
+
+            // Move and check orbs
+            orbs.forEach(orb => {
+                if (orb.userData.active) {
+                    orb.position.z += state.speed;
+                    
+                    // Float animation
+                    orb.position.y = orb.userData.baseY + Math.sin(time * 2 + orb.userData.index) * 0.5;
+
+                    // Check collection
+                    const dist = crane.position.distanceTo(orb.position);
+                    if (dist < 4) {
+                        collectOrb(orb);
+                    }
+
+                    // Respawn if missed
+                    if (orb.position.z > 10) {
+                        orb.position.z = -150;
+                        orb.position.x = lerp(orb.position.x, state.currentX, 0.6);
+                    }
+                }
+            });
+
+            // Move particles
+            const positions = particles.geometry.attributes.position.array;
+            for (let i = 2; i < positions.length; i += 3) {
+                positions[i] += state.speed * 1.2;
+                if (positions[i] > 15) {
+                    positions[i] = -150;
+                }
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(update);
+        }
+
+        // =========================================================================
+        // EVENT LISTENERS
+        // =========================================================================
+        
+        ui.btnStart.addEventListener('click', () => {
+            ui.intro.style.opacity = '0';
+            ui.intro.style.pointerEvents = 'none';
+            setTimeout(() => {
+                ui.intro.style.display = 'none';
+            }, 1500);
+
+            ui.hud.classList.add('visible');
+            
+            setTimeout(() => {
+                ui.controlHint.classList.add('hidden');
+            }, 4000);
+
+            audio.init();
+            state.isPlaying = true;
+        });
+
+        ui.dialogue.addEventListener('click', () => {
+            if (ui.btnContinue.classList.contains('visible')) {
+                hideDialogue();
+            }
+        });
+
+        ui.btnSound.addEventListener('click', () => {
+            const muted = audio.toggleMute();
+            ui.iconSound.innerHTML = muted 
+                ? '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+                : '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start the loop
+        update();
+
+    </script>
+</body>
+</html>
