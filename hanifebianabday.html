@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Untuk Hani Febiana - Selamat Ulang Tahun</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Nunito:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --ocean-deep: #0c1929;
-            --ocean-mid: #1a3a5c;
-            --sunset-gold: #f4a460;
-            --sunset-pink: #e8a0b4;
-            --sunset-orange: #ff7f50;
-            --warm-cream: #fef9f3;
-            --soft-white: #fff8f0;
-            --starlight: #fffacd;
+            --night-deep: #0a0f1a;
+            --night-purple: #1a1528;
+            --garden-green: #1a2f20;
+            --firefly-gold: #f4d35e;
+            --firefly-warm: #fae588;
+            --petal-pink: #f4a5c0;
+            --cream: #fefbf3;
+            --soft-lavender: #e8dff0;
         }
 
         * {
@@ -30,14 +30,13 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: 'Quicksand', sans-serif;
-            background: var(--ocean-deep);
-            color: var(--warm-cream);
+            font-family: 'Nunito', sans-serif;
+            background: var(--night-deep);
+            color: var(--cream);
             touch-action: none;
             user-select: none;
         }
 
-        /* Canvas Container */
         #world {
             position: fixed;
             top: 0;
@@ -47,8 +46,7 @@
             z-index: 1;
         }
 
-        /* Light overlay */
-        .light-overlay {
+        .vignette {
             position: fixed;
             top: 0;
             left: 0;
@@ -56,10 +54,9 @@
             height: 100%;
             pointer-events: none;
             z-index: 2;
-            background: radial-gradient(ellipse at 50% 20%, rgba(244, 164, 96, 0.15) 0%, transparent 50%);
+            background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(10, 15, 26, 0.7) 100%);
         }
 
-        /* UI Layer */
         #ui {
             position: fixed;
             top: 0;
@@ -89,9 +86,9 @@
             text-align: center;
             padding: 30px;
             background: linear-gradient(180deg, 
-                #0c1929 0%, 
-                #1a3a5c 50%, 
-                #2d4a6c 100%
+                #0a0f1a 0%, 
+                #1a1528 50%, 
+                #1a2f20 100%
             );
         }
 
@@ -101,91 +98,114 @@
             animation: fadeUp 1s ease forwards;
         }
 
-        .countdown-content:nth-child(2) { animation-delay: 0.2s; }
-        .countdown-content:nth-child(3) { animation-delay: 0.4s; }
-        .countdown-content:nth-child(4) { animation-delay: 0.6s; }
+        .countdown-content:nth-child(1) { animation-delay: 0.1s; }
+        .countdown-content:nth-child(2) { animation-delay: 0.3s; }
+        .countdown-content:nth-child(3) { animation-delay: 0.5s; }
+        .countdown-content:nth-child(4) { animation-delay: 0.7s; }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .countdown-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: glowPulse 3s infinite ease-in-out;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(244, 211, 94, 0.5)); }
+            50% { filter: drop-shadow(0 0 25px rgba(244, 211, 94, 0.9)); }
+        }
 
         .countdown-title {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-weight: 300;
-            font-size: clamp(1.5rem, 6vw, 2.5rem);
-            color: var(--warm-cream);
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
+            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            color: var(--cream);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.3rem;
         }
 
         .countdown-subtitle {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-weight: 300;
-            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-            color: var(--sunset-gold);
-            letter-spacing: 0.25em;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            color: var(--firefly-gold);
+            letter-spacing: 0.3em;
             text-transform: uppercase;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             opacity: 0.9;
         }
 
         .countdown-timer {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         .countdown-item {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(244, 164, 96, 0.2);
-            border-radius: 12px;
-            padding: 20px 15px;
-            min-width: 70px;
+            background: rgba(244, 211, 94, 0.08);
+            border: 1px solid rgba(244, 211, 94, 0.2);
+            border-radius: 16px;
+            padding: 18px 14px;
+            min-width: 65px;
         }
 
         .countdown-number {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2rem, 8vw, 3rem);
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(1.8rem, 7vw, 2.5rem);
             font-weight: 400;
-            color: var(--sunset-gold);
+            color: var(--firefly-warm);
             line-height: 1;
         }
 
         .countdown-label {
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: var(--soft-white);
-            opacity: 0.7;
-            margin-top: 8px;
+            color: var(--cream);
+            opacity: 0.6;
+            margin-top: 6px;
         }
 
         .countdown-message {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-style: italic;
-            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            font-size: clamp(0.9rem, 3.2vw, 1.05rem);
             line-height: 1.9;
-            color: var(--soft-white);
-            max-width: 400px;
+            color: var(--soft-lavender);
+            max-width: 380px;
             opacity: 0.85;
         }
 
-        /* Stars animation for countdown */
-        .star {
+        /* Floating fireflies for countdown */
+        .firefly-bg {
             position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--starlight);
+            width: 6px;
+            height: 6px;
+            background: var(--firefly-gold);
             border-radius: 50%;
+            box-shadow: 0 0 10px var(--firefly-gold), 0 0 20px var(--firefly-gold);
+            animation: fireflyFloat 8s infinite ease-in-out;
             opacity: 0;
-            animation: twinkle 3s infinite;
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.8; }
+        @keyframes fireflyFloat {
+            0%, 100% { 
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            50% {
+                transform: translate(calc(var(--dx) * 1px), calc(var(--dy) * 1px));
+            }
         }
 
-        /* ===== START SCREEN ===== */
+        /* ===== INTRO SCREEN ===== */
         #intro {
             position: fixed;
             top: 0;
@@ -199,92 +219,89 @@
             justify-content: center;
             text-align: center;
             padding: 30px;
-            background: linear-gradient(180deg, 
-                #1a3a5c 0%, 
-                #2d4a6c 40%,
-                #4a6080 100%
+            background: radial-gradient(ellipse at 50% 70%, 
+                rgba(26, 47, 32, 0.9) 0%, 
+                rgba(26, 21, 40, 0.95) 50%,
+                rgba(10, 15, 26, 1) 100%
             );
         }
 
         .intro-content {
             opacity: 0;
-            transform: translateY(30px);
-            animation: fadeUp 1.5s ease forwards;
+            transform: translateY(25px);
+            animation: fadeUp 1.2s ease forwards;
         }
 
-        .intro-content:nth-child(2) { animation-delay: 0.3s; }
+        .intro-content:nth-child(1) { animation-delay: 0.2s; }
+        .intro-content:nth-child(2) { animation-delay: 0.4s; }
         .intro-content:nth-child(3) { animation-delay: 0.6s; }
-        .intro-content:nth-child(4) { animation-delay: 0.9s; }
-
-        @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .intro-content:nth-child(4) { animation-delay: 0.8s; }
+        .intro-content:nth-child(5) { animation-delay: 1s; }
 
         .title-main {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-weight: 300;
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            color: var(--warm-cream);
-            letter-spacing: 0.1em;
-            margin-bottom: 0.3rem;
+            font-size: clamp(1.8rem, 7vw, 3rem);
+            color: var(--cream);
+            letter-spacing: 0.06em;
+            margin-bottom: 0.2rem;
         }
 
         .title-age {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-weight: 400;
-            font-size: clamp(3rem, 12vw, 5rem);
-            color: var(--sunset-gold);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 40px rgba(244, 164, 96, 0.4);
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            background: linear-gradient(135deg, var(--firefly-gold), var(--petal-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 0.3rem;
         }
 
         .title-sub {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-weight: 300;
-            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-            color: var(--sunset-pink);
-            letter-spacing: 0.3em;
+            font-size: clamp(0.65rem, 2.3vw, 0.8rem);
+            color: var(--petal-pink);
+            letter-spacing: 0.35em;
             text-transform: uppercase;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             opacity: 0.9;
         }
 
         .intro-poem {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-style: italic;
             font-weight: 300;
-            font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+            font-size: clamp(0.9rem, 3.3vw, 1.1rem);
             line-height: 2;
-            color: var(--soft-white);
-            max-width: 420px;
-            margin-bottom: 2.5rem;
+            color: var(--soft-lavender);
+            max-width: 400px;
+            margin-bottom: 2rem;
             opacity: 0.9;
         }
 
         .btn-begin {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-weight: 400;
-            font-size: 0.8rem;
-            letter-spacing: 0.25em;
+            font-size: 0.75rem;
+            letter-spacing: 0.28em;
             text-transform: uppercase;
-            color: var(--warm-cream);
-            background: linear-gradient(135deg, rgba(244, 164, 96, 0.3), rgba(232, 160, 180, 0.3));
-            border: 1px solid rgba(244, 164, 96, 0.5);
-            padding: 18px 45px;
+            color: var(--night-deep);
+            background: linear-gradient(135deg, var(--firefly-gold), var(--firefly-warm));
+            border: none;
+            padding: 16px 40px;
             cursor: pointer;
-            transition: all 0.5s ease;
+            transition: all 0.4s ease;
             border-radius: 50px;
+            box-shadow: 0 4px 25px rgba(244, 211, 94, 0.3);
         }
 
         .btn-begin:hover,
         .btn-begin:active {
-            background: linear-gradient(135deg, rgba(244, 164, 96, 0.5), rgba(232, 160, 180, 0.5));
-            box-shadow: 0 0 30px rgba(244, 164, 96, 0.3);
-            transform: scale(1.02);
+            transform: scale(1.03);
+            box-shadow: 0 6px 35px rgba(244, 211, 94, 0.5);
         }
 
         /* ===== HUD ===== */
@@ -293,7 +310,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            padding: 25px 30px;
+            padding: 22px 25px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -302,41 +319,37 @@
             z-index: 15;
         }
 
-        #hud.visible {
-            opacity: 1;
-        }
+        #hud.visible { opacity: 1; }
 
         .progress-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            background: rgba(10, 15, 26, 0.6);
+            padding: 10px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
         }
 
-        .progress-dots {
-            display: flex;
-            gap: 8px;
+        .firefly-icon {
+            font-size: 1rem;
+            animation: glowPulse 2s infinite;
         }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(244, 164, 96, 0.3);
-            transition: all 0.5s ease;
-        }
-
-        .dot.filled {
-            background: var(--sunset-gold);
-            box-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
+        .progress-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--firefly-warm);
         }
 
         .sound-toggle {
-            width: 40px;
-            height: 40px;
-            border: 1px solid rgba(244, 164, 96, 0.3);
+            width: 42px;
+            height: 42px;
+            border: none;
             border-radius: 50%;
-            background: transparent;
-            color: var(--warm-cream);
+            background: rgba(10, 15, 26, 0.6);
+            backdrop-filter: blur(10px);
+            color: var(--cream);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -346,25 +359,25 @@
         }
 
         .sound-toggle:hover {
-            border-color: var(--sunset-gold);
+            background: rgba(244, 211, 94, 0.2);
         }
 
         /* ===== DIALOGUE BOX ===== */
         #dialogue {
             position: fixed;
-            bottom: 8%;
+            bottom: 6%;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 550px;
-            background: rgba(12, 25, 41, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(244, 164, 96, 0.2);
-            border-radius: 8px;
-            padding: 28px 32px;
+            width: calc(100% - 36px);
+            max-width: 520px;
+            background: rgba(10, 15, 26, 0.92);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(244, 211, 94, 0.15);
+            border-radius: 20px;
+            padding: 26px 28px;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.6s ease;
+            transition: all 0.5s ease;
             z-index: 20;
         }
 
@@ -374,48 +387,56 @@
         }
 
         #dialogue.is-doa {
-            border-color: rgba(255, 215, 0, 0.3);
-            background: rgba(12, 25, 41, 0.97);
+            border-color: rgba(244, 165, 192, 0.25);
+            background: rgba(26, 21, 40, 0.95);
         }
 
         .dialogue-header {
-            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Nunito', sans-serif;
             font-weight: 400;
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: var(--sunset-gold);
-            margin-bottom: 15px;
+            color: var(--firefly-gold);
+            margin-bottom: 14px;
             opacity: 0.9;
         }
 
+        .dialogue-header-icon {
+            font-size: 0.8rem;
+        }
+
         .dialogue-body {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1rem, 3.8vw, 1.2rem);
-            line-height: 1.9;
-            color: var(--warm-cream);
-            min-height: 80px;
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(0.95rem, 3.6vw, 1.12rem);
+            line-height: 1.85;
+            color: var(--cream);
+            min-height: 70px;
         }
 
         .dialogue-continue {
             position: absolute;
-            bottom: 12px;
-            right: 18px;
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
-            color: var(--sunset-gold);
+            bottom: 10px;
+            right: 16px;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            color: var(--firefly-gold);
             opacity: 0;
-            animation: pulse 2s infinite ease-in-out;
             cursor: pointer;
+            transition: opacity 0.3s;
         }
 
         .dialogue-continue.visible {
-            opacity: 0.7;
+            opacity: 0.6;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
+            50% { opacity: 0.7; }
         }
 
         /* ===== END SCREEN ===== */
@@ -431,11 +452,10 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 30px;
-            background: linear-gradient(180deg, 
-                #0c1929 0%, 
-                #1a3a5c 50%, 
-                #2d4a6c 100%
+            padding: 25px;
+            background: radial-gradient(ellipse at 50% 50%, 
+                rgba(26, 21, 40, 0.98) 0%, 
+                rgba(10, 15, 26, 1) 100%
             );
             opacity: 0;
             pointer-events: none;
@@ -449,11 +469,11 @@
         }
 
         .ending-card {
-            max-width: 520px;
+            max-width: 480px;
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(35px);
             transition: all 1.5s ease 0.5s;
-            padding: 20px 0;
+            padding: 15px 0;
         }
 
         #ending.active .ending-card {
@@ -461,88 +481,86 @@
             transform: translateY(0);
         }
 
-        .ending-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+        .ending-fireflies {
+            font-size: 2rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: 8px;
         }
 
         .ending-title {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-weight: 300;
-            font-size: clamp(1.6rem, 6vw, 2.2rem);
-            color: var(--warm-cream);
-            margin-bottom: 0.3rem;
-            letter-spacing: 0.08em;
+            font-size: clamp(1.5rem, 5.5vw, 2rem);
+            color: var(--cream);
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.05em;
         }
 
         .ending-subtitle {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-weight: 300;
-            font-size: 0.75rem;
-            letter-spacing: 0.25em;
+            font-size: 0.7rem;
+            letter-spacing: 0.28em;
             text-transform: uppercase;
-            color: var(--sunset-gold);
-            margin-bottom: 2rem;
+            color: var(--firefly-gold);
+            margin-bottom: 1.8rem;
             opacity: 0.9;
         }
 
         .ending-message {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(0.9rem, 3.3vw, 1.02rem);
             line-height: 2;
-            color: var(--soft-white);
-            margin-bottom: 2rem;
+            color: var(--soft-lavender);
+            margin-bottom: 1.8rem;
         }
 
         .ending-signature {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Crimson Pro', serif;
             font-style: italic;
-            font-size: 0.95rem;
-            color: var(--sunset-pink);
+            font-size: 0.9rem;
+            color: var(--petal-pink);
             opacity: 0.8;
         }
 
         .btn-restart {
-            margin-top: 2rem;
-            font-family: 'Quicksand', sans-serif;
-            font-size: 0.7rem;
+            margin-top: 1.8rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.65rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--warm-cream);
+            color: var(--cream);
             background: transparent;
-            border: 1px solid rgba(244, 164, 96, 0.3);
-            padding: 14px 30px;
+            border: 1px solid rgba(244, 211, 94, 0.3);
+            padding: 12px 28px;
             cursor: pointer;
-            opacity: 0.6;
+            opacity: 0.5;
             transition: all 0.4s ease;
             border-radius: 30px;
         }
 
         .btn-restart:hover {
             opacity: 1;
-            border-color: var(--sunset-gold);
+            border-color: var(--firefly-gold);
+            background: rgba(244, 211, 94, 0.1);
         }
 
         /* Control Hint */
         .control-hint {
             position: fixed;
-            bottom: 25px;
+            bottom: 20px;
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
-            color: rgba(254, 249, 243, 0.4);
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            color: rgba(254, 251, 243, 0.35);
             z-index: 12;
-            opacity: 1;
             transition: opacity 2s ease;
         }
 
-        .control-hint.hidden {
-            opacity: 0;
-        }
+        .control-hint.hidden { opacity: 0; }
 
-        /* SVG Icons */
         .icon {
             display: inline-block;
             width: 1em;
@@ -550,38 +568,26 @@
             vertical-align: middle;
         }
 
-        /* Wave decoration */
-        .wave-decoration {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: linear-gradient(to top, rgba(26, 58, 92, 0.5), transparent);
-            pointer-events: none;
-        }
-
     </style>
 </head>
 <body>
 
     <div id="world"></div>
-    <div class="light-overlay"></div>
+    <div class="vignette"></div>
 
     <div id="ui">
         <!-- Countdown Screen -->
         <div id="countdown-screen" class="pointer-active">
-            <!-- Stars -->
-            <div class="star" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
-            <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;"></div>
-            <div class="star" style="top: 35%; left: 25%; animation-delay: 1s;"></div>
-            <div class="star" style="top: 15%; left: 60%; animation-delay: 1.5s;"></div>
-            <div class="star" style="top: 40%; left: 90%; animation-delay: 2s;"></div>
-            <div class="star" style="top: 8%; left: 40%; animation-delay: 2.5s;"></div>
-            <div class="star" style="top: 25%; left: 5%; animation-delay: 0.3s;"></div>
-            <div class="star" style="top: 45%; left: 70%; animation-delay: 1.8s;"></div>
+            <!-- Background fireflies -->
+            <div class="firefly-bg" style="top: 15%; left: 10%; --dx: 30; --dy: -20; animation-delay: 0s;"></div>
+            <div class="firefly-bg" style="top: 25%; left: 85%; --dx: -25; --dy: 15; animation-delay: 1s;"></div>
+            <div class="firefly-bg" style="top: 60%; left: 20%; --dx: 20; --dy: -30; animation-delay: 2s;"></div>
+            <div class="firefly-bg" style="top: 70%; left: 75%; --dx: -35; --dy: -10; animation-delay: 3s;"></div>
+            <div class="firefly-bg" style="top: 40%; left: 50%; --dx: 15; --dy: 25; animation-delay: 4s;"></div>
+            <div class="firefly-bg" style="top: 80%; left: 40%; --dx: -20; --dy: -25; animation-delay: 5s;"></div>
 
-            <h1 class="countdown-title countdown-content">Menunggu Hari Spesial</h1>
+            <div class="countdown-icon countdown-content">✨</div>
+            <h1 class="countdown-title countdown-content">Menunggu Malam Spesial</h1>
             <p class="countdown-subtitle countdown-content">3 Juni 2026</p>
             
             <div class="countdown-timer countdown-content">
@@ -604,12 +610,10 @@
             </div>
 
             <p class="countdown-message countdown-content">
-                "Ada sesuatu yang sedang kusiapkan untukmu.<br>
-                Sebuah perjalanan kecil di atas ombak,<br>
-                dengan kata-kata yang sudah lama ingin kusampaikan."
+                "Di taman yang sunyi, kunang-kunang sedang<br>
+                merangkai cahaya menjadi kata-kata.<br>
+                Tunggu sebentar lagi, ya?"
             </p>
-
-            <div class="wave-decoration"></div>
         </div>
 
         <!-- Intro Screen -->
@@ -619,20 +623,21 @@
             <p class="title-sub intro-content">Hani Febiana • dari Rizal</p>
             
             <p class="intro-poem intro-content">
-                Malam ini lautan menyimpan cerita,<br>
-                dan bintang-bintang merangkai doa.<br>
-                Maukah kau berlayar sebentar bersamaku?
+                Malam ini taman dipenuhi cahaya kecil,<br>
+                setiap kunang-kunang membawa sepenggal cerita.<br>
+                Maukah kau menangkap mereka bersamaku?
             </p>
             
             <button class="btn-begin intro-content pointer-active" id="btnStart">
-                Mulai Berlayar
+                Masuk ke Taman
             </button>
         </div>
 
         <!-- HUD -->
         <div id="hud">
             <div class="progress-container">
-                <div class="progress-dots" id="progressDots"></div>
+                <span class="firefly-icon">✦</span>
+                <span class="progress-text" id="progressText">0 / 9</span>
             </div>
             <button class="sound-toggle pointer-active" id="btnSound">
                 <svg class="icon" id="iconSound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -644,38 +649,40 @@
 
         <!-- Dialogue -->
         <div id="dialogue" class="pointer-active">
-            <div class="dialogue-header" id="dialogueHeader">Rizal menulis:</div>
+            <div class="dialogue-header">
+                <span class="dialogue-header-icon" id="dialogueIcon">✦</span>
+                <span id="dialogueLabel">Rizal berbisik:</span>
+            </div>
             <div class="dialogue-body" id="dialogueText"></div>
             <div class="dialogue-continue" id="btnContinue">ketuk untuk lanjut →</div>
         </div>
 
         <!-- Control Hint -->
         <div class="control-hint" id="controlHint">
-            sentuh layar untuk mengarahkan kapal
+            sentuh kunang-kunang untuk menangkapnya
         </div>
 
         <!-- Ending -->
         <div id="ending">
             <div class="ending-card">
-                <div class="ending-icon">🌙</div>
-                <h1 class="ending-title">Selamat Ulang Tahun, Sayangku</h1>
-                <p class="ending-subtitle">Hani Febiana</p>
+                <div class="ending-fireflies">✦ ✦ ✦</div>
+                <h1 class="ending-title">Selamat Ulang Tahun, Hani</h1>
+                <p class="ending-subtitle">Cahaya di Malamku</p>
                 
                 <p class="ending-message">
-                    Di hari istimewa ini,<br>
-                    aku tidak punya hadiah mewah untuk diberikan.<br>
-                    Yang kumiliki hanyalah hati yang utuh—<br>
-                    dan semuanya sudah kuberikan padamu.<br><br>
-                    Terima kasih sudah lahir ke dunia ini,<br>
-                    dan memilih untuk berjalan di sampingku.<br>
-                    Semoga Allah selalu menjaga senyummu,<br>
-                    hari ini dan selamanya.
+                    Semua kunang-kunang sudah berkumpul,<br>
+                    dan mereka membentuk satu pesan sederhana:<br><br>
+                    <em>"Aku bersyukur kau ada."</em><br><br>
+                    Terima kasih sudah menjadi cahaya<br>
+                    di malam-malam yang gelap.<br>
+                    Semoga Allah selalu menerangi jalanmu,<br>
+                    seperti kau menerangi hidupku.
                 </p>
                 
-                <p class="ending-signature">— Dengan seluruh cinta yang kumiliki, Rizal —</p>
+                <p class="ending-signature">— Selamanya milikmu, Rizal —</p>
                 
                 <button class="btn-restart pointer-active" onclick="location.reload()">
-                    Berlayar Lagi
+                    Kembali ke Taman
                 </button>
             </div>
         </div>
@@ -683,81 +690,76 @@
 
     <script>
         // =========================================================================
-        // BIRTHDAY DATE CONFIG
+        // CONFIG
         // =========================================================================
         
         const BIRTHDAY = new Date('2025-06-03T00:00:00');
         
-        // Calculate age
         function calculateAge() {
-            const birthYear = 2005; // Assuming birth year, adjust if needed
+            const birthYear = 2005;
             return BIRTHDAY.getFullYear() - birthYear;
         }
 
         // =========================================================================
-        // MESSAGES - Ucapan ulang tahun yang tulus + 3 doa terakhir
+        // MESSAGES
         // =========================================================================
         
         const messages = [
             {
                 type: 'message',
-                text: "Hani... Hari ini adalah hari di mana dunia pertama kali mengenalmu. Dan aku bersyukur, karena dari sekian miliar manusia di bumi ini, takdir mempertemukan kita."
+                text: "Hani... Setiap malam aku memandang langit, dan entah kenapa bintang-bintang selalu mengingatkanku padamu. Mungkin karena kau adalah cahaya yang sama—jauh, tapi selalu terasa dekat di hati."
             },
             {
                 type: 'message',
-                text: "Setahun berlalu, dan cintaku padamu tidak berkurang—justru bertambah di setiap tarikan napas. Kau mengajariku arti sabar, arti setia, arti pulang."
+                text: "Setahun lagi kita berjalan bersama. Ada tawa, ada tangis, ada sunyi yang kita lalui berdua. Dan di setiap langkahnya, aku semakin yakin—kau adalah pilihan yang tidak pernah kusesali."
             },
             {
                 type: 'message',
-                text: "Aku tidak sempurna, Hani. Ada hari-hari di mana aku gagal menjadi yang kau butuhkan. Tapi terima kasih sudah tetap memilihku, bahkan di saat aku sulit memilih diriku sendiri."
+                text: "Aku bukan lelaki sempurna. Ada hari di mana aku lupa mendengarkan, lupa bertanya kabarmu, lupa bahwa kau juga butuh disandarkan. Maafkan aku untuk hari-hari itu."
             },
             {
                 type: 'message',
-                text: "Kau adalah pelabuhan di tengah badai hidupku. Tempat di mana aku bisa melepas semua topeng dan tetap diterima. Kau adalah rumah yang tidak pernah membuatku takut untuk pulang."
+                text: "Tapi di hari ini, aku ingin kau tahu—kau adalah alasan aku ingin menjadi lebih baik. Bukan untuk siapa-siapa, tapi untukmu. Untuk kita."
             },
             {
                 type: 'message',
-                text: "Di usiamu yang baru ini, aku ingin kau tahu—kau jauh lebih kuat dari yang kau kira. Kau jauh lebih cantik dari yang cermin bisa tunjukkan. Dan kau jauh lebih berharga dari yang kata-kata bisa gambarkan."
+                text: "Di usia yang baru ini, jangan lupa untuk bangga pada dirimu sendiri. Kau sudah melewati begitu banyak hal, dan kau masih di sini—masih berdiri, masih tersenyum. Itu bukan hal kecil."
             },
             {
                 type: 'message',
-                text: "Aku berjanji akan terus belajar mencintaimu dengan cara yang lebih baik. Bukan cinta yang sempurna, tapi cinta yang tulus—yang hadir di hari-hari sulit, bukan hanya di saat mudah."
+                text: "Aku berjanji akan terus belajar mencintaimu. Bukan dengan cara yang sempurna, tapi dengan cara yang jujur. Yang hadir saat kau butuh, yang diam saat kau ingin sendiri, yang mengerti tanpa harus dijelaskan."
             },
             {
                 type: 'doa',
-                text: "Ya Allah, di hari kelahiran Hani ini, aku memohon kepada-Mu—berkahilah setiap langkahnya, mudahkanlah setiap urusannya, dan jauhkanlah ia dari segala keburukan. Jadikanlah ia wanita yang shalihah, yang dekat dengan-Mu."
+                text: "Ya Allah, di malam yang penuh berkah ini, aku memohon kepada-Mu—limpahkanlah kebahagiaan untuk Hani. Jauhkan ia dari kesedihan yang berkepanjangan, dan dekatkan ia pada segala hal yang membuatnya tersenyum."
             },
             {
                 type: 'doa',
-                text: "Ya Rahman Ya Rahim, jika Engkau sudah menuliskan kami dalam satu takdir—maka satukanlah kami dalam ikatan yang halal dan penuh berkah. Jadikanlah cinta kami ibadah, dan hubungan kami jalan menuju ridha-Mu."
+                text: "Ya Rahman Ya Rahim, jika kami memang ditakdirkan untuk bersama—satukanlah kami dalam ikatan yang Kau ridhai. Jadikan cinta ini bukan sekadar perasaan, tapi jalan ibadah yang membawa kami mendekat kepada-Mu."
             },
             {
                 type: 'doa',
-                text: "Ya Rabb, aku titipkan Hani dalam penjagaan-Mu. Jaga hatinya, jaga imannya, jaga mimpi-mimpinya. Dan jika aku ditakdirkan untuk menemaninya—jadikanlah aku imam yang membimbingnya menuju surga-Mu. Aamiin ya Rabbal'alamin."
+                text: "Ya Rabb, aku titipkan Hani dalam penjagaan-Mu yang Maha Sempurna. Jaga hatinya, jaga langkahnya, jaga mimpi-mimpinya. Dan jika Engkau izinkan aku menemaninya—jadikan aku pelindung yang amanah, dan imam yang membimbingnya menuju ridha-Mu. Aamiin ya Rabbal'alamin."
             }
         ];
 
         // =========================================================================
-        // STATE & CONFIG
+        // STATE
         // =========================================================================
         
         const state = {
             isPlaying: false,
             score: 0,
             maxScore: messages.length,
-            targetX: 0,
-            targetY: 0,
-            currentX: 0,
-            currentY: 0,
             dialogueOpen: false,
-            speed: 0,
-            baseSpeed: 0.4,
             isMuted: false,
-            isUnlocked: false
+            isUnlocked: false,
+            mouseX: 0,
+            mouseY: 0
         };
 
         // =========================================================================
-        // COUNTDOWN LOGIC
+        // COUNTDOWN
         // =========================================================================
         
         function updateCountdown() {
@@ -765,7 +767,6 @@
             const diff = BIRTHDAY - now;
 
             if (diff <= 0) {
-                // Birthday has arrived!
                 state.isUnlocked = true;
                 document.getElementById('countdown-screen').style.display = 'none';
                 document.getElementById('intro').style.display = 'flex';
@@ -786,7 +787,6 @@
             return false;
         }
 
-        // Check countdown every second
         function startCountdown() {
             if (!updateCountdown()) {
                 setInterval(updateCountdown, 1000);
@@ -798,47 +798,42 @@
         // =========================================================================
         
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x1a3a5c, 0.008);
+        scene.background = new THREE.Color(0x0a0f1a);
+        scene.fog = new THREE.FogExp2(0x0a0f1a, 0.015);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 5, 15);
+        camera.position.set(0, 2, 8);
 
         const renderer = new THREE.WebGLRenderer({ 
-            antialias: true, 
-            alpha: true,
+            antialias: true,
             powerPreference: "high-performance"
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.3;
         document.getElementById('world').appendChild(renderer.domElement);
 
-        // Lighting - Sunset mood
-        const ambientLight = new THREE.AmbientLight(0xffeedd, 0.4);
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x1a1528, 0.8);
         scene.add(ambientLight);
 
-        const sunLight = new THREE.DirectionalLight(0xffa040, 1);
-        sunLight.position.set(-20, 15, -50);
-        scene.add(sunLight);
-
-        const moonLight = new THREE.DirectionalLight(0xaaccff, 0.3);
-        moonLight.position.set(20, 20, 30);
+        const moonLight = new THREE.DirectionalLight(0x6677aa, 0.3);
+        moonLight.position.set(5, 10, 5);
         scene.add(moonLight);
 
         // =========================================================================
-        // TEXTURE GENERATORS
+        // TEXTURES
         // =========================================================================
         
-        function createGlowTexture(color1, color2) {
+        function createGlowTexture(color) {
             const canvas = document.createElement('canvas');
             canvas.width = 64;
             canvas.height = 64;
             const ctx = canvas.getContext('2d');
             
             const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            grad.addColorStop(0, color1);
-            grad.addColorStop(0.4, color2);
+            grad.addColorStop(0, color);
+            grad.addColorStop(0.3, color.replace('1)', '0.6)'));
+            grad.addColorStop(0.6, color.replace('1)', '0.2)'));
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             
             ctx.fillStyle = grad;
@@ -847,229 +842,265 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        function createStarTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 32;
-            canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            
-            const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-            grad.addColorStop(0, 'rgba(255, 255, 240, 1)');
-            grad.addColorStop(0.3, 'rgba(255, 250, 205, 0.8)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 32, 32);
-            
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        function createWaveTexture() {
+        function createGrassTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 256;
             canvas.height = 256;
             const ctx = canvas.getContext('2d');
             
-            // Ocean gradient
-            const grad = ctx.createLinearGradient(0, 0, 0, 256);
-            grad.addColorStop(0, '#1a3a5c');
-            grad.addColorStop(0.5, '#0c1929');
-            grad.addColorStop(1, '#061018');
-            
-            ctx.fillStyle = grad;
+            // Base color
+            ctx.fillStyle = '#0d1a12';
             ctx.fillRect(0, 0, 256, 256);
             
-            // Add some wave-like patterns
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-            ctx.lineWidth = 2;
-            for (let i = 0; i < 10; i++) {
+            // Grass blades
+            for (let i = 0; i < 500; i++) {
+                const x = Math.random() * 256;
+                const y = Math.random() * 256;
+                const height = 5 + Math.random() * 15;
+                const hue = 100 + Math.random() * 40;
+                const lightness = 10 + Math.random() * 15;
+                
+                ctx.strokeStyle = `hsl(${hue}, 40%, ${lightness}%)`;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                for (let x = 0; x < 256; x++) {
-                    const y = 128 + Math.sin(x * 0.05 + i * 0.5) * 20 + i * 10;
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + (Math.random() - 0.5) * 5, y - height);
                 ctx.stroke();
             }
             
             return new THREE.CanvasTexture(canvas);
         }
 
-        // =========================================================================
-        // GAME OBJECTS
-        // =========================================================================
-        
-        // Ocean plane
-        const oceanGeo = new THREE.PlaneGeometry(300, 300, 50, 50);
-        const oceanMat = new THREE.MeshStandardMaterial({
-            color: 0x1a3a5c,
-            roughness: 0.8,
-            metalness: 0.2,
-            transparent: true,
-            opacity: 0.9
-        });
-        const ocean = new THREE.Mesh(oceanGeo, oceanMat);
-        ocean.rotation.x = -Math.PI / 2;
-        ocean.position.y = -2;
-        scene.add(ocean);
-
-        // Boat
-        let boat;
-        function createBoat() {
-            const group = new THREE.Group();
+        function createFlowerTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
             
-            // Hull
-            const hullShape = new THREE.Shape();
-            hullShape.moveTo(-1.5, 0);
-            hullShape.quadraticCurveTo(-1.8, 0.8, -1.2, 1.2);
-            hullShape.lineTo(1.2, 1.2);
-            hullShape.quadraticCurveTo(1.8, 0.8, 1.5, 0);
-            hullShape.quadraticCurveTo(0, -0.3, -1.5, 0);
-
-            const extrudeSettings = { depth: 4, bevelEnabled: false };
-            const hullGeo = new THREE.ExtrudeGeometry(hullShape, extrudeSettings);
-            const hullMat = new THREE.MeshStandardMaterial({
-                color: 0x8b4513,
-                roughness: 0.7,
-                metalness: 0.1
-            });
-            const hull = new THREE.Mesh(hullGeo, hullMat);
-            hull.rotation.x = Math.PI / 2;
-            hull.position.set(0, -0.5, 0);
-            group.add(hull);
-
-            // Mast
-            const mastGeo = new THREE.CylinderGeometry(0.08, 0.1, 5, 8);
-            const mastMat = new THREE.MeshStandardMaterial({ color: 0x654321 });
-            const mast = new THREE.Mesh(mastGeo, mastMat);
-            mast.position.set(0, 2, 0);
-            group.add(mast);
-
-            // Sail
-            const sailGeo = new THREE.BufferGeometry();
-            const sailVerts = new Float32Array([
-                0, 4.5, 0,    0, 0.5, 0,    2, 0.5, 0.5,  // Triangle sail
-                0, 4.5, 0,    2, 0.5, 0.5,  1.5, 3, 0.3
-            ]);
-            sailGeo.setAttribute('position', new THREE.BufferAttribute(sailVerts, 3));
-            sailGeo.computeVertexNormals();
+            // Petals
+            const colors = ['#f4a5c0', '#e8dff0', '#fae588'];
+            ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
             
-            const sailMat = new THREE.MeshStandardMaterial({
-                color: 0xfff8f0,
-                side: THREE.DoubleSide,
-                roughness: 0.9,
-                emissive: 0xffa060,
-                emissiveIntensity: 0.1
-            });
-            const sail = new THREE.Mesh(sailGeo, sailMat);
-            sail.position.set(0, 0, 0);
-            group.add(sail);
-
-            // Lantern light
-            const lanternLight = new THREE.PointLight(0xffaa44, 0.8, 15);
-            lanternLight.position.set(0, 1, 1.5);
-            group.add(lanternLight);
-
-            // Ambient glow
-            const glowLight = new THREE.PointLight(0xffeedd, 0.4, 20);
-            glowLight.position.set(0, 2, 0);
-            group.add(glowLight);
-
-            boat = group;
-            boat.position.y = 0;
-            scene.add(boat);
+            for (let i = 0; i < 5; i++) {
+                const angle = (i / 5) * Math.PI * 2;
+                const x = 16 + Math.cos(angle) * 8;
+                const y = 16 + Math.sin(angle) * 8;
+                ctx.beginPath();
+                ctx.ellipse(x, y, 5, 3, angle, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Center
+            ctx.fillStyle = '#f4d35e';
+            ctx.beginPath();
+            ctx.arc(16, 16, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            return new THREE.CanvasTexture(canvas);
         }
 
-        // Collectible lanterns (floating lights)
-        const lanterns = [];
-        const lanternTex = createGlowTexture('rgba(255, 200, 100, 1)', 'rgba(255, 150, 80, 0.5)');
+        // =========================================================================
+        // GARDEN ENVIRONMENT
+        // =========================================================================
+        
+        // Ground
+        const groundGeo = new THREE.PlaneGeometry(100, 100);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: 0x0d1a12,
+            roughness: 1,
+            metalness: 0
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -1;
+        scene.add(ground);
 
-        function spawnLantern(index) {
-            const group = new THREE.Group();
+        // Grass particles
+        const grassCount = 3000;
+        const grassGeo = new THREE.BufferGeometry();
+        const grassPos = new Float32Array(grassCount * 3);
+        const grassColors = new Float32Array(grassCount * 3);
+
+        for (let i = 0; i < grassCount; i++) {
+            const i3 = i * 3;
+            const radius = Math.sqrt(Math.random()) * 30;
+            const angle = Math.random() * Math.PI * 2;
             
-            // Glow sprite
+            grassPos[i3] = Math.cos(angle) * radius;
+            grassPos[i3 + 1] = -0.9 + Math.random() * 0.3;
+            grassPos[i3 + 2] = Math.sin(angle) * radius - 5;
+            
+            const green = 0.15 + Math.random() * 0.15;
+            grassColors[i3] = green * 0.5;
+            grassColors[i3 + 1] = green;
+            grassColors[i3 + 2] = green * 0.3;
+        }
+
+        grassGeo.setAttribute('position', new THREE.BufferAttribute(grassPos, 3));
+        grassGeo.setAttribute('color', new THREE.BufferAttribute(grassColors, 3));
+
+        const grassMat = new THREE.PointsMaterial({
+            size: 0.15,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8
+        });
+        const grass = new THREE.Points(grassGeo, grassMat);
+        scene.add(grass);
+
+        // Flowers scattered
+        const flowerTex = createFlowerTexture();
+        const flowers = [];
+
+        for (let i = 0; i < 50; i++) {
             const mat = new THREE.SpriteMaterial({
-                map: lanternTex,
+                map: createFlowerTexture(),
+                transparent: true,
+                opacity: 0.7
+            });
+            const sprite = new THREE.Sprite(mat);
+            
+            const radius = 3 + Math.random() * 15;
+            const angle = Math.random() * Math.PI * 2;
+            
+            sprite.position.set(
+                Math.cos(angle) * radius,
+                -0.7 + Math.random() * 0.2,
+                Math.sin(angle) * radius - 5
+            );
+            sprite.scale.set(0.3 + Math.random() * 0.2, 0.3 + Math.random() * 0.2, 1);
+            
+            scene.add(sprite);
+            flowers.push(sprite);
+        }
+
+        // Background trees (silhouettes)
+        const treeTex = createGlowTexture('rgba(15, 25, 20, 1)');
+        for (let i = 0; i < 15; i++) {
+            const mat = new THREE.SpriteMaterial({
+                map: treeTex,
+                transparent: true,
+                opacity: 0.8
+            });
+            const tree = new THREE.Sprite(mat);
+            
+            const angle = (i / 15) * Math.PI * 2;
+            const radius = 25 + Math.random() * 10;
+            
+            tree.position.set(
+                Math.cos(angle) * radius,
+                3 + Math.random() * 4,
+                Math.sin(angle) * radius - 10
+            );
+            tree.scale.set(8 + Math.random() * 6, 12 + Math.random() * 8, 1);
+            
+            scene.add(tree);
+        }
+
+        // Stars in sky
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 300;
+        const starPos = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount; i++) {
+            const i3 = i * 3;
+            starPos[i3] = (Math.random() - 0.5) * 100;
+            starPos[i3 + 1] = 10 + Math.random() * 30;
+            starPos[i3 + 2] = -20 - Math.random() * 30;
+        }
+
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({
+            color: 0xffffee,
+            size: 0.1,
+            transparent: true,
+            opacity: 0.6
+        });
+        const starField = new THREE.Points(starGeo, starMat);
+        scene.add(starField);
+
+        // =========================================================================
+        // FIREFLIES
+        // =========================================================================
+        
+        const fireflies = [];
+        const fireflyTex = createGlowTexture('rgba(244, 211, 94, 1)');
+        const collectibleTex = createGlowTexture('rgba(255, 230, 150, 1)');
+
+        // Ambient fireflies (non-collectible, background)
+        for (let i = 0; i < 40; i++) {
+            const mat = new THREE.SpriteMaterial({
+                map: fireflyTex,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
             const sprite = new THREE.Sprite(mat);
-            sprite.scale.set(4, 4, 1);
-            group.add(sprite);
-
-            // Point light
-            const light = new THREE.PointLight(0xffcc66, 0.5, 12);
-            group.add(light);
-
-            const zPos = -60 - (index * 100);
-            const xPos = Math.sin(index * 1.2) * 18;
-            const yPos = 2 + Math.cos(index * 0.8) * 3;
-
-            group.position.set(xPos, yPos, zPos);
-            group.userData = { index, active: true, baseY: yPos };
-
-            scene.add(group);
-            lanterns.push(group);
+            
+            sprite.position.set(
+                (Math.random() - 0.5) * 30,
+                Math.random() * 5,
+                (Math.random() - 0.5) * 20 - 5
+            );
+            sprite.scale.set(0.3, 0.3, 1);
+            
+            sprite.userData = {
+                basePos: sprite.position.clone(),
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.5 + Math.random() * 0.5,
+                amplitude: 0.5 + Math.random() * 1,
+                isCollectible: false
+            };
+            
+            // Point light for ambient fireflies
+            const light = new THREE.PointLight(0xf4d35e, 0.15, 3);
+            sprite.add(light);
+            
+            scene.add(sprite);
+            fireflies.push(sprite);
         }
 
+        // Collectible fireflies (larger, brighter)
         for (let i = 0; i < state.maxScore; i++) {
-            spawnLantern(i);
-        }
-
-        // Stars in sky
-        const starTex = createStarTexture();
-        const starCount = 200;
-        const starGeo = new THREE.BufferGeometry();
-        const starPos = new Float32Array(starCount * 3);
-
-        for (let i = 0; i < starCount * 3; i += 3) {
-            starPos[i] = (Math.random() - 0.5) * 150;
-            starPos[i + 1] = 20 + Math.random() * 40;
-            starPos[i + 2] = -Math.random() * 200;
-        }
-
-        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({
-            map: starTex,
-            size: 1.5,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const stars = new THREE.Points(starGeo, starMat);
-        scene.add(stars);
-
-        // Clouds/mist
-        const cloudTex = createGlowTexture('rgba(60, 80, 100, 0.4)', 'rgba(40, 60, 80, 0.1)');
-        const clouds = [];
-
-        function spawnCloud(zPos) {
             const mat = new THREE.SpriteMaterial({
-                map: cloudTex,
+                map: collectibleTex,
                 transparent: true,
-                opacity: 0.3,
+                blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
             const sprite = new THREE.Sprite(mat);
-            const scale = 15 + Math.random() * 25;
-            sprite.scale.set(scale, scale * 0.4, 1);
-
-            const xPos = (Math.random() - 0.5) * 80;
-            const yPos = 8 + Math.random() * 15;
-            sprite.position.set(xPos, yPos, zPos);
-
+            
+            // Spread them around the garden
+            const angle = (i / state.maxScore) * Math.PI * 2 + Math.random() * 0.5;
+            const radius = 4 + Math.random() * 8;
+            
+            sprite.position.set(
+                Math.cos(angle) * radius,
+                0.5 + Math.random() * 3,
+                Math.sin(angle) * radius - 5
+            );
+            sprite.scale.set(0.8, 0.8, 1);
+            
+            sprite.userData = {
+                index: i,
+                basePos: sprite.position.clone(),
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.3 + Math.random() * 0.3,
+                amplitude: 0.8 + Math.random() * 0.5,
+                isCollectible: true,
+                active: true
+            };
+            
+            // Brighter light for collectibles
+            const light = new THREE.PointLight(0xfae588, 0.5, 5);
+            sprite.add(light);
+            
             scene.add(sprite);
-            clouds.push(sprite);
-        }
-
-        for (let i = 0; i < 20; i++) {
-            spawnCloud(-i * 25);
+            fireflies.push(sprite);
         }
 
         // =========================================================================
-        // AUDIO SYSTEM
+        // AUDIO
         // =========================================================================
         
         class AudioEngine {
@@ -1082,57 +1113,47 @@
                 const AC = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AC();
                 this.master = this.ctx.createGain();
-                this.master.gain.value = 0.25;
+                this.master.gain.value = 0.3;
                 this.master.connect(this.ctx.destination);
 
-                this.playOcean();
+                this.playAmbience();
                 this.playMelody();
             }
 
-            playOcean() {
-                // Ocean waves - filtered noise
-                const bufferSize = 2 * this.ctx.sampleRate;
-                const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = Math.random() * 2 - 1;
-                }
+            playAmbience() {
+                // Night crickets simulation
+                const createCricket = (freq, interval) => {
+                    setInterval(() => {
+                        if (this.ctx.state !== 'running' || state.isMuted) return;
+                        
+                        const osc = this.ctx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq + Math.random() * 100;
+                        
+                        const gain = this.ctx.createGain();
+                        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.015, this.ctx.currentTime + 0.01);
+                        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.05);
+                        
+                        osc.connect(gain);
+                        gain.connect(this.master);
+                        osc.start();
+                        osc.stop(this.ctx.currentTime + 0.05);
+                    }, interval + Math.random() * interval);
+                };
 
-                const noise = this.ctx.createBufferSource();
-                noise.buffer = noiseBuffer;
-                noise.loop = true;
-
-                const filter = this.ctx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = 200;
-
-                const gain = this.ctx.createGain();
-                gain.gain.value = 0.05;
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.master);
-                noise.start();
-
-                // Wave rhythm
-                setInterval(() => {
-                    if (this.ctx && this.ctx.state === 'running') {
-                        filter.frequency.setValueAtTime(
-                            150 + Math.sin(this.ctx.currentTime * 0.3) * 50,
-                            this.ctx.currentTime
-                        );
-                    }
-                }, 100);
+                createCricket(4000, 200);
+                createCricket(4500, 300);
+                createCricket(5000, 250);
             }
 
             playMelody() {
-                // Peaceful pentatonic: C, D, E, G, A (higher octave for dreamy feel)
-                const scale = [523.25, 587.33, 659.25, 783.99, 880];
+                // Gentle pentatonic melody
+                const scale = [392, 440, 523.25, 587.33, 659.25]; // G4 pentatonic
                 
                 const playNote = () => {
                     if (state.dialogueOpen) {
-                        setTimeout(playNote, 3000);
+                        setTimeout(playNote, 4000);
                         return;
                     }
 
@@ -1142,15 +1163,15 @@
 
                     const gain = this.ctx.createGain();
                     gain.gain.setValueAtTime(0, this.ctx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.04, this.ctx.currentTime + 1);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 5);
+                    gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.5);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 4);
 
                     osc.connect(gain);
                     gain.connect(this.master);
                     osc.start();
-                    osc.stop(this.ctx.currentTime + 5);
+                    osc.stop(this.ctx.currentTime + 4);
 
-                    setTimeout(playNote, 3000 + Math.random() * 4000);
+                    setTimeout(playNote, 3000 + Math.random() * 5000);
                 };
 
                 setTimeout(playNote, 2000);
@@ -1159,30 +1180,30 @@
             playCollect() {
                 if (!this.ctx) return;
 
-                // Chime sound
-                const frequencies = [659.25, 783.99, 987.77];
-                
-                frequencies.forEach((freq, i) => {
+                // Magical chime
+                const notes = [659.25, 783.99, 987.77, 1174.66];
+                notes.forEach((freq, i) => {
                     const osc = this.ctx.createOscillator();
                     osc.type = 'sine';
                     osc.frequency.value = freq;
 
                     const gain = this.ctx.createGain();
-                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
-                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.1 + 0.5);
+                    const startTime = this.ctx.currentTime + i * 0.08;
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.12, startTime + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
 
                     osc.connect(gain);
                     gain.connect(this.master);
-                    osc.start(this.ctx.currentTime + i * 0.1);
-                    osc.stop(this.ctx.currentTime + i * 0.1 + 0.5);
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.8);
                 });
             }
 
             toggleMute() {
                 state.isMuted = !state.isMuted;
                 if (this.master) {
-                    this.master.gain.value = state.isMuted ? 0 : 0.25;
+                    this.master.gain.value = state.isMuted ? 0 : 0.3;
                 }
                 return state.isMuted;
             }
@@ -1191,44 +1212,63 @@
         const audio = new AudioEngine();
 
         // =========================================================================
-        // INPUT HANDLING
+        // INPUT
         // =========================================================================
         
-        function handlePointer(clientX, clientY) {
-            state.targetX = ((clientX / window.innerWidth) * 2 - 1) * 18;
-            state.targetY = (-(clientY / window.innerHeight) * 2 + 1) * 6 + 2;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onPointerDown(clientX, clientY) {
+            if (!state.isPlaying || state.dialogueOpen) return;
+
+            mouse.x = (clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // Check collectible fireflies
+            const collectibles = fireflies.filter(f => f.userData.isCollectible && f.userData.active);
+            const intersects = raycaster.intersectObjects(collectibles);
+
+            if (intersects.length > 0) {
+                const firefly = intersects[0].object;
+                collectFirefly(firefly);
+            }
         }
 
-        document.addEventListener('mousemove', (e) => {
-            if (state.isPlaying) handlePointer(e.clientX, e.clientY);
+        document.addEventListener('click', (e) => {
+            onPointerDown(e.clientX, e.clientY);
         });
 
         document.addEventListener('touchstart', (e) => {
-            if (state.isPlaying) {
-                const touch = e.touches[0];
-                handlePointer(touch.clientX, touch.clientY);
-            }
+            const touch = e.touches[0];
+            onPointerDown(touch.clientX, touch.clientY);
         }, { passive: true });
 
+        // Camera follows mouse slightly
+        document.addEventListener('mousemove', (e) => {
+            state.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            state.mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+        });
+
         document.addEventListener('touchmove', (e) => {
-            if (state.isPlaying) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                handlePointer(touch.clientX, touch.clientY);
-            }
-        }, { passive: false });
+            const touch = e.touches[0];
+            state.mouseX = (touch.clientX / window.innerWidth) * 2 - 1;
+            state.mouseY = (touch.clientY / window.innerHeight) * 2 - 1;
+        }, { passive: true });
 
         // =========================================================================
-        // UI ELEMENTS
+        // UI
         // =========================================================================
         
         const ui = {
             countdownScreen: document.getElementById('countdown-screen'),
             intro: document.getElementById('intro'),
             hud: document.getElementById('hud'),
-            progressDots: document.getElementById('progressDots'),
+            progressText: document.getElementById('progressText'),
             dialogue: document.getElementById('dialogue'),
-            dialogueHeader: document.getElementById('dialogueHeader'),
+            dialogueIcon: document.getElementById('dialogueIcon'),
+            dialogueLabel: document.getElementById('dialogueLabel'),
             dialogueText: document.getElementById('dialogueText'),
             btnContinue: document.getElementById('btnContinue'),
             ending: document.getElementById('ending'),
@@ -1238,19 +1278,8 @@
             controlHint: document.getElementById('controlHint')
         };
 
-        // Generate progress dots
-        for (let i = 0; i < state.maxScore; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.dataset.index = i;
-            ui.progressDots.appendChild(dot);
-        }
-
         function updateProgress() {
-            const dots = ui.progressDots.querySelectorAll('.dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('filled', i < state.score);
-            });
+            ui.progressText.textContent = `${state.score} / ${state.maxScore}`;
         }
 
         let typeTimer = null;
@@ -1262,13 +1291,14 @@
             ui.dialogueText.innerHTML = '';
             ui.btnContinue.classList.remove('visible');
 
-            // Check if it's a doa
             if (messageObj.type === 'doa') {
                 ui.dialogue.classList.add('is-doa');
-                ui.dialogueHeader.textContent = 'Doa dari Rizal:';
+                ui.dialogueIcon.textContent = '🤲';
+                ui.dialogueLabel.textContent = 'Doa dari Rizal:';
             } else {
                 ui.dialogue.classList.remove('is-doa');
-                ui.dialogueHeader.textContent = 'Rizal menulis:';
+                ui.dialogueIcon.textContent = '✦';
+                ui.dialogueLabel.textContent = 'Rizal berbisik:';
             }
 
             let i = 0;
@@ -1277,7 +1307,7 @@
                 if (i < text.length) {
                     ui.dialogueText.innerHTML += text.charAt(i);
                     i++;
-                    typeTimer = setTimeout(typeChar, 30);
+                    typeTimer = setTimeout(typeChar, 28);
                 } else {
                     ui.btnContinue.classList.add('visible');
                 }
@@ -1297,18 +1327,23 @@
         // GAME LOGIC
         // =========================================================================
         
-        createBoat();
-
-        function lerp(a, b, t) {
-            return a + (b - a) * t;
-        }
-
-        function collectLantern(lantern) {
-            lantern.userData.active = false;
-            lantern.visible = false;
-
+        function collectFirefly(firefly) {
+            firefly.userData.active = false;
+            
             audio.playCollect();
-            createCollectEffect(lantern.position);
+            createCollectEffect(firefly.position.clone());
+            
+            // Fade out
+            const fadeOut = () => {
+                firefly.material.opacity -= 0.05;
+                firefly.scale.multiplyScalar(1.05);
+                if (firefly.material.opacity > 0) {
+                    requestAnimationFrame(fadeOut);
+                } else {
+                    firefly.visible = false;
+                }
+            };
+            fadeOut();
 
             state.score++;
             updateProgress();
@@ -1322,38 +1357,38 @@
         }
 
         function createCollectEffect(pos) {
-            const count = 12;
-            const effectTex = createGlowTexture('rgba(255, 220, 150, 1)', 'rgba(255, 180, 100, 0.3)');
-            
+            const count = 15;
             for (let i = 0; i < count; i++) {
                 const mat = new THREE.SpriteMaterial({
-                    map: effectTex,
+                    map: fireflyTex,
                     transparent: true,
                     blending: THREE.AdditiveBlending
                 });
-                const sprite = new THREE.Sprite(mat);
-                sprite.position.copy(pos);
-                sprite.scale.set(1.5, 1.5, 1);
-                scene.add(sprite);
+                const particle = new THREE.Sprite(mat);
+                particle.position.copy(pos);
+                particle.scale.set(0.4, 0.4, 1);
+                scene.add(particle);
 
                 const angle = (i / count) * Math.PI * 2;
+                const speed = 0.02 + Math.random() * 0.03;
                 const vel = {
-                    x: Math.cos(angle) * 0.12,
-                    y: Math.sin(angle) * 0.12 + 0.05,
-                    z: (Math.random() - 0.5) * 0.08
+                    x: Math.cos(angle) * speed,
+                    y: Math.sin(angle) * speed + 0.02,
+                    z: (Math.random() - 0.5) * speed
                 };
 
                 const animate = () => {
-                    sprite.position.x += vel.x;
-                    sprite.position.y += vel.y;
-                    sprite.position.z += vel.z;
-                    vel.y -= 0.002; // gravity
-                    sprite.material.opacity -= 0.015;
+                    particle.position.x += vel.x;
+                    particle.position.y += vel.y;
+                    particle.position.z += vel.z;
+                    vel.y -= 0.001;
+                    particle.material.opacity -= 0.015;
+                    particle.scale.multiplyScalar(0.98);
 
-                    if (sprite.material.opacity > 0) {
+                    if (particle.material.opacity > 0) {
                         requestAnimationFrame(animate);
                     } else {
-                        scene.remove(sprite);
+                        scene.remove(particle);
                     }
                 };
                 animate();
@@ -1374,89 +1409,40 @@
         let time = 0;
 
         function update() {
-            time += 0.01;
+            time += 0.016;
 
-            // Animate ocean waves
-            const positions = ocean.geometry.attributes.position.array;
-            for (let i = 0; i < positions.length; i += 3) {
-                const x = positions[i];
-                const z = positions[i + 2];
-                positions[i + 1] = Math.sin(x * 0.1 + time * 2) * 0.3 + Math.sin(z * 0.1 + time * 1.5) * 0.2;
-            }
-            ocean.geometry.attributes.position.needsUpdate = true;
-
-            if (!state.isPlaying) {
-                // Idle animation
-                if (boat) {
-                    boat.rotation.z = Math.sin(time * 1.5) * 0.05;
-                    boat.position.y = Math.sin(time * 2) * 0.15;
-                }
-                renderer.render(scene, camera);
-                requestAnimationFrame(update);
-                return;
-            }
-
-            // Update speed based on dialogue state
-            const targetSpeed = state.dialogueOpen ? 0.05 : state.baseSpeed;
-            state.speed = lerp(state.speed, targetSpeed, 0.05);
-
-            // Move boat smoothly
-            state.currentX = lerp(state.currentX, state.targetX, 0.04);
-            state.currentY = lerp(state.currentY, state.targetY, 0.04);
-
-            boat.position.x = state.currentX;
-            boat.position.y = state.currentY + Math.sin(time * 2) * 0.15;
-
-            // Boat tilt based on movement
-            const tiltX = -(state.targetX - state.currentX) * 0.03;
-            const tiltZ = Math.sin(time * 1.5) * 0.05;
-            boat.rotation.y = lerp(boat.rotation.y, tiltX, 0.1);
-            boat.rotation.z = tiltZ;
-
-            // Camera follow
-            camera.position.x = lerp(camera.position.x, state.currentX * 0.3, 0.03);
-            camera.position.y = lerp(camera.position.y, state.currentY * 0.2 + 5, 0.03);
-
-            // Move clouds
-            clouds.forEach(cloud => {
-                cloud.position.z += state.speed * 0.5;
-                if (cloud.position.z > 20) {
-                    cloud.position.z = -300;
-                    cloud.position.x = (Math.random() - 0.5) * 80;
+            // Animate fireflies
+            fireflies.forEach(firefly => {
+                if (!firefly.userData.active && firefly.userData.isCollectible) return;
+                
+                const data = firefly.userData;
+                const t = time * data.speed + data.phase;
+                
+                // Floating motion
+                firefly.position.x = data.basePos.x + Math.sin(t) * data.amplitude;
+                firefly.position.y = data.basePos.y + Math.sin(t * 1.3) * data.amplitude * 0.5;
+                firefly.position.z = data.basePos.z + Math.cos(t * 0.7) * data.amplitude * 0.5;
+                
+                // Pulsing glow
+                const pulse = 0.7 + Math.sin(t * 3) * 0.3;
+                firefly.material.opacity = pulse * (data.isCollectible ? 1 : 0.6);
+                
+                // Update light intensity
+                if (firefly.children[0]) {
+                    firefly.children[0].intensity = pulse * (data.isCollectible ? 0.5 : 0.15);
                 }
             });
 
-            // Move and check lanterns
-            lanterns.forEach(lantern => {
-                if (lantern.userData.active) {
-                    lantern.position.z += state.speed;
-                    
-                    // Float animation
-                    lantern.position.y = lantern.userData.baseY + Math.sin(time * 1.5 + lantern.userData.index) * 0.8;
-
-                    // Check collection
-                    const dist = boat.position.distanceTo(lantern.position);
-                    if (dist < 5) {
-                        collectLantern(lantern);
-                    }
-
-                    // Respawn if missed
-                    if (lantern.position.z > 15) {
-                        lantern.position.z = -120;
-                        lantern.position.x = lerp(lantern.position.x, state.currentX, 0.5);
-                    }
-                }
-            });
-
-            // Move stars slowly
-            const starPositions = stars.geometry.attributes.position.array;
-            for (let i = 2; i < starPositions.length; i += 3) {
-                starPositions[i] += state.speed * 0.3;
-                if (starPositions[i] > 20) {
-                    starPositions[i] = -200;
-                }
+            // Gentle camera movement
+            if (state.isPlaying && !state.dialogueOpen) {
+                camera.position.x += (state.mouseX * 2 - camera.position.x) * 0.02;
+                camera.position.y += (2 + state.mouseY * 0.5 - camera.position.y) * 0.02;
+                camera.lookAt(0, 1, -5);
             }
-            stars.geometry.attributes.position.needsUpdate = true;
+
+            // Twinkle stars
+            const starOpacity = 0.4 + Math.sin(time * 0.5) * 0.2;
+            starField.material.opacity = starOpacity;
 
             renderer.render(scene, camera);
             requestAnimationFrame(update);
@@ -1471,13 +1457,13 @@
             ui.intro.style.pointerEvents = 'none';
             setTimeout(() => {
                 ui.intro.style.display = 'none';
-            }, 1500);
+            }, 1200);
 
             ui.hud.classList.add('visible');
             
             setTimeout(() => {
                 ui.controlHint.classList.add('hidden');
-            }, 4000);
+            }, 5000);
 
             audio.init();
             state.isPlaying = true;
@@ -1503,7 +1489,7 @@
         });
 
         // =========================================================================
-        // INITIALIZE
+        // INIT
         // =========================================================================
         
         startCountdown();
