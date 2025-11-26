@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Untuk Hani Febiana - Selamat Ulang Tahun</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ocean-deep: #0c1929;
+            --ocean-mid: #1a3a5c;
+            --sunset-gold: #f4a460;
+            --sunset-pink: #e8a0b4;
+            --sunset-orange: #ff7f50;
+            --warm-cream: #fef9f3;
+            --soft-white: #fff8f0;
+            --starlight: #fffacd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--ocean-deep);
+            color: var(--warm-cream);
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* Canvas Container */
+        #world {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Light overlay */
+        .light-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            background: radial-gradient(ellipse at 50% 20%, rgba(244, 164, 96, 0.15) 0%, transparent 50%);
+        }
+
+        /* UI Layer */
+        #ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .pointer-active {
+            pointer-events: auto;
+        }
+
+        /* ===== COUNTDOWN SCREEN ===== */
+        #countdown-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, 
+                #0c1929 0%, 
+                #1a3a5c 50%, 
+                #2d4a6c 100%
+            );
+        }
+
+        .countdown-content {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s ease forwards;
+        }
+
+        .countdown-content:nth-child(2) { animation-delay: 0.2s; }
+        .countdown-content:nth-child(3) { animation-delay: 0.4s; }
+        .countdown-content:nth-child(4) { animation-delay: 0.6s; }
+
+        .countdown-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            color: var(--warm-cream);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-subtitle {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+            color: var(--sunset-gold);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(244, 164, 96, 0.2);
+            border-radius: 12px;
+            padding: 20px 15px;
+            min-width: 70px;
+        }
+
+        .countdown-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-weight: 400;
+            color: var(--sunset-gold);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--soft-white);
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .countdown-message {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            line-height: 1.9;
+            color: var(--soft-white);
+            max-width: 400px;
+            opacity: 0.85;
+        }
+
+        /* Stars animation for countdown */
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--starlight);
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ===== START SCREEN ===== */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, 
+                #1a3a5c 0%, 
+                #2d4a6c 40%,
+                #4a6080 100%
+            );
+        }
+
+        .intro-content {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.5s ease forwards;
+        }
+
+        .intro-content:nth-child(2) { animation-delay: 0.3s; }
+        .intro-content:nth-child(3) { animation-delay: 0.6s; }
+        .intro-content:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title-main {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: var(--warm-cream);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        .title-age {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: clamp(3rem, 12vw, 5rem);
+            color: var(--sunset-gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 40px rgba(244, 164, 96, 0.4);
+        }
+
+        .title-sub {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+            color: var(--sunset-pink);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .intro-poem {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+            line-height: 2;
+            color: var(--soft-white);
+            max-width: 420px;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .btn-begin {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 400;
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--warm-cream);
+            background: linear-gradient(135deg, rgba(244, 164, 96, 0.3), rgba(232, 160, 180, 0.3));
+            border: 1px solid rgba(244, 164, 96, 0.5);
+            padding: 18px 45px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            border-radius: 50px;
+        }
+
+        .btn-begin:hover,
+        .btn-begin:active {
+            background: linear-gradient(135deg, rgba(244, 164, 96, 0.5), rgba(232, 160, 180, 0.5));
+            box-shadow: 0 0 30px rgba(244, 164, 96, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* ===== HUD ===== */
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 15;
+        }
+
+        #hud.visible {
+            opacity: 1;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(244, 164, 96, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .dot.filled {
+            background: var(--sunset-gold);
+            box-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
+        }
+
+        .sound-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(244, 164, 96, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--warm-cream);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .sound-toggle:hover {
+            border-color: var(--sunset-gold);
+        }
+
+        /* ===== DIALOGUE BOX ===== */
+        #dialogue {
+            position: fixed;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 550px;
+            background: rgba(12, 25, 41, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(244, 164, 96, 0.2);
+            border-radius: 8px;
+            padding: 28px 32px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s ease;
+            z-index: 20;
+        }
+
+        #dialogue.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #dialogue.is-doa {
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(12, 25, 41, 0.97);
+        }
+
+        .dialogue-header {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 400;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--sunset-gold);
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .dialogue-body {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 3.8vw, 1.2rem);
+            line-height: 1.9;
+            color: var(--warm-cream);
+            min-height: 80px;
+        }
+
+        .dialogue-continue {
+            position: absolute;
+            bottom: 12px;
+            right: 18px;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: var(--sunset-gold);
+            opacity: 0;
+            animation: pulse 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        .dialogue-continue.visible {
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ===== END SCREEN ===== */
+        #ending {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, 
+                #0c1929 0%, 
+                #1a3a5c 50%, 
+                #2d4a6c 100%
+            );
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease;
+            overflow-y: auto;
+        }
+
+        #ending.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .ending-card {
+            max-width: 520px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.5s ease 0.5s;
+            padding: 20px 0;
+        }
+
+        #ending.active .ending-card {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ending-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ending-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(1.6rem, 6vw, 2.2rem);
+            color: var(--warm-cream);
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.08em;
+        }
+
+        .ending-subtitle {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 300;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--sunset-gold);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .ending-message {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+            line-height: 2;
+            color: var(--soft-white);
+            margin-bottom: 2rem;
+        }
+
+        .ending-signature {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: var(--sunset-pink);
+            opacity: 0.8;
+        }
+
+        .btn-restart {
+            margin-top: 2rem;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-cream);
+            background: transparent;
+            border: 1px solid rgba(244, 164, 96, 0.3);
+            padding: 14px 30px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.4s ease;
+            border-radius: 30px;
+        }
+
+        .btn-restart:hover {
+            opacity: 1;
+            border-color: var(--sunset-gold);
+        }
+
+        /* Control Hint */
+        .control-hint {
+            position: fixed;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: rgba(254, 249, 243, 0.4);
+            z-index: 12;
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
+
+        .control-hint.hidden {
+            opacity: 0;
+        }
+
+        /* SVG Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+        }
+
+        /* Wave decoration */
+        .wave-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, rgba(26, 58, 92, 0.5), transparent);
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="world"></div>
+    <div class="light-overlay"></div>
+
+    <div id="ui">
+        <!-- Countdown Screen -->
+        <div id="countdown-screen" class="pointer-active">
+            <!-- Stars -->
+            <div class="star" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+            <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;"></div>
+            <div class="star" style="top: 35%; left: 25%; animation-delay: 1s;"></div>
+            <div class="star" style="top: 15%; left: 60%; animation-delay: 1.5s;"></div>
+            <div class="star" style="top: 40%; left: 90%; animation-delay: 2s;"></div>
+            <div class="star" style="top: 8%; left: 40%; animation-delay: 2.5s;"></div>
+            <div class="star" style="top: 25%; left: 5%; animation-delay: 0.3s;"></div>
+            <div class="star" style="top: 45%; left: 70%; animation-delay: 1.8s;"></div>
+
+            <h1 class="countdown-title countdown-content">Menunggu Hari Spesial</h1>
+            <p class="countdown-subtitle countdown-content">3 Juni 2026</p>
+            
+            <div class="countdown-timer countdown-content">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">00</div>
+                    <div class="countdown-label">Hari</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">00</div>
+                    <div class="countdown-label">Jam</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">00</div>
+                    <div class="countdown-label">Menit</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">00</div>
+                    <div class="countdown-label">Detik</div>
+                </div>
+            </div>
+
+            <p class="countdown-message countdown-content">
+                "Ada sesuatu yang sedang kusiapkan untukmu.<br>
+                Sebuah perjalanan kecil di atas ombak,<br>
+                dengan kata-kata yang sudah lama ingin kusampaikan."
+            </p>
+
+            <div class="wave-decoration"></div>
+        </div>
+
+        <!-- Intro Screen -->
+        <div id="intro" class="pointer-active">
+            <h1 class="title-main intro-content">Selamat Ulang Tahun</h1>
+            <div class="title-age intro-content" id="ageDisplay">✦</div>
+            <p class="title-sub intro-content">Hani Febiana • dari Rizal</p>
+            
+            <p class="intro-poem intro-content">
+                Malam ini lautan menyimpan cerita,<br>
+                dan bintang-bintang merangkai doa.<br>
+                Maukah kau berlayar sebentar bersamaku?
+            </p>
+            
+            <button class="btn-begin intro-content pointer-active" id="btnStart">
+                Mulai Berlayar
+            </button>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div class="progress-container">
+                <div class="progress-dots" id="progressDots"></div>
+            </div>
+            <button class="sound-toggle pointer-active" id="btnSound">
+                <svg class="icon" id="iconSound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Dialogue -->
+        <div id="dialogue" class="pointer-active">
+            <div class="dialogue-header" id="dialogueHeader">Rizal menulis:</div>
+            <div class="dialogue-body" id="dialogueText"></div>
+            <div class="dialogue-continue" id="btnContinue">ketuk untuk lanjut →</div>
+        </div>
+
+        <!-- Control Hint -->
+        <div class="control-hint" id="controlHint">
+            sentuh layar untuk mengarahkan kapal
+        </div>
+
+        <!-- Ending -->
+        <div id="ending">
+            <div class="ending-card">
+                <div class="ending-icon">🌙</div>
+                <h1 class="ending-title">Selamat Ulang Tahun, Sayangku</h1>
+                <p class="ending-subtitle">Hani Febiana</p>
+                
+                <p class="ending-message">
+                    Di hari istimewa ini,<br>
+                    aku tidak punya hadiah mewah untuk diberikan.<br>
+                    Yang kumiliki hanyalah hati yang utuh—<br>
+                    dan semuanya sudah kuberikan padamu.<br><br>
+                    Terima kasih sudah lahir ke dunia ini,<br>
+                    dan memilih untuk berjalan di sampingku.<br>
+                    Semoga Allah selalu menjaga senyummu,<br>
+                    hari ini dan selamanya.
+                </p>
+                
+                <p class="ending-signature">— Dengan seluruh cinta yang kumiliki, Rizal —</p>
+                
+                <button class="btn-restart pointer-active" onclick="location.reload()">
+                    Berlayar Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // BIRTHDAY DATE CONFIG
+        // =========================================================================
+        
+        const BIRTHDAY = new Date('2026-06-03T00:00:00');
+        
+        // Calculate age
+        function calculateAge() {
+            const birthYear = 2004; // Assuming birth year, adjust if needed
+            return BIRTHDAY.getFullYear() - birthYear;
+        }
+
+        // =========================================================================
+        // MESSAGES - Ucapan ulang tahun yang tulus + 3 doa terakhir
+        // =========================================================================
+        
+        const messages = [
+            {
+                type: 'message',
+                text: "Hani... Hari ini adalah hari di mana dunia pertama kali mengenalmu. Dan aku bersyukur, karena dari sekian miliar manusia di bumi ini, takdir mempertemukan kita."
+            },
+            {
+                type: 'message',
+                text: "Setahun berlalu, dan cintaku padamu tidak berkurang—justru bertambah di setiap tarikan napas. Kau mengajariku arti sabar, arti setia, arti pulang."
+            },
+            {
+                type: 'message',
+                text: "Aku tidak sempurna, Hani. Ada hari-hari di mana aku gagal menjadi yang kau butuhkan. Tapi terima kasih sudah tetap memilihku, bahkan di saat aku sulit memilih diriku sendiri."
+            },
+            {
+                type: 'message',
+                text: "Kau adalah pelabuhan di tengah badai hidupku. Tempat di mana aku bisa melepas semua topeng dan tetap diterima. Kau adalah rumah yang tidak pernah membuatku takut untuk pulang."
+            },
+            {
+                type: 'message',
+                text: "Di usiamu yang baru ini, aku ingin kau tahu—kau jauh lebih kuat dari yang kau kira. Kau jauh lebih cantik dari yang cermin bisa tunjukkan. Dan kau jauh lebih berharga dari yang kata-kata bisa gambarkan."
+            },
+            {
+                type: 'message',
+                text: "Aku berjanji akan terus belajar mencintaimu dengan cara yang lebih baik. Bukan cinta yang sempurna, tapi cinta yang tulus—yang hadir di hari-hari sulit, bukan hanya di saat mudah."
+            },
+            {
+                type: 'doa',
+                text: "Ya Allah, di hari kelahiran Hani ini, aku memohon kepada-Mu—berkahilah setiap langkahnya, mudahkanlah setiap urusannya, dan jauhkanlah ia dari segala keburukan. Jadikanlah ia wanita yang shalihah, yang dekat dengan-Mu."
+            },
+            {
+                type: 'doa',
+                text: "Ya Rahman Ya Rahim, jika Engkau sudah menuliskan kami dalam satu takdir—maka satukanlah kami dalam ikatan yang halal dan penuh berkah. Jadikanlah cinta kami ibadah, dan hubungan kami jalan menuju ridha-Mu."
+            },
+            {
+                type: 'doa',
+                text: "Ya Rabb, aku titipkan Hani dalam penjagaan-Mu. Jaga hatinya, jaga imannya, jaga mimpi-mimpinya. Dan jika aku ditakdirkan untuk menemaninya—jadikanlah aku imam yang membimbingnya menuju surga-Mu. Aamiin ya Rabbal'alamin."
+            }
+        ];
+
+        // =========================================================================
+        // STATE & CONFIG
+        // =========================================================================
+        
+        const state = {
+            isPlaying: false,
+            score: 0,
+            maxScore: messages.length,
+            targetX: 0,
+            targetY: 0,
+            currentX: 0,
+            currentY: 0,
+            dialogueOpen: false,
+            speed: 0,
+            baseSpeed: 0.4,
+            isMuted: false,
+            isUnlocked: false
+        };
+
+        // =========================================================================
+        // COUNTDOWN LOGIC
+        // =========================================================================
+        
+        function updateCountdown() {
+            const now = new Date();
+            const diff = BIRTHDAY - now;
+
+            if (diff <= 0) {
+                // Birthday has arrived!
+                state.isUnlocked = true;
+                document.getElementById('countdown-screen').style.display = 'none';
+                document.getElementById('intro').style.display = 'flex';
+                document.getElementById('ageDisplay').textContent = calculateAge();
+                return true;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            return false;
+        }
+
+        // Check countdown every second
+        function startCountdown() {
+            if (!updateCountdown()) {
+                setInterval(updateCountdown, 1000);
+            }
+        }
+
+        // =========================================================================
+        // THREE.JS SETUP
+        // =========================================================================
+        
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x1a3a5c, 0.008);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 15);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.3;
+        document.getElementById('world').appendChild(renderer.domElement);
+
+        // Lighting - Sunset mood
+        const ambientLight = new THREE.AmbientLight(0xffeedd, 0.4);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffa040, 1);
+        sunLight.position.set(-20, 15, -50);
+        scene.add(sunLight);
+
+        const moonLight = new THREE.DirectionalLight(0xaaccff, 0.3);
+        moonLight.position.set(20, 20, 30);
+        scene.add(moonLight);
+
+        // =========================================================================
+        // TEXTURE GENERATORS
+        // =========================================================================
+        
+        function createGlowTexture(color1, color2) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, color1);
+            grad.addColorStop(0.4, color2);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createStarTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            grad.addColorStop(0, 'rgba(255, 255, 240, 1)');
+            grad.addColorStop(0.3, 'rgba(255, 250, 205, 0.8)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 32, 32);
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createWaveTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // Ocean gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, 256);
+            grad.addColorStop(0, '#1a3a5c');
+            grad.addColorStop(0.5, '#0c1929');
+            grad.addColorStop(1, '#061018');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            
+            // Add some wave-like patterns
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                for (let x = 0; x < 256; x++) {
+                    const y = 128 + Math.sin(x * 0.05 + i * 0.5) * 20 + i * 10;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // =========================================================================
+        // GAME OBJECTS
+        // =========================================================================
+        
+        // Ocean plane
+        const oceanGeo = new THREE.PlaneGeometry(300, 300, 50, 50);
+        const oceanMat = new THREE.MeshStandardMaterial({
+            color: 0x1a3a5c,
+            roughness: 0.8,
+            metalness: 0.2,
+            transparent: true,
+            opacity: 0.9
+        });
+        const ocean = new THREE.Mesh(oceanGeo, oceanMat);
+        ocean.rotation.x = -Math.PI / 2;
+        ocean.position.y = -2;
+        scene.add(ocean);
+
+        // Boat
+        let boat;
+        function createBoat() {
+            const group = new THREE.Group();
+            
+            // Hull
+            const hullShape = new THREE.Shape();
+            hullShape.moveTo(-1.5, 0);
+            hullShape.quadraticCurveTo(-1.8, 0.8, -1.2, 1.2);
+            hullShape.lineTo(1.2, 1.2);
+            hullShape.quadraticCurveTo(1.8, 0.8, 1.5, 0);
+            hullShape.quadraticCurveTo(0, -0.3, -1.5, 0);
+
+            const extrudeSettings = { depth: 4, bevelEnabled: false };
+            const hullGeo = new THREE.ExtrudeGeometry(hullShape, extrudeSettings);
+            const hullMat = new THREE.MeshStandardMaterial({
+                color: 0x8b4513,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            const hull = new THREE.Mesh(hullGeo, hullMat);
+            hull.rotation.x = Math.PI / 2;
+            hull.position.set(0, -0.5, 0);
+            group.add(hull);
+
+            // Mast
+            const mastGeo = new THREE.CylinderGeometry(0.08, 0.1, 5, 8);
+            const mastMat = new THREE.MeshStandardMaterial({ color: 0x654321 });
+            const mast = new THREE.Mesh(mastGeo, mastMat);
+            mast.position.set(0, 2, 0);
+            group.add(mast);
+
+            // Sail
+            const sailGeo = new THREE.BufferGeometry();
+            const sailVerts = new Float32Array([
+                0, 4.5, 0,    0, 0.5, 0,    2, 0.5, 0.5,  // Triangle sail
+                0, 4.5, 0,    2, 0.5, 0.5,  1.5, 3, 0.3
+            ]);
+            sailGeo.setAttribute('position', new THREE.BufferAttribute(sailVerts, 3));
+            sailGeo.computeVertexNormals();
+            
+            const sailMat = new THREE.MeshStandardMaterial({
+                color: 0xfff8f0,
+                side: THREE.DoubleSide,
+                roughness: 0.9,
+                emissive: 0xffa060,
+                emissiveIntensity: 0.1
+            });
+            const sail = new THREE.Mesh(sailGeo, sailMat);
+            sail.position.set(0, 0, 0);
+            group.add(sail);
+
+            // Lantern light
+            const lanternLight = new THREE.PointLight(0xffaa44, 0.8, 15);
+            lanternLight.position.set(0, 1, 1.5);
+            group.add(lanternLight);
+
+            // Ambient glow
+            const glowLight = new THREE.PointLight(0xffeedd, 0.4, 20);
+            glowLight.position.set(0, 2, 0);
+            group.add(glowLight);
+
+            boat = group;
+            boat.position.y = 0;
+            scene.add(boat);
+        }
+
+        // Collectible lanterns (floating lights)
+        const lanterns = [];
+        const lanternTex = createGlowTexture('rgba(255, 200, 100, 1)', 'rgba(255, 150, 80, 0.5)');
+
+        function spawnLantern(index) {
+            const group = new THREE.Group();
+            
+            // Glow sprite
+            const mat = new THREE.SpriteMaterial({
+                map: lanternTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(4, 4, 1);
+            group.add(sprite);
+
+            // Point light
+            const light = new THREE.PointLight(0xffcc66, 0.5, 12);
+            group.add(light);
+
+            const zPos = -60 - (index * 100);
+            const xPos = Math.sin(index * 1.2) * 18;
+            const yPos = 2 + Math.cos(index * 0.8) * 3;
+
+            group.position.set(xPos, yPos, zPos);
+            group.userData = { index, active: true, baseY: yPos };
+
+            scene.add(group);
+            lanterns.push(group);
+        }
+
+        for (let i = 0; i < state.maxScore; i++) {
+            spawnLantern(i);
+        }
+
+        // Stars in sky
+        const starTex = createStarTexture();
+        const starCount = 200;
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+            starPos[i] = (Math.random() - 0.5) * 150;
+            starPos[i + 1] = 20 + Math.random() * 40;
+            starPos[i + 2] = -Math.random() * 200;
+        }
+
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({
+            map: starTex,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        // Clouds/mist
+        const cloudTex = createGlowTexture('rgba(60, 80, 100, 0.4)', 'rgba(40, 60, 80, 0.1)');
+        const clouds = [];
+
+        function spawnCloud(zPos) {
+            const mat = new THREE.SpriteMaterial({
+                map: cloudTex,
+                transparent: true,
+                opacity: 0.3,
+                depthWrite: false
+            });
+            const sprite = new THREE.Sprite(mat);
+            const scale = 15 + Math.random() * 25;
+            sprite.scale.set(scale, scale * 0.4, 1);
+
+            const xPos = (Math.random() - 0.5) * 80;
+            const yPos = 8 + Math.random() * 15;
+            sprite.position.set(xPos, yPos, zPos);
+
+            scene.add(sprite);
+            clouds.push(sprite);
+        }
+
+        for (let i = 0; i < 20; i++) {
+            spawnCloud(-i * 25);
+        }
+
+        // =========================================================================
+        // AUDIO SYSTEM
+        // =========================================================================
+        
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.master = null;
+            }
+
+            init() {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AC();
+                this.master = this.ctx.createGain();
+                this.master.gain.value = 0.25;
+                this.master.connect(this.ctx.destination);
+
+                this.playOcean();
+                this.playMelody();
+            }
+
+            playOcean() {
+                // Ocean waves - filtered noise
+                const bufferSize = 2 * this.ctx.sampleRate;
+                const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = noiseBuffer;
+                noise.loop = true;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 200;
+
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.05;
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.master);
+                noise.start();
+
+                // Wave rhythm
+                setInterval(() => {
+                    if (this.ctx && this.ctx.state === 'running') {
+                        filter.frequency.setValueAtTime(
+                            150 + Math.sin(this.ctx.currentTime * 0.3) * 50,
+                            this.ctx.currentTime
+                        );
+                    }
+                }, 100);
+            }
+
+            playMelody() {
+                // Peaceful pentatonic: C, D, E, G, A (higher octave for dreamy feel)
+                const scale = [523.25, 587.33, 659.25, 783.99, 880];
+                
+                const playNote = () => {
+                    if (state.dialogueOpen) {
+                        setTimeout(playNote, 3000);
+                        return;
+                    }
+
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = scale[Math.floor(Math.random() * scale.length)];
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.04, this.ctx.currentTime + 1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 5);
+
+                    osc.connect(gain);
+                    gain.connect(this.master);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 5);
+
+                    setTimeout(playNote, 3000 + Math.random() * 4000);
+                };
+
+                setTimeout(playNote, 2000);
+            }
+
+            playCollect() {
+                if (!this.ctx) return;
+
+                // Chime sound
+                const frequencies = [659.25, 783.99, 987.77];
+                
+                frequencies.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.1 + 0.5);
+
+                    osc.connect(gain);
+                    gain.connect(this.master);
+                    osc.start(this.ctx.currentTime + i * 0.1);
+                    osc.stop(this.ctx.currentTime + i * 0.1 + 0.5);
+                });
+            }
+
+            toggleMute() {
+                state.isMuted = !state.isMuted;
+                if (this.master) {
+                    this.master.gain.value = state.isMuted ? 0 : 0.25;
+                }
+                return state.isMuted;
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // =========================================================================
+        // INPUT HANDLING
+        // =========================================================================
+        
+        function handlePointer(clientX, clientY) {
+            state.targetX = ((clientX / window.innerWidth) * 2 - 1) * 18;
+            state.targetY = (-(clientY / window.innerHeight) * 2 + 1) * 6 + 2;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (state.isPlaying) handlePointer(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if (state.isPlaying) {
+                const touch = e.touches[0];
+                handlePointer(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (state.isPlaying) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                handlePointer(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        // =========================================================================
+        // UI ELEMENTS
+        // =========================================================================
+        
+        const ui = {
+            countdownScreen: document.getElementById('countdown-screen'),
+            intro: document.getElementById('intro'),
+            hud: document.getElementById('hud'),
+            progressDots: document.getElementById('progressDots'),
+            dialogue: document.getElementById('dialogue'),
+            dialogueHeader: document.getElementById('dialogueHeader'),
+            dialogueText: document.getElementById('dialogueText'),
+            btnContinue: document.getElementById('btnContinue'),
+            ending: document.getElementById('ending'),
+            btnStart: document.getElementById('btnStart'),
+            btnSound: document.getElementById('btnSound'),
+            iconSound: document.getElementById('iconSound'),
+            controlHint: document.getElementById('controlHint')
+        };
+
+        // Generate progress dots
+        for (let i = 0; i < state.maxScore; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.dataset.index = i;
+            ui.progressDots.appendChild(dot);
+        }
+
+        function updateProgress() {
+            const dots = ui.progressDots.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < state.score);
+            });
+        }
+
+        let typeTimer = null;
+        function showDialogue(messageObj) {
+            if (typeTimer) clearTimeout(typeTimer);
+            
+            state.dialogueOpen = true;
+            ui.dialogue.classList.add('visible');
+            ui.dialogueText.innerHTML = '';
+            ui.btnContinue.classList.remove('visible');
+
+            // Check if it's a doa
+            if (messageObj.type === 'doa') {
+                ui.dialogue.classList.add('is-doa');
+                ui.dialogueHeader.textContent = 'Doa dari Rizal:';
+            } else {
+                ui.dialogue.classList.remove('is-doa');
+                ui.dialogueHeader.textContent = 'Rizal menulis:';
+            }
+
+            let i = 0;
+            const text = messageObj.text;
+            const typeChar = () => {
+                if (i < text.length) {
+                    ui.dialogueText.innerHTML += text.charAt(i);
+                    i++;
+                    typeTimer = setTimeout(typeChar, 30);
+                } else {
+                    ui.btnContinue.classList.add('visible');
+                }
+            };
+            typeChar();
+        }
+
+        function hideDialogue() {
+            if (typeTimer) clearTimeout(typeTimer);
+            ui.dialogue.classList.remove('visible');
+            ui.dialogue.classList.remove('is-doa');
+            ui.btnContinue.classList.remove('visible');
+            state.dialogueOpen = false;
+        }
+
+        // =========================================================================
+        // GAME LOGIC
+        // =========================================================================
+        
+        createBoat();
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function collectLantern(lantern) {
+            lantern.userData.active = false;
+            lantern.visible = false;
+
+            audio.playCollect();
+            createCollectEffect(lantern.position);
+
+            state.score++;
+            updateProgress();
+
+            const msg = messages[state.score - 1];
+            if (msg) showDialogue(msg);
+
+            if (state.score >= state.maxScore) {
+                setTimeout(showEnding, 10000);
+            }
+        }
+
+        function createCollectEffect(pos) {
+            const count = 12;
+            const effectTex = createGlowTexture('rgba(255, 220, 150, 1)', 'rgba(255, 180, 100, 0.3)');
+            
+            for (let i = 0; i < count; i++) {
+                const mat = new THREE.SpriteMaterial({
+                    map: effectTex,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                const sprite = new THREE.Sprite(mat);
+                sprite.position.copy(pos);
+                sprite.scale.set(1.5, 1.5, 1);
+                scene.add(sprite);
+
+                const angle = (i / count) * Math.PI * 2;
+                const vel = {
+                    x: Math.cos(angle) * 0.12,
+                    y: Math.sin(angle) * 0.12 + 0.05,
+                    z: (Math.random() - 0.5) * 0.08
+                };
+
+                const animate = () => {
+                    sprite.position.x += vel.x;
+                    sprite.position.y += vel.y;
+                    sprite.position.z += vel.z;
+                    vel.y -= 0.002; // gravity
+                    sprite.material.opacity -= 0.015;
+
+                    if (sprite.material.opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        scene.remove(sprite);
+                    }
+                };
+                animate();
+            }
+        }
+
+        function showEnding() {
+            state.isPlaying = false;
+            ui.hud.classList.remove('visible');
+            ui.dialogue.classList.remove('visible');
+            ui.ending.classList.add('active');
+        }
+
+        // =========================================================================
+        // MAIN LOOP
+        // =========================================================================
+        
+        let time = 0;
+
+        function update() {
+            time += 0.01;
+
+            // Animate ocean waves
+            const positions = ocean.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                const x = positions[i];
+                const z = positions[i + 2];
+                positions[i + 1] = Math.sin(x * 0.1 + time * 2) * 0.3 + Math.sin(z * 0.1 + time * 1.5) * 0.2;
+            }
+            ocean.geometry.attributes.position.needsUpdate = true;
+
+            if (!state.isPlaying) {
+                // Idle animation
+                if (boat) {
+                    boat.rotation.z = Math.sin(time * 1.5) * 0.05;
+                    boat.position.y = Math.sin(time * 2) * 0.15;
+                }
+                renderer.render(scene, camera);
+                requestAnimationFrame(update);
+                return;
+            }
+
+            // Update speed based on dialogue state
+            const targetSpeed = state.dialogueOpen ? 0.05 : state.baseSpeed;
+            state.speed = lerp(state.speed, targetSpeed, 0.05);
+
+            // Move boat smoothly
+            state.currentX = lerp(state.currentX, state.targetX, 0.04);
+            state.currentY = lerp(state.currentY, state.targetY, 0.04);
+
+            boat.position.x = state.currentX;
+            boat.position.y = state.currentY + Math.sin(time * 2) * 0.15;
+
+            // Boat tilt based on movement
+            const tiltX = -(state.targetX - state.currentX) * 0.03;
+            const tiltZ = Math.sin(time * 1.5) * 0.05;
+            boat.rotation.y = lerp(boat.rotation.y, tiltX, 0.1);
+            boat.rotation.z = tiltZ;
+
+            // Camera follow
+            camera.position.x = lerp(camera.position.x, state.currentX * 0.3, 0.03);
+            camera.position.y = lerp(camera.position.y, state.currentY * 0.2 + 5, 0.03);
+
+            // Move clouds
+            clouds.forEach(cloud => {
+                cloud.position.z += state.speed * 0.5;
+                if (cloud.position.z > 20) {
+                    cloud.position.z = -300;
+                    cloud.position.x = (Math.random() - 0.5) * 80;
+                }
+            });
+
+            // Move and check lanterns
+            lanterns.forEach(lantern => {
+                if (lantern.userData.active) {
+                    lantern.position.z += state.speed;
+                    
+                    // Float animation
+                    lantern.position.y = lantern.userData.baseY + Math.sin(time * 1.5 + lantern.userData.index) * 0.8;
+
+                    // Check collection
+                    const dist = boat.position.distanceTo(lantern.position);
+                    if (dist < 5) {
+                        collectLantern(lantern);
+                    }
+
+                    // Respawn if missed
+                    if (lantern.position.z > 15) {
+                        lantern.position.z = -120;
+                        lantern.position.x = lerp(lantern.position.x, state.currentX, 0.5);
+                    }
+                }
+            });
+
+            // Move stars slowly
+            const starPositions = stars.geometry.attributes.position.array;
+            for (let i = 2; i < starPositions.length; i += 3) {
+                starPositions[i] += state.speed * 0.3;
+                if (starPositions[i] > 20) {
+                    starPositions[i] = -200;
+                }
+            }
+            stars.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(update);
+        }
+
+        // =========================================================================
+        // EVENT LISTENERS
+        // =========================================================================
+        
+        ui.btnStart.addEventListener('click', () => {
+            ui.intro.style.opacity = '0';
+            ui.intro.style.pointerEvents = 'none';
+            setTimeout(() => {
+                ui.intro.style.display = 'none';
+            }, 1500);
+
+            ui.hud.classList.add('visible');
+            
+            setTimeout(() => {
+                ui.controlHint.classList.add('hidden');
+            }, 4000);
+
+            audio.init();
+            state.isPlaying = true;
+        });
+
+        ui.dialogue.addEventListener('click', () => {
+            if (ui.btnContinue.classList.contains('visible')) {
+                hideDialogue();
+            }
+        });
+
+        ui.btnSound.addEventListener('click', () => {
+            const muted = audio.toggleMute();
+            ui.iconSound.innerHTML = muted 
+                ? '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+                : '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // =========================================================================
+        // INITIALIZE
+        // =========================================================================
+        
+        startCountdown();
+        update();
+
+    </script>
+</body>
+</html>
