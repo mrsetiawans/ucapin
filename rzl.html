@@ -3,1728 +3,842 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Langit Harapan: Perjalanan Rizal</title>
+    <title>Untuk Hani Febiana - From Rizal</title>
+    <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Mono:wght@400;700&family=Homemade+Apple&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
     <style>
+        /* --- ROMANTIC THEME STYLES --- */
         :root {
-            --gold: #D4AF37;
-            --gold-light: #F4E4BC;
-            --sky-blue: #4A90D9;
-            --glass: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            --primary: #ff9a9e;
+            --secondary: #fecfef;
+            --accent: #fff1eb;
+            --text-gold: #FFD700;
+            --glass: rgba(45, 10, 40, 0.5);
+            --glass-border: rgba(255, 200, 200, 0.2);
+            --deep-purple: #2c0e37;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        html, body {
+        body {
             overflow: hidden;
-            background: #87CEEB;
-            font-family: 'Cormorant Garamond', serif;
+            background: #000;
+            font-family: 'Montserrat', sans-serif;
             color: white;
-            width: 100vw;
-            height: 100vh;
-            cursor: none;
-        }
-
-        #custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s ease;
-            mix-blend-mode: difference;
-        }
-        
-        #cursor-dot {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: var(--gold);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
+            width: 100vw; height: 100vh;
+            touch-action: none; /* Kunci scroll di HP */
         }
 
         #canvas-container {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            background: linear-gradient(to bottom, #2c3e50, #bdc3c7); /* Fallback */
         }
 
+        /* --- UI OVERLAY --- */
         #ui-layer {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
             pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* ===== LOADER ===== */
-        #loader {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(180deg, #1e90ff 0%, #87CEEB 50%, #B0E0E6 100%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 1.5s ease;
-        }
+        .pointer-events-auto { pointer-events: auto; }
 
-        .loader-ring {
-            width: 80px; height: 80px;
-            border: 2px solid transparent;
-            border-top: 2px solid var(--gold);
-            border-right: 2px solid var(--gold);
-            border-radius: 50%;
-            animation: spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            position: relative;
-        }
-        
-        .loader-ring::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 2px solid transparent;
-            border-bottom: 2px solid var(--gold-light);
-            border-left: 2px solid var(--gold-light);
-            border-radius: 50%;
-            animation: spin 2s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
-        }
-
-        .loader-text {
-            margin-top: 30px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #fff;
-            opacity: 0.9;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        /* ===== START SCREEN ===== */
+        /* START SCREEN */
         #start-screen {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,50,100,0.3);
-            backdrop-filter: blur(10px);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(60, 20, 60, 0.8), rgba(10, 5, 20, 0.95));
+            backdrop-filter: blur(8px);
             z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center;
-            pointer-events: auto;
-            opacity: 0;
-            animation: fadeIn 2s forwards 0.5s;
+            transition: opacity 1.5s ease;
+            padding: 20px;
         }
 
-        .title-container {
-            position: relative;
-            margin-bottom: 2rem;
+        .title-box h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 150, 150, 0.3);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
-        .main-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(3rem, 8vw, 7rem);
+        .title-box h2 {
+            font-family: 'Montserrat', sans-serif;
             font-weight: 300;
-            color: #fff;
-            letter-spacing: 0.2em;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            color: #ffc3a0;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
             text-transform: uppercase;
-            position: relative;
-            opacity: 0;
-            animation: revealText 2s forwards 1s;
-            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
-        }
-        
-        .main-title::before,
-        .main-title::after {
-            content: '';
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            animation: expandLine 1.5s forwards 1.5s;
-        }
-        
-        .main-title::before { top: -15px; }
-        .main-title::after { bottom: -15px; }
-
-        .sub-title {
-            font-family: 'Homemade Apple', cursive;
-            font-size: clamp(1.2rem, 3vw, 2rem);
-            color: var(--gold);
-            margin-top: 1.5rem;
-            opacity: 0;
-            animation: fadeIn 1.5s forwards 2s;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        .intro-text {
-            max-width: 500px;
-            margin: 2rem auto;
-            line-height: 1.8;
-            color: rgba(255,255,255,0.9);
-            font-size: 1.1rem;
-            opacity: 0;
-            animation: fadeIn 1.5s forwards 2.3s;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        .heart-beat {
+            color: #ff6b6b;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
         }
 
         .btn-start {
-            padding: 18px 60px;
-            font-size: 0.85rem;
-            font-family: 'Space Mono', monospace;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--gold);
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--gold);
+            padding: 18px 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            animation: fadeIn 1.5s forwards 2.6s;
-            backdrop-filter: blur(5px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(255, 100, 100, 0.3);
+            margin-top: 20px;
         }
-        
-        .btn-start::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-start:hover::before { left: 100%; }
-        
+
         .btn-start:hover {
-            background: var(--gold);
-            color: #1a3a5c;
-            box-shadow: 0 0 50px rgba(212,175,55,0.4);
-            transform: translateY(-2px);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 100, 100, 0.5);
         }
 
-        .hint-text {
-            margin-top: 2rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            opacity: 0;
-            color: rgba(255,255,255,0.6);
-            animation: fadeIn 1.5s forwards 2.9s;
-        }
-
-        /* ===== HUD ===== */
+        /* HUD */
         #hud {
-            width: 100%;
-            padding: 30px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            opacity: 0;
-            transition: opacity 1s;
+            padding: 25px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            opacity: 0; transition: opacity 1s;
         }
 
-        .score-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .score-ring {
-            width: 60px; height: 60px;
-            border-radius: 50%;
+        .hud-item {
             background: var(--glass);
-            backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .score-ring::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            background: conic-gradient(var(--gold) var(--progress, 0%), transparent var(--progress, 0%));
-            z-index: -1;
-            mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2px));
-            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2px));
-        }
-
-        .score-number {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.2rem;
-            color: var(--gold);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .score-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.7);
-            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
-        }
-
-        .icon-btn {
-            width: 45px; height: 45px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            pointer-events: auto;
-            transition: all 0.3s;
-            color: rgba(255,255,255,0.8);
-            font-size: 1.2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .icon-btn:hover {
-            background: rgba(212,175,55,0.3);
-            border-color: var(--gold);
-        }
-
-        /* ===== CONTROL INDICATOR ===== */
-        #control-indicator {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .control-circle {
-            width: 100px; height: 100px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            position: relative;
-            background: rgba(255,255,255,0.05);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex; align-items: center; gap: 10px;
             backdrop-filter: blur(5px);
+            color: #fff;
         }
 
-        .control-dot {
-            width: 12px; height: 12px;
-            background: var(--gold);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px var(--gold);
-            transition: all 0.1s ease-out;
-        }
-
-        .control-text {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.5);
-            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
-        }
-
-        /* ===== DIALOGUE BOX ===== */
-        #dialogue-box {
-            position: absolute;
-            bottom: 12%;
-            left: 50%;
-            transform: translateX(-50%) translateY(30px);
-            width: 90%;
-            max-width: 650px;
-            background: rgba(0, 30, 60, 0.85);
-            border: 1px solid rgba(212,175,55,0.4);
-            padding: 30px 40px;
-            backdrop-filter: blur(20px);
+        /* DIALOGUE BOX - Love Letter Style */
+        #dialogue-container {
+            position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 650px;
+            background: rgba(20, 10, 30, 0.85);
+            border: 1px solid rgba(255, 180, 180, 0.3);
+            border-radius: 20px;
+            padding: 30px;
             display: none;
-            pointer-events: auto;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            border-left: 5px solid #ff9a9e;
         }
 
-        #dialogue-box.active {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .dialogue-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .dialogue-speaker {
-            font-family: 'Space Mono', monospace;
-            color: var(--gold);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .dialogue-count {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .dialogue-content {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
-            line-height: 1.8;
-            color: rgba(255,255,255,0.95);
-            min-height: 60px;
-        }
-
-        .dialogue-next {
-            position: absolute;
-            bottom: 20px;
-            right: 25px;
-            font-size: 0.65rem;
-            font-family: 'Space Mono', monospace;
+        .speaker-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #ff9a9e;
+            margin-bottom: 12px;
             letter-spacing: 2px;
-            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .dialogue-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #fff1eb;
+            font-style: italic;
+        }
+
+        .next-arrow {
+            position: absolute; bottom: 20px; right: 25px;
+            color: #ff9a9e;
+            animation: float 2s infinite ease-in-out;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.3s;
+            font-size: 1.2rem;
         }
 
-        .dialogue-next.visible { opacity: 1; }
-
-        .dialogue-next::after {
-            content: '→';
-            animation: bounceRight 1s infinite;
-        }
-
-        /* ===== END SCREEN ===== */
+        /* END SCREEN */
         #end-screen {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(180deg, #1e90ff 0%, #87CEEB 50%, #FFE4B5 100%);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #2c0e37, #662d60);
             z-index: 200;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 2s ease;
+            padding: 20px;
+        }
+
+        .wish-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 600px;
+            transform: translateY(50px);
+            transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         #end-screen.active { opacity: 1; pointer-events: auto; }
+        #end-screen.active .wish-card { transform: translateY(0); }
 
-        .final-card {
-            text-align: center;
-            max-width: 600px;
-            padding: 60px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
+        /* KEYFRAMES */
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #end-screen.active .final-card {
-            opacity: 1;
-            transform: translateY(0);
-            transition-delay: 0.5s;
+        /* VIRTUAL JOYSTICK HINT */
+        .control-hint {
+            position: absolute; bottom: 30px; width: 100%;
+            text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6);
+            animation: fadeOut 5s forwards 3s;
         }
+        @keyframes fadeOut { to { opacity: 0; } }
 
-        .final-icon {
-            width: 80px; height: 80px;
-            margin: 0 auto 30px;
-            border: 1px solid var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--gold);
-            background: rgba(255,255,255,0.1);
-        }
-
-        .final-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            color: #1a3a5c;
-        }
-
-        .final-divider {
-            width: 60px;
-            height: 1px;
-            background: var(--gold);
-            margin: 30px auto;
-        }
-
-        .final-message {
-            font-family: 'Homemade Apple', cursive;
-            font-size: 1.8rem;
-            color: var(--gold);
-            margin-bottom: 30px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .final-poem {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.2rem;
-            line-height: 2;
-            color: #2a4a6c;
-            font-style: italic;
-            margin-bottom: 40px;
-        }
-
-        /* ===== PARTICLES OVERLAY ===== */
-        #particles-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes revealText { 
-            from { opacity: 0; letter-spacing: 0.5em; } 
-            to { opacity: 1; letter-spacing: 0.2em; } 
-        }
-        @keyframes expandLine { from { width: 0; } to { width: 120%; } }
-        @keyframes bounceRight { 
-            0%, 100% { transform: translateX(0); } 
-            50% { transform: translateX(5px); } 
-        }
-
-        @media (max-width: 768px) {
-            .main-title { letter-spacing: 0.1em; }
-            #hud { padding: 20px; }
-            .score-ring { width: 50px; height: 50px; }
-            .dialogue-content { font-size: 1.1rem; }
-            #dialogue-box { padding: 20px 25px; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="custom-cursor"></div>
-    <div id="cursor-dot"></div>
-
     <div id="canvas-container"></div>
-    <canvas id="particles-overlay"></canvas>
 
     <div id="ui-layer">
-        
-        <div id="loader">
-            <div class="loader-ring"></div>
-            <div class="loader-text">Memuat Langit Harapan</div>
-        </div>
-
-        <div id="start-screen">
-            <div class="title-container">
-                <h1 class="main-title">Langit Harapan</h1>
-                <h2 class="sub-title">Untuk Muhammad Rizal Setiawan</h2>
+        <!-- Start -->
+        <div id="start-screen" class="pointer-events-auto">
+            <div class="title-box">
+                <h1>Untuk Hani Febiana</h1>
+                <h2><span style="font-size: 0.8em; opacity: 0.8;">From:</span> Muhammad Rizal Setiawan</h2>
             </div>
-            <p class="intro-text">
-                Terbangkan pesawat kertas menembus hamparan awan. 
-                Kumpulkan tujuh bintang harapan untuk merangkai doa di hari istimewamu.
+            <div style="margin-bottom: 30px; font-size: 2rem;">
+                <i class="fas fa-heart heart-beat"></i>
+            </div>
+            <p style="margin-bottom: 40px; color: #ffdede; max-width: 500px; line-height: 1.8; font-family: 'Playfair Display', serif; font-style: italic;">
+                "Terbanglah bersamaku sejenak.<br>Ada beberapa bintang harapan yang ingin kurangkai<br>menjadi sebuah doa untukmu."
             </p>
             <button class="btn-start" id="btn-start">Mulai Perjalanan</button>
-            <div class="hint-text">Gunakan headphone untuk pengalaman terbaik</div>
         </div>
 
+        <!-- HUD -->
         <div id="hud">
-            <div class="score-container">
-                <div class="score-ring" id="score-ring">
-                    <span class="score-number" id="score-number">0</span>
-                </div>
-                <div>
-                    <div class="score-label">Bintang</div>
-                </div>
+            <div class="hud-item">
+                <i class="fas fa-heart" style="color: #ff9a9e;"></i>
+                <span id="score-text" style="font-family: 'Montserrat'; font-weight: 600;">0 / 7</span>
             </div>
-            <div class="icon-btn" id="volume-btn">🔊</div>
+            
+            <div class="hud-item pointer-events-auto" style="cursor: pointer;" id="btn-mute">
+                <i class="fas fa-volume-up" id="icon-vol"></i>
+            </div>
         </div>
 
-        <div id="control-indicator">
-            <div class="control-circle">
-                <div class="control-dot" id="control-dot"></div>
-            </div>
-            <div class="control-text">Gerakkan untuk mengendalikan</div>
+        <!-- Dialogue -->
+        <div id="dialogue-container" class="pointer-events-auto">
+            <div class="speaker-name">Rizal Berkata:</div>
+            <div class="dialogue-text" id="dialogue-text"></div>
+            <div class="next-arrow" id="btn-next-dialogue"><i class="fas fa-chevron-right"></i></div>
         </div>
 
-        <div id="dialogue-box">
-            <div class="dialogue-header">
-                <div class="dialogue-speaker">Suara Langit</div>
-                <div class="dialogue-count" id="dialogue-count">1 / 7</div>
-            </div>
-            <div class="dialogue-content" id="dialogue-text"></div>
-            <div class="dialogue-next" id="dialogue-next">Lanjutkan</div>
-        </div>
-
+        <!-- End -->
         <div id="end-screen">
-            <div class="final-card">
-                <div class="final-icon">✈</div>
-                <h2 class="final-title">Perjalanan Selesai</h2>
-                <div class="final-divider"></div>
-                <p class="final-message">"Selamat Ulang Tahun, Rizal."</p>
-                <p class="final-poem">
-                    Seperti pesawat kertas yang berani menembus awan tinggi,<br>
-                    Semoga impianmu tak pernah takut pada ketinggian.<br>
-                    Teruslah terbang, karena langit Tuhan itu luas tanpa batas.
+            <div class="wish-card">
+                <i class="fas fa-infinity" style="font-size: 3rem; color: #ff9a9e; margin-bottom: 20px;"></i>
+                <h1 style="font-family: 'Playfair Display'; font-size: 2.5rem; margin-bottom: 10px; color: #fff;">Selamat Ulang Tahun</h1>
+                <h2 style="font-family: 'Montserrat'; font-size: 1.2rem; color: #ffc3a0; margin-bottom: 30px;">Hani Febiana, Sayangku</h2>
+                
+                <p style="line-height: 1.8; color: #eee; font-size: 1.1rem; margin-bottom: 30px; font-family: 'Playfair Display', serif; font-style: italic;">
+                    "Terima kasih telah menjadi bagian terindah dalam hidupku.<br>
+                    Semoga hari-harimu selalu dipenuhi warna seindah langit senja ini.<br>
+                    Aku mencintaimu, hari ini dan seterusnya."
                 </p>
-                <button class="btn-start" onclick="location.reload()">Terbang Lagi</button>
+                <div style="font-size: 0.9rem; color: #aaa; margin-top: 20px;">- Rizal -</div>
+                <button class="btn-start" onclick="location.reload()" style="margin-top: 30px; font-size: 0.9rem;">Ulangi Kenangan</button>
             </div>
         </div>
 
+        <div class="control-hint" id="hint-text">Sentuh & Tahan Layar untuk Mengarahkan Hati</div>
     </div>
 
     <script>
-    /**
-     * ============================================================================
-     * LANGIT HARAPAN V2 - Enhanced Paper Plane Birthday Experience
-     * - Beautiful paper plane model
-     * - Respawning stars (never run out)
-     * - Beautiful blue sky with sun
-     * ============================================================================
-     */
-
-    // ===== UTILITIES =====
-    const Utils = {
-        lerp: (a, b, t) => a + (b - a) * t,
-        clamp: (val, min, max) => Math.max(min, Math.min(max, val)),
-        rand: (min, max) => Math.random() * (max - min) + min,
-        randInt: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
-        smoothstep: (min, max, value) => {
-            const x = Math.max(0, Math.min(1, (value - min) / (max - min)));
-            return x * x * (3 - 2 * x);
-        }
-    };
-
-    // Simplex Noise
-    class SimplexNoise {
-        constructor() {
-            this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
-            this.p = [];
-            for (let i = 0; i < 256; i++) this.p[i] = Math.floor(Math.random() * 256);
-            this.perm = [];
-            for (let i = 0; i < 512; i++) this.perm[i] = this.p[i & 255];
-        }
-        dot(g, x, y) { return g[0] * x + g[1] * y; }
-        noise2D(xin, yin) {
-            let n0, n1, n2;
-            const F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
-            const s = (xin + yin) * F2;
-            const i = Math.floor(xin + s);
-            const j = Math.floor(yin + s);
-            const G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
-            const t = (i + j) * G2;
-            const X0 = i - t, Y0 = j - t;
-            const x0 = xin - X0, y0 = yin - Y0;
-            let i1, j1;
-            if (x0 > y0) { i1 = 1; j1 = 0; } else { i1 = 0; j1 = 1; }
-            const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2;
-            const x2 = x0 - 1.0 + 2.0 * G2, y2 = y0 - 1.0 + 2.0 * G2;
-            const ii = i & 255, jj = j & 255;
-            const gi0 = this.perm[ii + this.perm[jj]] % 12;
-            const gi1 = this.perm[ii + i1 + this.perm[jj + j1]] % 12;
-            const gi2 = this.perm[ii + 1 + this.perm[jj + 1]] % 12;
-            let t0 = 0.5 - x0 * x0 - y0 * y0;
-            n0 = t0 < 0 ? 0 : (t0 *= t0, t0 * t0 * this.dot(this.grad3[gi0], x0, y0));
-            let t1 = 0.5 - x1 * x1 - y1 * y1;
-            n1 = t1 < 0 ? 0 : (t1 *= t1, t1 * t1 * this.dot(this.grad3[gi1], x1, y1));
-            let t2 = 0.5 - x2 * x2 - y2 * y2;
-            n2 = t2 < 0 ? 0 : (t2 *= t2, t2 * t2 * this.dot(this.grad3[gi2], x2, y2));
-            return 70.0 * (n0 + n1 + n2);
-        }
-    }
-    const noise = new SimplexNoise();
-
-    // ===== AUDIO ENGINE =====
-    class AudioEngine {
-        constructor() {
-            this.ctx = null;
-            this.masterGain = null;
-            this.isPlaying = false;
-            this.isMuted = false;
-            this.scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
-        }
-
-        init() {
-            if (this.ctx) return;
-            const AC = window.AudioContext || window.webkitAudioContext;
-            this.ctx = new AC();
-            this.masterGain = this.ctx.createGain();
-            this.masterGain.gain.value = 0.25;
-            this.masterGain.connect(this.ctx.destination);
-
-            this.convolver = this.ctx.createConvolver();
-            this.convolver.buffer = this.createReverbIR();
-            this.reverbGain = this.ctx.createGain();
-            this.reverbGain.gain.value = 0.3;
-            this.masterGain.connect(this.convolver);
-            this.convolver.connect(this.reverbGain);
-            this.reverbGain.connect(this.ctx.destination);
-        }
-
-        createReverbIR() {
-            const length = this.ctx.sampleRate * 2;
-            const impulse = this.ctx.createBuffer(2, length, this.ctx.sampleRate);
-            for (let channel = 0; channel < 2; channel++) {
-                const channelData = impulse.getChannelData(channel);
-                for (let i = 0; i < length; i++) {
-                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
-                }
-            }
-            return impulse;
-        }
-
-        start() {
-            if (!this.ctx) this.init();
-            if (this.ctx.state === 'suspended') this.ctx.resume();
-            if (this.isPlaying) return;
-            this.isPlaying = true;
-            this.playAmbience();
-            this.createWindNoise();
-        }
-
-        createWindNoise() {
-            const bufferSize = 2 * this.ctx.sampleRate;
-            const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            let lastOut = 0;
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                output[i] = (lastOut + 0.02 * white) / 1.02;
-                lastOut = output[i];
-                output[i] *= 3.5;
-            }
-            const noiseNode = this.ctx.createBufferSource();
-            noiseNode.buffer = noiseBuffer;
-            noiseNode.loop = true;
-            
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 400;
-            
-            this.windGain = this.ctx.createGain();
-            this.windGain.gain.value = 0.04;
-            
-            noiseNode.connect(filter);
-            filter.connect(this.windGain);
-            this.windGain.connect(this.masterGain);
-            noiseNode.start();
-        }
-
-        updateWind(intensity) {
-            if (this.windGain) {
-                const target = Utils.clamp(0.03 + intensity * 0.1, 0.03, 0.2);
-                this.windGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.3);
-            }
-        }
-
-        playAmbience() {
-            if (!this.isPlaying) return;
-            
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            
-            const note = this.scale[Math.floor(Math.random() * this.scale.length)];
-            const octave = Math.random() > 0.7 ? 2 : 1;
-            osc.frequency.value = note * octave * (Math.random() > 0.5 ? 0.5 : 1);
-            osc.type = Math.random() > 0.7 ? 'sine' : 'triangle';
-            
-            const now = this.ctx.currentTime;
-            const attack = Utils.rand(1, 3);
-            const release = Utils.rand(2, 4);
-            
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.04, now + attack);
-            gain.gain.linearRampToValueAtTime(0, now + attack + release);
-            
-            osc.connect(gain);
-            gain.connect(this.masterGain);
-            osc.start();
-            osc.stop(now + attack + release);
-            
-            setTimeout(() => this.playAmbience(), Utils.rand(1500, 4000));
-        }
-
-        playCollect() {
-            if (!this.ctx || this.isMuted) return;
-            
-            [1, 1.5, 2, 2.5].forEach((mult, i) => {
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.value = 880 * mult;
-                
-                const now = this.ctx.currentTime + i * 0.08;
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-                
-                osc.connect(gain);
-                gain.connect(this.masterGain);
-                osc.start(now);
-                osc.stop(now + 0.6);
-            });
-        }
-
-        toggleMute() {
-            this.isMuted = !this.isMuted;
-            this.masterGain.gain.setTargetAtTime(this.isMuted ? 0 : 0.25, this.ctx.currentTime, 0.1);
-            return !this.isMuted;
-        }
-    }
-    const audio = new AudioEngine();
-
-    // ===== 2D PARTICLE SYSTEM =====
-    class ParticleSystem {
-        constructor(canvas) {
-            this.canvas = canvas;
-            this.ctx = canvas.getContext('2d');
-            this.particles = [];
-            this.resize();
-            window.addEventListener('resize', () => this.resize());
-        }
-
-        resize() {
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
-        }
-
-        addStarBurst(x, y) {
-            for (let i = 0; i < 40; i++) {
-                const angle = (i / 40) * Math.PI * 2;
-                const speed = Utils.rand(3, 10);
-                this.particles.push({
-                    x, y,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed,
-                    life: 1,
-                    decay: Utils.rand(0.015, 0.03),
-                    size: Utils.rand(2, 6),
-                    color: ['#FFD700', '#FFA500', '#FFFF00', '#fff'][Math.floor(Math.random() * 4)]
-                });
-            }
-        }
-
-        update() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            
-            for (let i = this.particles.length - 1; i >= 0; i--) {
-                const p = this.particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.08;
-                p.vx *= 0.98;
-                p.life -= p.decay;
-                
-                if (p.life <= 0) {
-                    this.particles.splice(i, 1);
-                    continue;
-                }
-                
-                this.ctx.globalAlpha = p.life;
-                this.ctx.fillStyle = p.color;
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-                this.ctx.fill();
-            }
-            this.ctx.globalAlpha = 1;
-        }
-    }
-
-    // ===== CONFIG =====
-    const CONFIG = {
-        planeSpeed: 0.7,
-        worldWidth: 300,
-        starCount: 7,
-        cloudCount: 60,
-        smoothing: 0.06,
-        tiltMultiplier: 0.7,
-        cameraLag: 0.04
-    };
-
-    // ===== STATE =====
-    const state = {
-        isRunning: false,
-        score: 0,
-        mouse: { x: 0, y: 0 },
-        targetMouse: { x: 0, y: 0 },
-        time: 0,
-        dialogueQueue: [],
-        isDialogueOpen: false,
-        currentDialogueIndex: 0,
-        starsCollected: new Set()
-    };
-
-    const storyData = [
-        "Selamat Ulang Tahun, Rizal. Hari ini, langit merayakan kehadiranmu.",
-        "Setiap awan yang kau lewati adalah rintangan yang telah kau taklukan setahun ini.",
-        "Lihatlah ke depan. Cakrawala luas itu adalah potensimu yang belum terjamah.",
-        "Jangan takut jatuh. Angin doa dari orang-orang tercinta akan selalu mengangkatmu.",
-        "Jadilah pribadi yang bijak, setenang biru langit, sehangat sinar mentari.",
-        "Teruslah bermimpi setinggi mungkin. Karena Tuhan menyukai hamba-Nya yang berharap.",
-        "Semoga di usia baru ini, kebahagiaan dan keberkahan selalu menaungimu. Aamiin."
-    ];
-
-    // ===== THREE.JS SETUP =====
-    let scene, camera, renderer;
-    let plane, trail, sun;
-    let clouds = [], stars = [];
-    let particleSystem;
-
-    function initGraphics() {
-        scene = new THREE.Scene();
+        /**
+         * =========================================================================
+         * ENGINE CORE: THREE.JS SETUP & UTILITIES
+         * =========================================================================
+         */
         
-        // Beautiful blue sky fog
-        scene.fog = new THREE.Fog(0x87CEEB, 100, 800);
-        scene.background = new THREE.Color(0x87CEEB);
-
-        camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.set(0, 8, 25);
-
-        renderer = new THREE.WebGLRenderer({ 
-            antialias: true, 
-            alpha: false,
-            powerPreference: 'high-performance'
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.1;
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // Lighting for daytime
-        const ambient = new THREE.AmbientLight(0x87CEEB, 0.6);
-        scene.add(ambient);
-
-        const sunLight = new THREE.DirectionalLight(0xfffaf0, 1.8);
-        sunLight.position.set(200, 300, -100);
-        sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        scene.add(sunLight);
-
-        // Hemisphere light for sky coloring
-        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0xffffff, 0.5);
-        scene.add(hemiLight);
-
-        // Create everything
-        createSkyDome();
-        createSun();
-        createPaperPlane();
-        createClouds();
-        createStars();
-
-        particleSystem = new ParticleSystem(document.getElementById('particles-overlay'));
-
-        window.addEventListener('resize', onResize);
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('touchmove', onTouchMove, { passive: false });
-        document.addEventListener('touchstart', onTouchMove, { passive: false });
-
-        animate();
-        
-        setTimeout(() => {
-            document.getElementById('loader').style.opacity = '0';
-            setTimeout(() => document.getElementById('loader').remove(), 1500);
-        }, 1000);
-    }
-
-    // ===== BEAUTIFUL SKY DOME =====
-    function createSkyDome() {
-        const vertexShader = `
-            varying vec3 vWorldPosition;
-            varying vec2 vUv;
-            void main() {
-                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-                vWorldPosition = worldPosition.xyz;
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `;
-        const fragmentShader = `
-            uniform vec3 topColor;
-            uniform vec3 midColor;
-            uniform vec3 bottomColor;
-            uniform vec3 sunColor;
-            uniform vec3 sunPosition;
-            uniform float sunIntensity;
-            varying vec3 vWorldPosition;
-            
-            void main() {
-                float h = normalize(vWorldPosition).y;
-                
-                // Sky gradient
-                vec3 skyColor;
-                if (h > 0.0) {
-                    skyColor = mix(midColor, topColor, pow(h, 0.5));
-                } else {
-                    skyColor = mix(midColor, bottomColor, pow(-h, 0.8));
-                }
-                
-                // Sun glow
-                vec3 sunDir = normalize(sunPosition);
-                vec3 viewDir = normalize(vWorldPosition);
-                float sunAngle = dot(viewDir, sunDir);
-                
-                // Sun disc
-                float sunDisc = smoothstep(0.995, 0.999, sunAngle);
-                
-                // Sun glow/halo
-                float sunGlow = pow(max(0.0, sunAngle), 8.0) * 0.5;
-                float sunHalo = pow(max(0.0, sunAngle), 2.0) * 0.15;
-                
-                vec3 finalColor = skyColor;
-                finalColor += sunColor * sunGlow * sunIntensity;
-                finalColor += sunColor * sunHalo * sunIntensity * 0.5;
-                finalColor = mix(finalColor, sunColor, sunDisc);
-                
-                gl_FragColor = vec4(finalColor, 1.0);
-            }
-        `;
-        
-        const uniforms = {
-            topColor: { value: new THREE.Color(0x1e90ff) },      // Deep blue
-            midColor: { value: new THREE.Color(0x87CEEB) },      // Sky blue
-            bottomColor: { value: new THREE.Color(0xB0E0E6) },   // Powder blue
-            sunColor: { value: new THREE.Color(0xFFFFE0) },      // Warm yellow
-            sunPosition: { value: new THREE.Vector3(200, 300, -400) },
-            sunIntensity: { value: 1.2 }
+        const MathUtils = {
+            rand: (min, max) => Math.random() * (max - min) + min,
+            lerp: (start, end, t) => start * (1 - t) + end * t,
+            clamp: (val, min, max) => Math.max(min, Math.min(max, val))
         };
 
-        const skyGeo = new THREE.SphereGeometry(900, 64, 64);
-        const skyMat = new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            uniforms,
-            side: THREE.BackSide
-        });
-        
-        const sky = new THREE.Mesh(skyGeo, skyMat);
-        scene.add(sky);
-    }
+        const state = {
+            isRunning: false,
+            score: 0,
+            maxScore: 7,
+            speed: 0,
+            baseSpeed: 0.6, // Slightly slower for romantic vibe
+            mouseX: 0,
+            mouseY: 0,
+            targetX: 0,
+            targetY: 0,
+            planePos: { x: 0, y: 0 },
+            isDialogueOpen: false
+        };
 
-    // ===== BRIGHT SUN =====
-    function createSun() {
-        const sunGroup = new THREE.Group();
-        
-        // Sun core
-        const sunGeo = new THREE.SphereGeometry(30, 32, 32);
-        const sunMat = new THREE.MeshBasicMaterial({
-            color: 0xFFFF80,
-        });
-        const sunMesh = new THREE.Mesh(sunGeo, sunMat);
-        sunGroup.add(sunMesh);
-        
-        // Sun glow (multiple layers)
-        for (let i = 0; i < 3; i++) {
-            const glowGeo = new THREE.SphereGeometry(35 + i * 15, 32, 32);
-            const glowMat = new THREE.MeshBasicMaterial({
-                color: 0xFFFF99,
-                transparent: true,
-                opacity: 0.15 - i * 0.04,
-                side: THREE.BackSide
-            });
-            const glow = new THREE.Mesh(glowGeo, glowMat);
-            sunGroup.add(glow);
-        }
-        
-        // Sun rays (sprites)
-        const rayTexture = createSunRayTexture();
-        for (let i = 0; i < 12; i++) {
-            const rayMat = new THREE.SpriteMaterial({
-                map: rayTexture,
-                transparent: true,
-                opacity: 0.3,
-                blending: THREE.AdditiveBlending
-            });
-            const ray = new THREE.Sprite(rayMat);
-            const angle = (i / 12) * Math.PI * 2;
-            ray.position.set(Math.cos(angle) * 50, Math.sin(angle) * 50, 0);
-            ray.scale.set(80, 80, 1);
-            sunGroup.add(ray);
-        }
-        
-        sunGroup.position.set(200, 250, -500);
-        scene.add(sunGroup);
-        sun = sunGroup;
-    }
-
-    function createSunRayTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        
-        const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-        grad.addColorStop(0, 'rgba(255,255,200,0.8)');
-        grad.addColorStop(0.3, 'rgba(255,255,150,0.3)');
-        grad.addColorStop(1, 'rgba(255,255,100,0)');
-        
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 128, 128);
-        
-        return new THREE.CanvasTexture(canvas);
-    }
-
-    // ===== BEAUTIFUL PAPER PLANE =====
-    function createPaperPlane() {
-        const group = new THREE.Group();
-        
-        // Paper material with slight transparency and fold lines
-        const paperMat = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            roughness: 0.4,
-            metalness: 0.0,
-            side: THREE.DoubleSide,
-            flatShading: false
-        });
-        
-        const paperMatBack = new THREE.MeshStandardMaterial({
-            color: 0xf5f5f5,
-            roughness: 0.5,
-            metalness: 0.0,
-            side: THREE.DoubleSide
-        });
-
-        // Main body (fuselage) - elongated triangle
-        const bodyGeo = new THREE.BufferGeometry();
-        const bodyVerts = new Float32Array([
-            // Top surface
-            0, 0.15, 3,      // Nose (top)
-            -0.3, 0.1, -1.5, // Left back top
-            0.3, 0.1, -1.5,  // Right back top
-            
-            // Bottom surface
-            0, -0.05, 3,     // Nose (bottom)
-            -0.3, 0, -1.5,   // Left back bottom
-            0.3, 0, -1.5,    // Right back bottom
-        ]);
-        const bodyIndices = [
-            0, 1, 2,  // Top
-            3, 5, 4,  // Bottom
-            0, 3, 4, 0, 4, 1,  // Left side
-            0, 2, 5, 0, 5, 3,  // Right side
-            1, 4, 5, 1, 5, 2   // Back
+        // --- RIZAL'S MESSAGES FOR HANI ---
+        const stories = [
+            "Hani... Setiap kali aku melihatmu, duniaku terasa lebih berwarna. Kamu adalah keajaiban terindah yang pernah hadir dalam hidupku.",
+            "Aku selalu kagum dengan caramu tersenyum. Senyummu punya kekuatan untuk membuat hari terberatku menjadi ringan. Terima kasih sudah selalu ada.",
+            "Bersama kamu, aku belajar arti sabar dan tulus mencintai. Kamu mengajarkanku bahwa cinta bukan hanya tentang kata-kata, tapi tentang kehadiran.",
+            "Aku tidak butuh langit yang sempurna, karena langitku sudah sempurna dengan adanya kamu di dalamnya. Kamu adalah bintang paling terang di hidupku.",
+            "Kalau ada satu hal yang ingin aku lakukan seumur hidupku, itu adalah membuatmu bahagia. Karena kebahagiaanmu adalah kebahagiaanku juga.",
+            "Terima kasih sudah menerima aku apa adanya, dengan segala kekurangan dan kelebihanku. Di matamu, aku merasa menjadi versi terbaik dari diriku.",
+            "Hani, aku tidak bisa menjanjikan segalanya akan selalu mudah. Tapi aku berjanji akan selalu ada di sampingmu, dalam suka maupun duka. Aku sayang kamu, selamanya."
         ];
-        bodyGeo.setAttribute('position', new THREE.BufferAttribute(bodyVerts, 3));
-        bodyGeo.setIndex(bodyIndices);
-        bodyGeo.computeVertexNormals();
+
+        // --- SCENE SETUP ---
+        const scene = new THREE.Scene();
+        // Romantic Purple Fog
+        scene.fog = new THREE.FogExp2(0x2c0e37, 0.0025); 
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 4, 15);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // --- LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffccff, 0.5); // Pinkish ambient
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffaa00, 1.2); // Golden hour sun
+        sunLight.position.set(20, 50, -100);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
+
+        // --- ASSET GENERATORS ---
         
-        const body = new THREE.Mesh(bodyGeo, paperMat);
-        body.castShadow = true;
-        group.add(body);
+        // 1. Heart Texture (Canvas)
+        function createHeartTexture(color) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.translate(64, 64);
+            ctx.scale(2.5, 2.5);
+            ctx.translate(-64, -64);
 
-        // Left wing
-        const leftWingGeo = new THREE.BufferGeometry();
-        const leftWingVerts = new Float32Array([
-            0, 0.15, 2.5,     // Front inner (at body)
-            -0.3, 0.1, -1,    // Back inner
-            -2.5, 0.4, 0,     // Wing tip front
-            -2.2, 0.35, -1.2, // Wing tip back
-        ]);
-        leftWingGeo.setAttribute('position', new THREE.BufferAttribute(leftWingVerts, 3));
-        leftWingGeo.setIndex([0, 2, 1, 1, 2, 3]);
-        leftWingGeo.computeVertexNormals();
-        
-        const leftWing = new THREE.Mesh(leftWingGeo, paperMat);
-        leftWing.castShadow = true;
-        group.add(leftWing);
+            ctx.beginPath();
+            ctx.moveTo(75, 40);
+            ctx.bezierCurveTo(75, 37, 70, 25, 50, 25);
+            ctx.bezierCurveTo(20, 25, 20, 62.5, 20, 62.5);
+            ctx.bezierCurveTo(20, 80, 40, 102, 75, 120);
+            ctx.bezierCurveTo(110, 102, 130, 80, 130, 62.5);
+            ctx.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
+            ctx.bezierCurveTo(85, 25, 75, 37, 75, 40);
+            ctx.fillStyle = color;
+            ctx.fill();
 
-        // Right wing (mirror)
-        const rightWingGeo = new THREE.BufferGeometry();
-        const rightWingVerts = new Float32Array([
-            0, 0.15, 2.5,     // Front inner
-            0.3, 0.1, -1,     // Back inner
-            2.5, 0.4, 0,      // Wing tip front
-            2.2, 0.35, -1.2,  // Wing tip back
-        ]);
-        rightWingGeo.setAttribute('position', new THREE.BufferAttribute(rightWingVerts, 3));
-        rightWingGeo.setIndex([0, 1, 2, 1, 3, 2]);
-        rightWingGeo.computeVertexNormals();
-        
-        const rightWing = new THREE.Mesh(rightWingGeo, paperMat);
-        rightWing.castShadow = true;
-        group.add(rightWing);
+            // Glow
+            ctx.globalCompositeOperation = 'destination-over';
+            const grad = ctx.createRadialGradient(75, 75, 10, 75, 75, 60);
+            grad.addColorStop(0, 'rgba(255,255,255,0.8)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,150,150);
 
-        // Tail fin (vertical stabilizer)
-        const tailGeo = new THREE.BufferGeometry();
-        const tailVerts = new Float32Array([
-            0, 0.1, -0.5,    // Front bottom
-            0, 0.8, -1.2,    // Top
-            0, 0.1, -1.5,    // Back bottom
-        ]);
-        tailGeo.setAttribute('position', new THREE.BufferAttribute(tailVerts, 3));
-        tailGeo.setIndex([0, 1, 2]);
-        tailGeo.computeVertexNormals();
-        
-        const tail = new THREE.Mesh(tailGeo, paperMat);
-        tail.castShadow = true;
-        group.add(tail);
-
-        // Wing fold lines (visual detail)
-        const foldMat = new THREE.LineBasicMaterial({ color: 0xdddddd, linewidth: 1 });
-        
-        // Left fold
-        const leftFoldGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(0, 0.15, 2.5),
-            new THREE.Vector3(-2.3, 0.38, -0.1)
-        ]);
-        group.add(new THREE.Line(leftFoldGeo, foldMat));
-        
-        // Right fold
-        const rightFoldGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(0, 0.15, 2.5),
-            new THREE.Vector3(2.3, 0.38, -0.1)
-        ]);
-        group.add(new THREE.Line(rightFoldGeo, foldMat));
-
-        // Subtle shadow under plane
-        const shadowGeo = new THREE.PlaneGeometry(4, 6);
-        const shadowMat = new THREE.MeshBasicMaterial({
-            color: 0x000000,
-            transparent: true,
-            opacity: 0.1,
-            side: THREE.DoubleSide
-        });
-        const shadow = new THREE.Mesh(shadowGeo, shadowMat);
-        shadow.rotation.x = -Math.PI / 2;
-        shadow.position.y = -3;
-        group.add(shadow);
-
-        group.scale.set(1.2, 1.2, 1.2);
-        scene.add(group);
-        plane = group;
-
-        createTrail();
-    }
-
-    function createTrail() {
-        const trailCount = 60;
-        const positions = new Float32Array(trailCount * 3);
-        const colors = new Float32Array(trailCount * 3);
-        const sizes = new Float32Array(trailCount);
-
-        for (let i = 0; i < trailCount; i++) {
-            positions[i * 3] = 0;
-            positions[i * 3 + 1] = 0;
-            positions[i * 3 + 2] = i * 0.3;
-            colors[i * 3] = 1;
-            colors[i * 3 + 1] = 1;
-            colors[i * 3 + 2] = 1;
-            sizes[i] = (1 - i / trailCount) * 2;
+            return new THREE.CanvasTexture(canvas);
         }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        // 2. Sunset Cloud Texture
+        function createCloudTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64,64,0, 64,64,64);
+            grad.addColorStop(0, 'rgba(255, 200, 220, 0.6)'); // Pinkish
+            grad.addColorStop(0.5, 'rgba(200, 150, 200, 0.2)'); // Purpleish
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,128,128);
+            return new THREE.CanvasTexture(canvas);
+        }
 
-        const mat = new THREE.PointsMaterial({
-            size: 1.5,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.4,
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true
-        });
+        // 3. Glowing Orb (The "Star")
+        function createOrbTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(32,32,0, 32,32,32);
+            grad.addColorStop(0, '#fff');
+            grad.addColorStop(0.4, '#ff9a9e');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,64,64);
+            return new THREE.CanvasTexture(canvas);
+        }
 
-        trail = new THREE.Points(geo, mat);
-        scene.add(trail);
-    }
+        // --- GAME OBJECTS ---
 
-    // ===== FLUFFY CLOUDS =====
-    function createCloudTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        
-        const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(0.4, 'rgba(255,255,255,0.8)');
-        gradient.addColorStop(0.7, 'rgba(240,248,255,0.4)');
-        gradient.addColorStop(1, 'rgba(230,240,250,0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 256, 256);
-        
-        return new THREE.CanvasTexture(canvas);
-    }
+        // 1. THE PAPER PLANE (Glowing)
+        let plane;
+        function createPlane() {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = new Float32Array([
+                0, 0, 3,    -1.5, 0.5, -1,   0, -0.5, -1, // Left Wing
+                0, 0, 3,    0, -0.5, -1,     1.5, 0.5, -1, // Right Wing
+                0, 0, 3,    0, 0.5, -1,      0, 0, -1      // Spine (for thickness visual)
+            ]);
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            geometry.computeVertexNormals();
 
-    function createClouds() {
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff, 
+                emissive: 0xffaaaa,
+                emissiveIntensity: 0.3,
+                roughness: 0.3, 
+                metalness: 0.5,
+                side: THREE.DoubleSide
+            });
+
+            plane = new THREE.Mesh(geometry, material);
+            scene.add(plane);
+
+            // Add a point light to the plane so it illuminates clouds
+            const planeLight = new THREE.PointLight(0xff9a9e, 1, 20);
+            plane.add(planeLight);
+        }
+
+        // 2. ROMANTIC CLOUDS
+        const clouds = [];
         const cloudTex = createCloudTexture();
         
-        for (let i = 0; i < CONFIG.cloudCount; i++) {
+        function spawnCloud(zStart) {
             const group = new THREE.Group();
-            const puffs = Utils.randInt(5, 10);
+            const puffCount = 3 + Math.floor(Math.random() * 3);
+            const mat = new THREE.SpriteMaterial({ map: cloudTex, transparent: true, opacity: 0.6, depthWrite: false });
             
-            for (let j = 0; j < puffs; j++) {
-                const mat = new THREE.SpriteMaterial({
-                    map: cloudTex,
-                    transparent: true,
-                    opacity: Utils.rand(0.6, 0.95),
-                    depthWrite: false
-                });
+            for(let i=0; i<puffCount; i++) {
                 const sprite = new THREE.Sprite(mat);
+                const scale = 10 + Math.random() * 15;
+                sprite.scale.set(scale, scale, 1);
                 sprite.position.set(
-                    Utils.rand(-12, 12),
-                    Utils.rand(-4, 4),
-                    Utils.rand(-4, 4)
+                    Math.random() * 10 - 5,
+                    Math.random() * 5 - 2.5,
+                    Math.random() * 5 - 2.5
                 );
-                const scale = Utils.rand(12, 28);
-                sprite.scale.set(scale, scale * 0.6, 1);
                 group.add(sprite);
             }
 
-            group.position.set(
-                Utils.rand(-CONFIG.worldWidth, CONFIG.worldWidth),
-                Utils.rand(-10, 50),
-                Utils.rand(-800, -50)
-            );
-            group.userData = { 
-                speed: Utils.rand(0.02, 0.08),
-                baseY: group.position.y
-            };
-            
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 30 + Math.random() * 40; 
+            group.position.x = Math.cos(angle) * radius;
+            group.position.y = Math.sin(angle) * radius;
+            group.position.z = zStart;
+
+            // Variasi warna ungu/pink
+            const hueShift = Math.random() * 0.1;
+            group.children.forEach(s => s.material.color.setHSL(0.8 + hueShift, 0.7, 0.8));
+
             scene.add(group);
             clouds.push(group);
         }
-    }
 
-    // ===== GOLDEN STARS (Respawning) =====
-    function createStarTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        const ctx = canvas.getContext('2d');
+        for(let i=0; i<40; i++) spawnCloud(-i * 15);
+
+        // 3. COLLECTIBLE ORBS
+        const stars = [];
+        const orbTex = createOrbTexture();
         
-        // Outer glow
-        const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-        grad.addColorStop(0, 'rgba(255,215,0,1)');
-        grad.addColorStop(0.15, 'rgba(255,200,50,0.9)');
-        grad.addColorStop(0.4, 'rgba(255,180,0,0.4)');
-        grad.addColorStop(1, 'rgba(255,150,0,0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 128, 128);
-        
-        // Star shape
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        const cx = 64, cy = 64;
-        const spikes = 4;
-        const outerR = 22;
-        const innerR = 10;
-        let rot = Math.PI / 4;
-        
-        ctx.moveTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
-        for (let i = 0; i < spikes * 2; i++) {
-            const r = i % 2 === 0 ? innerR : outerR;
-            rot += Math.PI / spikes;
-            ctx.lineTo(cx + Math.cos(rot) * r, cy + Math.sin(rot) * r);
+        function spawnStar(index) {
+            const mat = new THREE.SpriteMaterial({ map: orbTex, blending: THREE.AdditiveBlending });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(4, 4, 1);
+
+            const zPos = -60 - (index * 140); // Further distance for relaxed pace
+            const xPos = Math.sin(index * 0.8) * 20;
+            const yPos = Math.cos(index * 0.6) * 12;
+            
+            sprite.position.set(xPos, yPos, zPos);
+            sprite.userData = { id: index, active: true };
+            
+            scene.add(sprite);
+            stars.push(sprite);
         }
-        ctx.closePath();
-        ctx.fill();
-        
-        return new THREE.CanvasTexture(canvas);
-    }
 
-    function createStars() {
-        const starTex = createStarTexture();
+        for(let i=0; i<state.maxScore; i++) spawnStar(i);
+
+        // 4. HEART PARTICLES (Atmosphere)
+        const heartTex = createHeartTexture('#ffc0cb');
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 200;
+        const pPos = new Float32Array(particleCount * 3);
         
-        // Create initial stars ahead of player
-        for (let i = 0; i < 10; i++) {
-            spawnStar(starTex, -100 - i * 120);
+        for(let i=0; i<particleCount*3; i+=3) {
+            pPos[i] = (Math.random() - 0.5) * 100;
+            pPos[i+1] = (Math.random() - 0.5) * 60;
+            pPos[i+2] = -Math.random() * 100;
         }
-    }
-
-    function spawnStar(texture, zPos) {
-        const mat = new THREE.SpriteMaterial({
-            map: texture || createStarTexture(),
-            transparent: true,
-            blending: THREE.AdditiveBlending
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const particleMat = new THREE.PointsMaterial({ 
+            map: heartTex, 
+            size: 0.8, 
+            transparent: true, 
+            opacity: 0.4, 
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         });
-        const sprite = new THREE.Sprite(mat);
-        sprite.scale.set(10, 10, 1);
-        
-        // Random position in view
-        const xPos = Utils.rand(-50, 50);
-        const yPos = Utils.rand(-5, 30);
-        
-        sprite.position.set(xPos, yPos, zPos);
-        sprite.userData = { 
-            collected: false, 
-            baseScale: 10,
-            id: Math.random()
-        };
-        
-        scene.add(sprite);
-        stars.push(sprite);
-        
-        return sprite;
-    }
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
 
-    // ===== ANIMATION LOOP =====
-    function animate() {
-        requestAnimationFrame(animate);
+        /**
+         * =========================================================================
+         * INPUT & CONTROLS (Improved for Mobile)
+         * =========================================================================
+         */
+
+        // Using a "Virtual Joystick" logic without visual UI
+        // We track the delta of movement from the touch start
+        let touchStartX = 0;
+        let touchStartY = 0;
         
-        const time = performance.now() * 0.001;
-        state.time = time;
-
-        // Smooth mouse interpolation
-        state.mouse.x = Utils.lerp(state.mouse.x, state.targetMouse.x, CONFIG.smoothing);
-        state.mouse.y = Utils.lerp(state.mouse.y, state.targetMouse.y, CONFIG.smoothing);
-
-        if (state.isRunning) {
-            updatePlane(time);
-            updateEnvironment(time);
-            checkCollisions();
-            manageStars();
-        } else if (plane) {
-            plane.position.y = Math.sin(time * 0.5) * 0.5 + 5;
-            plane.rotation.z = Math.sin(time * 0.3) * 0.1;
+        function handleInput(normalizedX, normalizedY) {
+            state.targetX = normalizedX * 25; // Max X range
+            state.targetY = normalizedY * 15; // Max Y range
         }
 
-        updateControlIndicator();
-        particleSystem.update();
-        
-        // Rotate sun rays
-        if (sun) {
-            sun.children.forEach((child, i) => {
-                if (i > 3) { // Only rays
-                    child.material.rotation += 0.002;
+        document.addEventListener('mousemove', e => {
+            const nX = (e.clientX / window.innerWidth) * 2 - 1;
+            const nY = -(e.clientY / window.innerHeight) * 2 + 1;
+            handleInput(nX, nY);
+        });
+
+        document.addEventListener('touchstart', e => {
+            // e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: false });
+
+        document.addEventListener('touchmove', e => {
+            e.preventDefault(); // Prevent scroll
+            const touch = e.touches[0];
+            
+            // Map directly to screen position for "Follow Finger" feeling
+            // This is often more intuitive for casual users than relative joystick
+            const nX = (touch.clientX / window.innerWidth) * 2 - 1;
+            const nY = -(touch.clientY / window.innerHeight) * 2 + 1;
+            
+            // Add a slight offset so finger doesn't cover the plane
+            handleInput(nX, nY + 0.3);
+        }, { passive: false });
+
+        /**
+         * =========================================================================
+         * AUDIO (Romantic Melodic Procedural)
+         * =========================================================================
+         */
+        class AudioSynth {
+            constructor() {
+                this.ctx = null;
+                this.master = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AC();
+                this.master = this.ctx.createGain();
+                this.master.gain.value = 0.3;
+                this.master.connect(this.ctx.destination);
+                
+                this.playPad();
+                this.playMelody();
+            }
+
+            playPad() {
+                // Warm, swelling pad
+                const osc = this.ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.value = 130.81; // C3
+                
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.1;
+                
+                // Lowpass filter to make it soft
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 400;
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.master);
+                osc.start();
+
+                // LFO for movement
+                setInterval(() => {
+                    if(this.ctx.state === 'running') {
+                        filter.frequency.rampToValueAtTime(400 + Math.sin(this.ctx.currentTime) * 100, this.ctx.currentTime + 2);
+                    }
+                }, 2000);
+            }
+
+            playMelody() {
+                // C Major Pentatonic: C, D, E, G, A
+                const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+                
+                const playNote = () => {
+                    if(state.isDialogueOpen) {
+                         setTimeout(playNote, 1000); // Pause melody during dialogue mostly
+                         return;
+                    }
+
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    const note = scale[Math.floor(Math.random() * scale.length)];
+                    osc.frequency.value = note;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.5); // Slow attack
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 3); // Long release
+
+                    osc.connect(gain);
+                    gain.connect(this.master);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 3.1);
+
+                    setTimeout(playNote, Math.random() * 2000 + 1500); // Slow tempo
+                };
+                playNote();
+            }
+
+            playCollect() {
+                if(!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1046.5, this.ctx.currentTime + 0.3); // High sparkle
+                
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(this.master);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if(this.master) this.master.gain.value = this.isMuted ? 0 : 0.3;
+                return this.isMuted;
+            }
+        }
+        const audioSys = new AudioSynth();
+
+        /**
+         * =========================================================================
+         * GAME LOOP
+         * =========================================================================
+         */
+
+        createPlane();
+
+        function update() {
+            if(!state.isRunning) {
+                // Idle Rotation
+                if(plane) {
+                    plane.rotation.z = Math.sin(performance.now() * 0.001) * 0.1;
+                    plane.rotation.y += 0.005;
+                }
+                renderer.render(scene, camera);
+                requestAnimationFrame(update);
+                return;
+            }
+
+            // 1. Plane Movement (Smoothed with Lerp)
+            // Use a higher lerp factor for mobile responsiveness, but maintain weight
+            const lerpFactor = 0.08; 
+            
+            plane.position.x = MathUtils.lerp(plane.position.x, state.targetX, lerpFactor);
+            plane.position.y = MathUtils.lerp(plane.position.y, state.targetY, lerpFactor);
+            plane.rotation.y = 0; // Reset from idle
+
+            // Banking Logic (Tilt when moving)
+            const bankAngle = -(plane.position.x - state.targetX) * 0.1; // Calculate diff
+            plane.rotation.z = MathUtils.lerp(plane.rotation.z, bankAngle, 0.1);
+            
+            // Pitch Logic (Tilt up/down)
+            const pitchAngle = -(plane.position.y - state.targetY) * 0.05;
+            plane.rotation.x = MathUtils.lerp(plane.rotation.x, pitchAngle, 0.1);
+
+            // 2. Camera Follow (Cinematic Lag)
+            camera.position.x = MathUtils.lerp(camera.position.x, plane.position.x * 0.5, 0.05);
+            camera.position.y = MathUtils.lerp(camera.position.y, plane.position.y * 0.5 + 4, 0.05);
+
+            // 3. Environment Movement
+            state.speed = state.isDialogueOpen ? MathUtils.lerp(state.speed, 0.1, 0.05) : state.baseSpeed;
+
+            // Clouds
+            clouds.forEach(c => {
+                c.position.z += state.speed;
+                if(c.position.z > 20) {
+                    c.position.z = -400;
+                    c.position.x = (Math.random() - 0.5) * 80;
+                    c.position.y = (Math.random() - 0.5) * 40;
                 }
             });
-        }
 
-        renderer.render(scene, camera);
-    }
-
-    function updatePlane(time) {
-        const targetX = state.mouse.x * 50;
-        const targetY = state.mouse.y * 25 + 8;
-
-        plane.position.x = Utils.lerp(plane.position.x, targetX, 0.08);
-        plane.position.y = Utils.lerp(plane.position.y, targetY, 0.08);
-
-        // Banking and pitching
-        const bankTarget = -state.mouse.x * CONFIG.tiltMultiplier;
-        const pitchTarget = state.mouse.y * 0.35;
-        plane.rotation.z = Utils.lerp(plane.rotation.z, bankTarget, 0.1);
-        plane.rotation.x = Utils.lerp(plane.rotation.x, pitchTarget, 0.1);
-        
-        // Subtle wobble
-        plane.rotation.y = Math.sin(time * 2) * 0.03;
-
-        // Forward movement
-        plane.position.z -= CONFIG.planeSpeed;
-        
-        // Camera follow
-        camera.position.z = Utils.lerp(camera.position.z, plane.position.z + 25, CONFIG.cameraLag);
-        camera.position.x = Utils.lerp(camera.position.x, plane.position.x * 0.25, 0.03);
-        camera.position.y = Utils.lerp(camera.position.y, plane.position.y + 6, 0.03);
-        camera.lookAt(plane.position.x * 0.4, plane.position.y, plane.position.z - 30);
-
-        updateTrail();
-
-        const speed = Math.abs(state.mouse.x) + Math.abs(state.mouse.y);
-        audio.updateWind(speed);
-    }
-
-    function updateTrail() {
-        const positions = trail.geometry.attributes.position.array;
-        
-        for (let i = positions.length - 3; i >= 3; i -= 3) {
-            positions[i] = positions[i - 3];
-            positions[i + 1] = positions[i - 2];
-            positions[i + 2] = positions[i - 1];
-        }
-        
-        positions[0] = plane.position.x;
-        positions[1] = plane.position.y;
-        positions[2] = plane.position.z - 1;
-        
-        trail.geometry.attributes.position.needsUpdate = true;
-    }
-
-    function updateEnvironment(time) {
-        // Clouds
-        clouds.forEach(cloud => {
-            if (cloud.position.z > camera.position.z + 100) {
-                cloud.position.z = camera.position.z - 700 - Math.random() * 200;
-                cloud.position.x = camera.position.x + Utils.rand(-CONFIG.worldWidth, CONFIG.worldWidth);
-                cloud.position.y = Utils.rand(-10, 50);
-                cloud.userData.baseY = cloud.position.y;
-            }
-            // Gentle float
-            cloud.position.y = cloud.userData.baseY + Math.sin(time * 0.5 + cloud.position.x * 0.01) * 2;
-        });
-
-        // Stars pulsing
-        stars.forEach((star, i) => {
-            if (!star.userData.collected) {
-                const pulse = 1 + Math.sin(time * 4 + i) * 0.25;
-                const scale = star.userData.baseScale * pulse;
-                star.scale.set(scale, scale, 1);
-                star.material.rotation += 0.015;
-            }
-        });
-    }
-
-    // ===== STAR MANAGEMENT (Respawning) =====
-    function manageStars() {
-        // Remove stars that are behind the camera
-        for (let i = stars.length - 1; i >= 0; i--) {
-            const star = stars[i];
-            if (star.position.z > camera.position.z + 50) {
-                scene.remove(star);
-                stars.splice(i, 1);
-            }
-        }
-        
-        // Spawn new stars ahead if needed (only if game not finished)
-        if (state.score < CONFIG.starCount) {
-            const furthestZ = Math.min(...stars.filter(s => !s.userData.collected).map(s => s.position.z));
-            const spawnZ = plane.position.z - 150;
-            
-            // Spawn new star if needed
-            if (isNaN(furthestZ) || furthestZ > spawnZ + 100) {
-                const uncollectedCount = stars.filter(s => !s.userData.collected).length;
-                if (uncollectedCount < 5) {
-                    spawnStar(null, spawnZ - Math.random() * 100);
+            // Stars/Orbs
+            stars.forEach(s => {
+                if(s.userData.active) {
+                    s.position.z += state.speed;
+                    // Collision
+                    if(plane.position.distanceTo(s.position) < 5) {
+                        collectStar(s);
+                    }
+                    // Respawn if missed (to ensure she gets all messages)
+                    if(s.position.z > 10) {
+                        s.position.z = -200; // Try again far back
+                        s.position.x = MathUtils.lerp(s.position.x, plane.position.x, 0.5); // Closer to player lane
+                    }
                 }
-            }
-        }
-    }
+            });
 
-    function checkCollisions() {
-        if (state.score >= CONFIG.starCount) return;
-        
-        const hitRadius = 12;
-        
-        for (let i = 0; i < stars.length; i++) {
-            const star = stars[i];
-            if (star.userData.collected) continue;
+            // Particles
+            const pPositions = particleSystem.geometry.attributes.position.array;
+            for(let i=2; i<pPositions.length; i+=3) {
+                pPositions[i] += state.speed * 1.5;
+                if(pPositions[i] > 20) pPositions[i] = -100;
+            }
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(update);
+        }
+
+        function collectStar(star) {
+            star.userData.active = false;
+            star.visible = false;
             
-            const dist = plane.position.distanceTo(star.position);
-            if (dist < hitRadius) {
-                collectStar(star);
-                break;
+            audioSys.playCollect();
+            createHeartExplosion(star.position);
+
+            state.score++;
+            updateHUD();
+
+            const text = stories[state.score - 1];
+            if(text) showDialogue(text);
+
+            if(state.score >= state.maxScore) {
+                setTimeout(endGame, 5000);
             }
         }
 
-        // Check end game
-        if (state.score >= CONFIG.starCount && !state.isDialogueOpen && state.dialogueQueue.length === 0) {
-            if (!state.endTimer) {
-                state.endTimer = setTimeout(finishGame, 2500);
+        function createHeartExplosion(pos) {
+            const mat = new THREE.SpriteMaterial({ map: heartTex, color: 0xff69b4, transparent: true });
+            const count = 10;
+            for(let i=0; i<count; i++) {
+                const s = new THREE.Sprite(mat);
+                s.position.copy(pos);
+                s.scale.set(2,2,1);
+                scene.add(s);
+                
+                const vel = new THREE.Vector3(
+                    (Math.random()-0.5)*0.5,
+                    (Math.random()-0.5)*0.5,
+                    (Math.random()-0.5)*0.5
+                );
+
+                const anim = () => {
+                    s.position.add(vel);
+                    s.material.opacity -= 0.02;
+                    if(s.material.opacity > 0) requestAnimationFrame(anim);
+                    else scene.remove(s);
+                };
+                anim();
             }
         }
-    }
 
-    function collectStar(star) {
-        star.userData.collected = true;
-        star.visible = false;
-        
-        // Screen position for particles
-        const screenPos = star.position.clone().project(camera);
-        const x = (screenPos.x + 1) / 2 * window.innerWidth;
-        const y = (-screenPos.y + 1) / 2 * window.innerHeight;
-        particleSystem.addStarBurst(x, y);
-        
-        audio.playCollect();
-        
-        state.score++;
-        document.getElementById('score-number').textContent = state.score;
-        
-        const progress = (state.score / CONFIG.starCount) * 100;
-        document.getElementById('score-ring').style.setProperty('--progress', progress + '%');
-        
-        if (storyData[state.score - 1]) {
-            queueDialogue(storyData[state.score - 1]);
-        }
-    }
+        // --- UI LOGIC ---
+        const ui = {
+            startScreen: document.getElementById('start-screen'),
+            hud: document.getElementById('hud'),
+            scoreText: document.getElementById('score-text'),
+            dialogueBox: document.getElementById('dialogue-container'),
+            dialogueText: document.getElementById('dialogue-text'),
+            endScreen: document.getElementById('end-screen'),
+            startBtn: document.getElementById('btn-start'),
+            nextBtn: document.getElementById('btn-next-dialogue'),
+            muteBtn: document.getElementById('btn-mute')
+        };
 
-    function updateControlIndicator() {
-        const dot = document.getElementById('control-dot');
-        const x = 50 + state.mouse.x * 40;
-        const y = 50 - state.mouse.y * 40;
-        dot.style.left = x + '%';
-        dot.style.top = y + '%';
-    }
-
-    // ===== DIALOGUE SYSTEM =====
-    function queueDialogue(text) {
-        state.dialogueQueue.push(text);
-        if (!state.isDialogueOpen) {
-            showNextDialogue();
-        }
-    }
-
-    function showNextDialogue() {
-        if (state.dialogueQueue.length === 0) {
-            closeDialogue();
-            return;
-        }
-
-        state.isDialogueOpen = true;
-        state.currentDialogueIndex++;
-        
-        const text = state.dialogueQueue.shift();
-        const box = document.getElementById('dialogue-box');
-        const content = document.getElementById('dialogue-text');
-        const count = document.getElementById('dialogue-count');
-        const nextBtn = document.getElementById('dialogue-next');
-        
-        box.style.display = 'block';
-        setTimeout(() => box.classList.add('active'), 10);
-        
-        count.textContent = `${state.currentDialogueIndex} / ${CONFIG.starCount}`;
-        content.innerHTML = '';
-        nextBtn.classList.remove('visible');
-        
-        let i = 0;
-        if (window.typeInterval) clearInterval(window.typeInterval);
-        
-        window.typeInterval = setInterval(() => {
-            if (i < text.length) {
-                content.innerHTML += text.charAt(i);
-                i++;
-            } else {
-                clearInterval(window.typeInterval);
-                nextBtn.classList.add('visible');
-            }
-        }, 30);
-    }
-
-    function closeDialogue() {
-        const box = document.getElementById('dialogue-box');
-        box.classList.remove('active');
-        setTimeout(() => {
-            box.style.display = 'none';
-            state.isDialogueOpen = false;
-        }, 500);
-    }
-
-    document.getElementById('dialogue-next').addEventListener('click', () => {
-        if (window.typeInterval) clearInterval(window.typeInterval);
-        showNextDialogue();
-    });
-
-    // ===== INPUT =====
-    function onMouseMove(e) {
-        state.targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        state.targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        
-        const cursor = document.getElementById('custom-cursor');
-        const dot = document.getElementById('cursor-dot');
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        dot.style.left = e.clientX + 'px';
-        dot.style.top = e.clientY + 'px';
-    }
-
-    function onTouchMove(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        state.targetMouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        state.targetMouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-    }
-
-    function onResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    // ===== GAME FLOW =====
-    document.getElementById('btn-start').addEventListener('click', () => {
-        audio.start();
-        
-        const startScreen = document.getElementById('start-screen');
-        startScreen.style.opacity = '0';
-        startScreen.style.pointerEvents = 'none';
-        
-        setTimeout(() => {
-            startScreen.style.display = 'none';
-            document.getElementById('hud').style.opacity = '1';
-            document.getElementById('control-indicator').style.opacity = '1';
+        ui.startBtn.addEventListener('click', () => {
+            ui.startScreen.style.opacity = '0';
+            setTimeout(() => ui.startScreen.style.display = 'none', 1500);
+            
+            ui.hud.style.opacity = '1';
+            audioSys.init();
             state.isRunning = true;
+            update();
+        });
+
+        ui.muteBtn.addEventListener('click', () => {
+            const muted = audioSys.toggleMute();
+            ui.muteBtn.innerHTML = muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        });
+
+        function updateHUD() {
+            ui.scoreText.innerText = `${state.score} / ${state.maxScore}`;
+        }
+
+        let typeTimeout;
+        function showDialogue(text) {
+            if(typeTimeout) clearTimeout(typeTimeout);
+            state.isDialogueOpen = true;
+            ui.dialogueBox.style.display = 'block';
+            ui.dialogueText.innerHTML = '';
             
-            setTimeout(() => {
-                queueDialogue("Langit ini luas, Rizal. Tapi tak seluas harapan yang kau miliki.");
-            }, 1500);
-        }, 800);
-    });
+            let i = 0;
+            const type = () => {
+                ui.dialogueText.innerHTML += text.charAt(i);
+                i++;
+                if(i < text.length) typeTimeout = setTimeout(type, 40);
+            };
+            type();
+        }
 
-    document.getElementById('volume-btn').addEventListener('click', (e) => {
-        const on = audio.toggleMute();
-        e.currentTarget.textContent = on ? '🔊' : '🔇';
-    });
+        ui.nextBtn.addEventListener('click', () => {
+            if(typeTimeout) clearTimeout(typeTimeout);
+            ui.dialogueBox.style.display = 'none';
+            state.isDialogueOpen = false;
+        });
 
-    function finishGame() {
-        state.isRunning = false;
-        document.getElementById('end-screen').classList.add('active');
-        document.getElementById('hud').style.opacity = '0';
-        document.getElementById('control-indicator').style.opacity = '0';
-    }
+        function endGame() {
+            state.isRunning = false;
+            ui.hud.style.opacity = '0';
+            ui.dialogueBox.style.display = 'none';
+            ui.endScreen.classList.add('active');
+        }
 
-    // Hide cursor on touch
-    if ('ontouchstart' in window) {
-        document.getElementById('custom-cursor').style.display = 'none';
-        document.getElementById('cursor-dot').style.display = 'none';
-        document.body.style.cursor = 'auto';
-    }
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
-    // ===== START =====
-    initGraphics();
+        // Init
+        update();
+
     </script>
 </body>
 </html>
