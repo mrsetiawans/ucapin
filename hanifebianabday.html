@@ -1515,7 +1515,7 @@
 
     <script>
         // ==================== CONFIG ====================
-        const TARGET_DATE = new Date('2025-06-03T00:00:00').getTime();
+        const TARGET_DATE = new Date('2026-06-03T00:00:00').getTime();
         
         const WISHES = [
             { icon: '🌸', title: 'Kebahagiaan Abadi', text: 'Semoga setiap detik yang kau lalui dipenuhi dengan kebahagiaan yang tulus. Semoga tawa selalu menghiasi wajahmu, dan hatimu selalu menemukan alasan untuk bersyukur.' },
@@ -1653,6 +1653,21 @@
 
         // ==================== SCROLL HANDLER ====================
         let typewriterStarted = false;
+        let experienceStarted = false;
+
+        function startTypewriter() {
+            if (typewriterStarted) return;
+            typewriterStarted = true;
+            
+            const scene = document.getElementById('scene0');
+            scene.querySelector('.opening-title').classList.add('visible');
+            
+            setTimeout(() => {
+                scene.querySelector('.typewriter-box').classList.add('visible');
+                typeElement = document.getElementById('typewriterText');
+                setTimeout(typeWriter, 500);
+            }, 500);
+        }
 
         function handleScroll() {
             const scrollTop = window.scrollY;
@@ -1666,17 +1681,8 @@
                 const windowHeight = window.innerHeight;
                 
                 if (rect.top < windowHeight * 0.75) {
-                    // Trigger specific animations
-                    if (index === 0 && !typewriterStarted) {
-                        typewriterStarted = true;
-                        scene.querySelector('.opening-title').classList.add('visible');
-                        setTimeout(() => {
-                            scene.querySelector('.typewriter-box').classList.add('visible');
-                            typeElement = document.getElementById('typewriterText');
-                            setTimeout(typeWriter, 500);
-                        }, 500);
-                    }
-
+                    // Scene 0 is handled by startTypewriter() on button click
+                    
                     if (index === 1) {
                         scene.querySelector('.story-title').classList.add('visible');
                         scene.querySelectorAll('.flip-card').forEach((card, i) => {
@@ -1809,6 +1815,12 @@
                 document.getElementById('entranceGate').style.display = 'none';
                 document.getElementById('mainExperience').classList.add('active');
                 createConfetti();
+                
+                // Start typewriter after entering
+                setTimeout(() => {
+                    startTypewriter();
+                }, 300);
+                
                 setTimeout(handleScroll, 100);
             });
 
