@@ -1,0 +1,21 @@
+{
+  "name": "Adobe Creative Cloud Official",
+  "short_name": "Adobe CC",
+  "start_url": "./adobe.html",
+  "display": "standalone",
+  "background_color": "#FBFBFD",
+  "theme_color": "#E31E24",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg/192px-Adobe_Creative_Cloud_rainbow_icon.svg.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg/512px-Adobe_Creative_Cloud_rainbow_icon.svg.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
